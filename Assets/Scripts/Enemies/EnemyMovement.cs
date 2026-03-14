@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyMovement : MonoBehaviour
 {
     public float speed = 3f;
-    private int currentWaypointIndex = 0;
+    public int currentWaypointIndex = 0;
     private Transform[] waypoints;
     // Start is called before the first frame update
     void Start()

@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find c:UserszonesDesktopProjectsClick-n-Claw-gameAssets -type f \\\\\\(-name *.unity -o -name *.prefab \\\\\\))"
+      "Bash(find c:UserszonesDesktopProjectsClick-n-Claw-gameAssets -type f \\\\\\(-name *.unity -o -name *.prefab \\\\\\))",
+      "Bash(find /c/Users/zones/Desktop/Projects/Click-n-Claw-game/Assets/Prefabs/Characters -name *.prefab -exec bash -c \"echo \"\"=== $1 ===\"\" && cat \"\"$1\"\"\" _ {})",
+      "Bash(2)"
     ]
   }
 }
