@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find c:UserszonesDesktopProjectsClick-n-Claw-gameAssets -type f \\\\\\(-name *.unity -o -name *.prefab \\\\\\))"
+    ]
+  }
+}
