@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a2325ad4b3ce44f1fa112fed8459331d
+guid: bc1d23d15acc94b40908182095b1154f
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,13 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CentipedeAttackAnim_0
+      name: Centipede Attack Sheet_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 257
-        width: 57
-        height: 63
+        x: 0
+        y: 256
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -111,20 +111,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ae3c177a78572419ab43af79eacd0d35
-      internalID: 198623601
+      spriteID: fdbb1260307004022945b9815cc33da3
+      internalID: -515019553
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_1
+      name: Centipede Attack Sheet_1
       rect:
         serializedVersion: 2
-        x: 69
-        y: 257
-        width: 55
-        height: 62
+        x: 64
+        y: 256
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -132,20 +132,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 57676c7a3bee74977b7da54bfc5e5336
-      internalID: 1583634118
+      spriteID: a742cdc41bb644237a5c33c299ebe7b5
+      internalID: -105406439
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_2
+      name: Centipede Attack Sheet_2
       rect:
         serializedVersion: 2
-        x: 133
-        y: 257
-        width: 55
-        height: 62
+        x: 128
+        y: 256
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,20 +153,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0e1c20f542102431ba5724641c72f042
-      internalID: 1998933778
+      spriteID: 2bbb79ddb05974355a11f3a241444324
+      internalID: -542916580
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_3
+      name: Centipede Attack Sheet_3
       rect:
         serializedVersion: 2
-        x: 197
-        y: 257
-        width: 55
-        height: 62
+        x: 192
+        y: 256
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -174,20 +174,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a29ddce6638554a2991e4b23e1fc3f7e
-      internalID: 751970407
+      spriteID: 3214420cf1a40424db1c00256fa0f4a0
+      internalID: 1687189367
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_4
+      name: Centipede Attack Sheet_4
       rect:
         serializedVersion: 2
-        x: 261
-        y: 257
-        width: 55
-        height: 62
+        x: 256
+        y: 256
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -195,20 +195,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 147b990338eba4d30b5cea353982f51b
-      internalID: 391812125
+      spriteID: a299a5b3be68b419aa56244f438aa862
+      internalID: 1647374887
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_5
+      name: Centipede Attack Sheet_5
       rect:
         serializedVersion: 2
-        x: 5
-        y: 193
-        width: 55
-        height: 62
+        x: 0
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -216,20 +216,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 13795309c0d0744de8896de0f14dfdeb
-      internalID: -1683824888
+      spriteID: 6ab6df5aacbd84499b26f04b13c0f604
+      internalID: 262176440
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_6
+      name: Centipede Attack Sheet_6
       rect:
         serializedVersion: 2
-        x: 69
-        y: 193
-        width: 55
-        height: 62
+        x: 64
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -237,20 +237,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63f9d7f9a31f04fab9c972b35b907079
-      internalID: -668221866
+      spriteID: b42661f3efae34861a4bae75bfaa728c
+      internalID: -1798195753
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_7
+      name: Centipede Attack Sheet_7
       rect:
         serializedVersion: 2
-        x: 133
-        y: 193
-        width: 55
-        height: 62
+        x: 128
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -258,20 +258,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2e953f51602ca46e6b59685e2d71a2c1
-      internalID: 136055904
+      spriteID: 3c36d1608b07f416280b886afc3dff68
+      internalID: -2072179630
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_8
+      name: Centipede Attack Sheet_8
       rect:
         serializedVersion: 2
-        x: 197
-        y: 193
-        width: 55
-        height: 62
+        x: 192
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -279,20 +279,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 122f510eddb434d41975b00f8872b3d6
-      internalID: 104578341
+      spriteID: d21eb7b966ef8488f838780044ddc923
+      internalID: -768874312
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_9
+      name: Centipede Attack Sheet_9
       rect:
         serializedVersion: 2
-        x: 261
-        y: 193
-        width: 55
-        height: 62
+        x: 256
+        y: 192
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -300,20 +300,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b17d525b989de4f7681696f5f773aff0
-      internalID: -1468062073
+      spriteID: d3585ce2b70964c71aabe0b90b652c95
+      internalID: 1074223
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_10
+      name: Centipede Attack Sheet_10
       rect:
         serializedVersion: 2
-        x: 5
-        y: 129
-        width: 55
-        height: 62
+        x: 0
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -321,20 +321,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1e365c86e8d81495d826de6a45775b95
-      internalID: -307097642
+      spriteID: 1e5f3eabf238d46f89facb934ee8bccb
+      internalID: 763494846
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_11
+      name: Centipede Attack Sheet_11
       rect:
         serializedVersion: 2
-        x: 69
-        y: 129
-        width: 55
-        height: 62
+        x: 64
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -342,20 +342,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 230c58d63a5c24a0a93f49b24d13fc99
-      internalID: 2029496983
+      spriteID: f8c7e68b1115444de98293553b05d694
+      internalID: 1957269783
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_12
+      name: Centipede Attack Sheet_12
       rect:
         serializedVersion: 2
-        x: 111
-        y: 187
-        width: 5
-        height: 5
+        x: 128
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -363,20 +363,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7186f8b1446884b6bb2fdd8fdc33a1e6
-      internalID: 542190069
+      spriteID: 2d9d329a6c1de4ca2964efeb9b5876fb
+      internalID: -674319185
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_13
+      name: Centipede Attack Sheet_13
       rect:
         serializedVersion: 2
-        x: 133
-        y: 129
-        width: 55
-        height: 62
+        x: 192
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -384,20 +384,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 45ff0a62b53ad4092b563740edac4eb9
-      internalID: 1397334643
+      spriteID: c91a58ca7ae884d1e9c97589d3c17a51
+      internalID: 1886134304
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_14
+      name: Centipede Attack Sheet_14
       rect:
         serializedVersion: 2
-        x: 175
-        y: 187
-        width: 5
-        height: 5
+        x: 256
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -405,20 +405,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 559edeebd429f4dcbb2a15fad461c381
-      internalID: 1576007078
+      spriteID: ea2a41786cd714ee9bd93ca81842fd1c
+      internalID: -274601644
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_15
+      name: Centipede Attack Sheet_15
       rect:
         serializedVersion: 2
-        x: 197
-        y: 129
-        width: 55
-        height: 62
+        x: 0
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -426,20 +426,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5f457dc6f35864a88901e4f18f1da501
-      internalID: 1613189102
+      spriteID: 81c48a72194974cbfa01daeaaa747146
+      internalID: -117654312
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_16
+      name: Centipede Attack Sheet_16
       rect:
         serializedVersion: 2
-        x: 238
-        y: 186
-        width: 6
-        height: 6
+        x: 64
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -447,20 +447,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 685fc725c1a0343409c2ba0f3b676777
-      internalID: -1636434367
+      spriteID: 8831a04a934f84f508315fb95fdcd240
+      internalID: -915069812
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_17
+      name: Centipede Attack Sheet_17
       rect:
         serializedVersion: 2
-        x: 261
-        y: 129
-        width: 55
-        height: 62
+        x: 128
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -468,20 +468,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 60150c5ae4dd24e94acc8e4170bdfb79
-      internalID: -217608621
+      spriteID: 524269af0b2864dc49b10fc48e993d1e
+      internalID: 1429002653
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_18
+      name: Centipede Attack Sheet_18
       rect:
         serializedVersion: 2
-        x: 303
-        y: 187
-        width: 5
-        height: 5
+        x: 192
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -489,20 +489,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 36d8d27afa2644e02963220c2595b6a7
-      internalID: -426446976
+      spriteID: f0ae751f8c93a4ce8856eaf9cc5a5e90
+      internalID: 1670115607
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_19
+      name: Centipede Attack Sheet_19
       rect:
         serializedVersion: 2
-        x: 5
-        y: 65
-        width: 55
-        height: 63
+        x: 256
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -510,20 +510,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c50ffa46dbea54d77904fa7929651151
-      internalID: -473920048
+      spriteID: 8ebb7653340d449e1b3b65e7cb3d17e0
+      internalID: 108076442
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: CentipedeAttackAnim_20
+      name: Centipede Attack Sheet_20
       rect:
         serializedVersion: 2
-        x: 48
-        y: 124
-        width: 4
-        height: 4
+        x: 0
+        y: 0
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -531,134 +531,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 659d68cd617594daf8c3e1cc3b1583cb
-      internalID: -970092088
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CentipedeAttackAnim_21
-      rect:
-        serializedVersion: 2
-        x: 69
-        y: 65
-        width: 55
-        height: 62
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6d297a3489bdf40f78f9625188b8b933
-      internalID: -816706179
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CentipedeAttackAnim_22
-      rect:
-        serializedVersion: 2
-        x: 112
-        y: 124
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 00b53dbeb2e6d4eceafbea7f162aba5f
-      internalID: -595565588
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CentipedeAttackAnim_23
-      rect:
-        serializedVersion: 2
-        x: 133
-        y: 65
-        width: 55
-        height: 63
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3ba7be995a82440be851aa5ca7a69f8d
-      internalID: -2085434034
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CentipedeAttackAnim_24
-      rect:
-        serializedVersion: 2
-        x: 197
-        y: 65
-        width: 55
-        height: 63
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3c75f0a7578294a4bb009a7a83433e2f
-      internalID: 390824357
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CentipedeAttackAnim_25
-      rect:
-        serializedVersion: 2
-        x: 261
-        y: 65
-        width: 55
-        height: 62
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 93e85ff2765d44c35a4e7099b7b4ae4b
-      internalID: 1025473864
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CentipedeAttackAnim_26
-      rect:
-        serializedVersion: 2
-        x: 6
-        y: 1
-        width: 56
-        height: 63
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: e63d7d5061bc94e49b568c5fbca9e21a
-      internalID: -894592082
+      spriteID: 5966946f8a2e847a2b08b9563db5f941
+      internalID: 1921957944
       vertices: []
       indices: 
       edges: []
@@ -674,33 +548,27 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      CentipedeAttackAnim_0: 198623601
-      CentipedeAttackAnim_1: 1583634118
-      CentipedeAttackAnim_10: -307097642
-      CentipedeAttackAnim_11: 2029496983
-      CentipedeAttackAnim_12: 542190069
-      CentipedeAttackAnim_13: 1397334643
-      CentipedeAttackAnim_14: 1576007078
-      CentipedeAttackAnim_15: 1613189102
-      CentipedeAttackAnim_16: -1636434367
-      CentipedeAttackAnim_17: -217608621
-      CentipedeAttackAnim_18: -426446976
-      CentipedeAttackAnim_19: -473920048
-      CentipedeAttackAnim_2: 1998933778
-      CentipedeAttackAnim_20: -970092088
-      CentipedeAttackAnim_21: -816706179
-      CentipedeAttackAnim_22: -595565588
-      CentipedeAttackAnim_23: -2085434034
-      CentipedeAttackAnim_24: 390824357
-      CentipedeAttackAnim_25: 1025473864
-      CentipedeAttackAnim_26: -894592082
-      CentipedeAttackAnim_3: 751970407
-      CentipedeAttackAnim_4: 391812125
-      CentipedeAttackAnim_5: -1683824888
-      CentipedeAttackAnim_6: -668221866
-      CentipedeAttackAnim_7: 136055904
-      CentipedeAttackAnim_8: 104578341
-      CentipedeAttackAnim_9: -1468062073
+      Centipede Attack Sheet_0: -515019553
+      Centipede Attack Sheet_1: -105406439
+      Centipede Attack Sheet_10: 763494846
+      Centipede Attack Sheet_11: 1957269783
+      Centipede Attack Sheet_12: -674319185
+      Centipede Attack Sheet_13: 1886134304
+      Centipede Attack Sheet_14: -274601644
+      Centipede Attack Sheet_15: -117654312
+      Centipede Attack Sheet_16: -915069812
+      Centipede Attack Sheet_17: 1429002653
+      Centipede Attack Sheet_18: 1670115607
+      Centipede Attack Sheet_19: 108076442
+      Centipede Attack Sheet_2: -542916580
+      Centipede Attack Sheet_20: 1921957944
+      Centipede Attack Sheet_3: 1687189367
+      Centipede Attack Sheet_4: 1647374887
+      Centipede Attack Sheet_5: 262176440
+      Centipede Attack Sheet_6: -1798195753
+      Centipede Attack Sheet_7: -2072179630
+      Centipede Attack Sheet_8: -768874312
+      Centipede Attack Sheet_9: 1074223
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

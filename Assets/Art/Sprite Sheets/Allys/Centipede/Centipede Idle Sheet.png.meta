@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: a910968ecf35d4cdc98a029d9a8dfd75
+guid: 9ac8546a3af474ec0a871f783e1a7e4a
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -45,7 +45,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 64
@@ -97,13 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Praying Mantis Attack_0
+      name: Centipede Idle Sheet_0
       rect:
         serializedVersion: 2
-        x: 12
-        y: 1
-        width: 41
-        height: 60
+        x: 0
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -111,20 +111,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9ef8d5bfcface48ba93ff6d9379e453f
-      internalID: 830345648
+      spriteID: d8b3a615f7c92438b88e66e47ec847d2
+      internalID: -477832394
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack_1
+      name: Centipede Idle Sheet_1
       rect:
         serializedVersion: 2
-        x: 71
-        y: 4
-        width: 48
-        height: 57
+        x: 64
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -132,20 +132,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2e7d0a410d6e444b293e760918f99267
-      internalID: -1232887567
+      spriteID: a2273924fd5fd40c3bb604b3cb194404
+      internalID: -348013986
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack_2
+      name: Centipede Idle Sheet_2
       rect:
         serializedVersion: 2
-        x: 136
-        y: 1
-        width: 48
-        height: 62
+        x: 128
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,20 +153,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e11d70b65eee3453698917b4a5f67feb
-      internalID: -253691129
+      spriteID: c83678407b10a4cc58e40636d29ea29d
+      internalID: 1959999119
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack_3
+      name: Centipede Idle Sheet_3
       rect:
         serializedVersion: 2
-        x: 199
-        y: 48
-        width: 7
-        height: 14
+        x: 192
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -174,20 +174,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3b9898be672f74d1398eb1df9f1d21ed
-      internalID: -25723233
+      spriteID: d496a1e49e12e495c9e9ef017782de5e
+      internalID: -1422467045
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack_4
+      name: Centipede Idle Sheet_4
       rect:
         serializedVersion: 2
-        x: 206
-        y: 1
-        width: 37
-        height: 63
+        x: 256
+        y: 128
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -195,20 +195,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 180a84b2dfbf64e969097b0d4fbf5a53
-      internalID: 1507539866
+      spriteID: d0ff906fc025f41cdad33e683f42b5d9
+      internalID: 1537745839
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack_5
+      name: Centipede Idle Sheet_5
       rect:
         serializedVersion: 2
-        x: 244
-        y: 51
-        width: 5
-        height: 11
+        x: 0
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -216,20 +216,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bacb554764e684cb0abdd64241d47e66
-      internalID: -1982403995
+      spriteID: 29f409257ac7646d881a08f275787337
+      internalID: 1806555706
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack_6
+      name: Centipede Idle Sheet_6
       rect:
         serializedVersion: 2
-        x: 267
-        y: 54
-        width: 9
-        height: 9
+        x: 64
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -237,20 +237,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f788b7d957bc64210ad945472e651eae
-      internalID: -1217068172
+      spriteID: 8ecdc098e1fc1484db54db6fc594e3e0
+      internalID: -1622283557
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack_7
+      name: Centipede Idle Sheet_7
       rect:
         serializedVersion: 2
-        x: 273
-        y: 1
-        width: 30
-        height: 63
+        x: 128
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -258,20 +258,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 77f146d67d8a9484c8b79882c4046c30
-      internalID: 1219135468
+      spriteID: 0b651f15f5ebe4654bbdb86445155369
+      internalID: -527396801
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack_8
+      name: Centipede Idle Sheet_8
       rect:
         serializedVersion: 2
-        x: 303
-        y: 55
-        width: 5
-        height: 8
+        x: 192
+        y: 64
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -279,8 +279,71 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e833e903543ba43458241ac62f0a061d
-      internalID: -920808104
+      spriteID: a0ec23faa4ed5447684d2a1e8ff4a88d
+      internalID: -725920466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Centipede Idle Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ce2b7fe71f3d400684d8bbf6108b7d5
+      internalID: -823462753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Centipede Idle Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9350e095343b24227b79958725b32410
+      internalID: 1345643095
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Centipede Idle Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a1d175a8519c462eb642215a18643e9
+      internalID: -1231527564
       vertices: []
       indices: 
       edges: []
@@ -296,15 +359,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Praying Mantis Attack_0: 830345648
-      Praying Mantis Attack_1: -1232887567
-      Praying Mantis Attack_2: -253691129
-      Praying Mantis Attack_3: -25723233
-      Praying Mantis Attack_4: 1507539866
-      Praying Mantis Attack_5: -1982403995
-      Praying Mantis Attack_6: -1217068172
-      Praying Mantis Attack_7: 1219135468
-      Praying Mantis Attack_8: -920808104
+      Centipede Idle Sheet_0: -477832394
+      Centipede Idle Sheet_1: -348013986
+      Centipede Idle Sheet_10: 1345643095
+      Centipede Idle Sheet_11: -1231527564
+      Centipede Idle Sheet_2: 1959999119
+      Centipede Idle Sheet_3: -1422467045
+      Centipede Idle Sheet_4: 1537745839
+      Centipede Idle Sheet_5: 1806555706
+      Centipede Idle Sheet_6: -1622283557
+      Centipede Idle Sheet_7: -527396801
+      Centipede Idle Sheet_8: -725920466
+      Centipede Idle Sheet_9: -823462753
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
