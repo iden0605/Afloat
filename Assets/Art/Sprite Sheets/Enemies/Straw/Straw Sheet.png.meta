@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1a75de414181c416c9569c414a572d8b
+guid: 6366e548b42944b02bdccd06e95329fd
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,7 +97,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Praying Mantis Attack sheet_0
+      name: Straw Sheet_0
       rect:
         serializedVersion: 2
         x: 0
@@ -111,14 +111,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 363d55de2bc8d4c0dbf703b32220bf3b
-      internalID: 1041294398
+      spriteID: 32f41403c72404a5da8cfa838ea93b05
+      internalID: 472970562
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack sheet_1
+      name: Straw Sheet_1
       rect:
         serializedVersion: 2
         x: 64
@@ -132,14 +132,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 36f5463debc6f497b85e9eb28ca5e18c
-      internalID: -469413666
+      spriteID: 5dadfe2cad12545959f3618af93cea3d
+      internalID: 986589389
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack sheet_2
+      name: Straw Sheet_2
       rect:
         serializedVersion: 2
         x: 128
@@ -153,14 +153,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5ccf41974052745efb9f65ca29c6633d
-      internalID: 378163316
+      spriteID: ed333fce89b9c463d94e36ad6546df52
+      internalID: 2005118921
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack sheet_3
+      name: Straw Sheet_3
       rect:
         serializedVersion: 2
         x: 192
@@ -174,14 +174,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 44f2681eccbf54e77b3c10379e5f7c76
-      internalID: -1785146294
+      spriteID: 5a3b888d20f4e46f4af0acde160380e0
+      internalID: 1760751270
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack sheet_4
+      name: Straw Sheet_4
       rect:
         serializedVersion: 2
         x: 256
@@ -195,8 +195,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fa5cd7aa7c4a740ff9b5b2751f024b0f
-      internalID: 1785036606
+      spriteID: b892169346e1c4dfeb02c24cbcad4f3b
+      internalID: -1957775146
       vertices: []
       indices: 
       edges: []
@@ -212,11 +212,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Praying Mantis Attack sheet_0: 1041294398
-      Praying Mantis Attack sheet_1: -469413666
-      Praying Mantis Attack sheet_2: 378163316
-      Praying Mantis Attack sheet_3: -1785146294
-      Praying Mantis Attack sheet_4: 1785036606
+      Straw Sheet_0: 472970562
+      Straw Sheet_1: 986589389
+      Straw Sheet_2: 2005118921
+      Straw Sheet_3: 1760751270
+      Straw Sheet_4: -1957775146
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

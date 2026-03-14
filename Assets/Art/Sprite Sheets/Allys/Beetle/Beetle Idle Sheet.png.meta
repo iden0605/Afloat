@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1a75de414181c416c9569c414a572d8b
+guid: 24234ec9cef2f44ada50c5f63347d1ce
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,13 +97,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Praying Mantis Attack sheet_0
+      name: Beetle Idle Sheet_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 64
-        height: 64
+        x: 11
+        y: 66
+        width: 44
+        height: 61
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -111,20 +111,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 363d55de2bc8d4c0dbf703b32220bf3b
-      internalID: 1041294398
+      spriteID: ae233be72bcbc4d7aad2b2148a1fc5e3
+      internalID: -1598429990
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack sheet_1
+      name: Beetle Idle Sheet_1
       rect:
         serializedVersion: 2
-        x: 64
-        y: 0
-        width: 64
-        height: 64
+        x: 73
+        y: 66
+        width: 45
+        height: 60
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -132,20 +132,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 36f5463debc6f497b85e9eb28ca5e18c
-      internalID: -469413666
+      spriteID: 0ac947a8db54c496ca744301693b88e6
+      internalID: 1165440711
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack sheet_2
+      name: Beetle Idle Sheet_2
       rect:
         serializedVersion: 2
-        x: 128
-        y: 0
-        width: 64
-        height: 64
+        x: 11
+        y: 2
+        width: 44
+        height: 61
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,20 +153,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5ccf41974052745efb9f65ca29c6633d
-      internalID: 378163316
+      spriteID: c48d00db5caf94f87ab316ab8c322a22
+      internalID: 353098290
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack sheet_3
+      name: Beetle Idle Sheet_3
       rect:
         serializedVersion: 2
-        x: 192
-        y: 0
-        width: 64
-        height: 64
+        x: 75
+        y: 2
+        width: 45
+        height: 60
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -174,29 +174,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 44f2681eccbf54e77b3c10379e5f7c76
-      internalID: -1785146294
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Praying Mantis Attack sheet_4
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fa5cd7aa7c4a740ff9b5b2751f024b0f
-      internalID: 1785036606
+      spriteID: a232fff8acfdf47ad94364d9daac2089
+      internalID: -1320387716
       vertices: []
       indices: 
       edges: []
@@ -212,11 +191,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Praying Mantis Attack sheet_0: 1041294398
-      Praying Mantis Attack sheet_1: -469413666
-      Praying Mantis Attack sheet_2: 378163316
-      Praying Mantis Attack sheet_3: -1785146294
-      Praying Mantis Attack sheet_4: 1785036606
+      Beetle Idle Sheet_0: -1598429990
+      Beetle Idle Sheet_1: 1165440711
+      Beetle Idle Sheet_2: 353098290
+      Beetle Idle Sheet_3: -1320387716
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

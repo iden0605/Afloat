@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1a75de414181c416c9569c414a572d8b
+guid: 602f61fde864948c2990feb1c90b9e14
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -97,7 +97,49 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Praying Mantis Attack sheet_0
+      name: Plastic bag Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 70e048a0388ea432484397d909c07b2b
+      internalID: -740501924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plastic bag Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9e9094be83eb4c9b8b87ca9c2d9920b
+      internalID: -1517405269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plastic bag Sheet_2
       rect:
         serializedVersion: 2
         x: 0
@@ -111,14 +153,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 363d55de2bc8d4c0dbf703b32220bf3b
-      internalID: 1041294398
+      spriteID: e3c91b5d0041346bfb27c4d17a174cbe
+      internalID: 1087786042
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Praying Mantis Attack sheet_1
+      name: Plastic bag Sheet_3
       rect:
         serializedVersion: 2
         x: 64
@@ -132,71 +174,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 36f5463debc6f497b85e9eb28ca5e18c
-      internalID: -469413666
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Praying Mantis Attack sheet_2
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5ccf41974052745efb9f65ca29c6633d
-      internalID: 378163316
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Praying Mantis Attack sheet_3
-      rect:
-        serializedVersion: 2
-        x: 192
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 44f2681eccbf54e77b3c10379e5f7c76
-      internalID: -1785146294
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Praying Mantis Attack sheet_4
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 0
-        width: 64
-        height: 64
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fa5cd7aa7c4a740ff9b5b2751f024b0f
-      internalID: 1785036606
+      spriteID: 4da1eae32a3074442964cfb1aa82d5b6
+      internalID: 1119562790
       vertices: []
       indices: 
       edges: []
@@ -212,11 +191,10 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Praying Mantis Attack sheet_0: 1041294398
-      Praying Mantis Attack sheet_1: -469413666
-      Praying Mantis Attack sheet_2: 378163316
-      Praying Mantis Attack sheet_3: -1785146294
-      Praying Mantis Attack sheet_4: 1785036606
+      Plastic bag Sheet_0: -740501924
+      Plastic bag Sheet_1: -1517405269
+      Plastic bag Sheet_2: 1087786042
+      Plastic bag Sheet_3: 1119562790
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
