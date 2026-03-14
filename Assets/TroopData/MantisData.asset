@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a0813b27cdd4b3b95d21f6cb444989, type: 3}
   m_Name: MantisData
   m_EditorClassIdentifier: 
-  troopName: 
-  portrait: {fileID: 0}
-  prefab: {fileID: 0}
+  troopName: Praying Mantis
+  portrait: {fileID: 21300000, guid: 16e2655f7c98b45f8be4c902691c31f5, type: 3}
+  prefab: {fileID: 1390176710375397592, guid: d7e0a4013636a49548d98ed007c16c1f, type: 3}
   baseCost: 50
   upgrades: []
