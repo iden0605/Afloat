@@ -1,5 +1,13 @@
 using UnityEngine;
 
+/// <summary>Where this troop type is allowed to be placed.</summary>
+public enum PlacementType
+{
+    LandOnly,       // Centipede, Beetle, Praying Mantis
+    WaterOnly,      // future water-only troops
+    LandAndWater,   // Frog
+}
+
 /// <summary>
 /// Create one TroopData asset per troop type via:
 /// Right-click in Project → Create → Click n Claw → Troop Data
@@ -11,6 +19,9 @@ public class TroopData : ScriptableObject
     public string troopName;
     public Sprite portrait;
     public GameObject prefab;
+
+    [Header("Placement")]
+    public PlacementType placementType = PlacementType.LandOnly;
 
     [Header("Economy")]
     public int baseCost = 50;

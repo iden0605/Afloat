@@ -135,6 +135,12 @@
     /* Rendered on top because it's added last to rootVisualElement */
 }
 
+/* Drag ghost — invalid placement (overlapping troop or out of bounds) */
+.drag-ghost--invalid {
+    border-color: rgba(255, 55, 55, 0.95);
+    -unity-background-image-tint-color: rgba(255, 80, 80, 0.75);
+}
+
 /* =============================================================
    Troop Selection Popup  (built entirely in C# by TroopSelectionUI)
    ============================================================= */
@@ -152,25 +158,6 @@
     display: none;
 }
 
-/* Close button — top-right corner */
-.sel-close {
-    position: absolute;
-    right: 5px;
-    top: 5px;
-    width: 18px;
-    height: 18px;
-    font-size: 14px;
-    -unity-text-align: middle-center;
-    color: rgb(145, 215, 120);
-    background-color: transparent;
-    border-width: 0;
-    padding: 0;
-    cursor: link;
-}
-
-.sel-close:hover {
-    color: rgb(220, 255, 210);
-}
 
 /* Troop name */
 .sel-troop-name {
