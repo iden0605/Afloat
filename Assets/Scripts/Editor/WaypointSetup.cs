@@ -6,63 +6,51 @@ public static class WaypointSetup
 {
     static readonly Vector2[] waypointPositions = new Vector2[]
     {
-        // Entry approach
+        // Entry approach (flowing in from top-right)
         new Vector2( 5.00f, -2.50f),  // WP0
-        new Vector2( 4.20f, -3.00f),  // WP1
-        new Vector2( 3.20f, -3.50f),  // WP2
-        new Vector2( 2.50f, -3.70f),  // WP3
+        new Vector2( 4.00f, -3.50f),  // WP1
+        new Vector2( 3.20f, -4.00f),  // WP2
 
-        // Right swirl — Circle 1 (clockwise, 30° steps, radius 1.3, center 1.5,-4.9)
-        new Vector2( 2.15f, -3.77f),  // WP4
-        new Vector2( 2.63f, -4.25f),  // WP5
-        new Vector2( 2.80f, -4.90f),  // WP6
-        new Vector2( 2.63f, -5.55f),  // WP7
-        new Vector2( 2.15f, -6.03f),  // WP8
-        new Vector2( 1.50f, -6.20f),  // WP9
-        new Vector2( 0.85f, -6.03f),  // WP10
-        new Vector2( 0.37f, -5.55f),  // WP11
-        new Vector2( 0.20f, -4.90f),  // WP12
-        new Vector2( 0.37f, -4.25f),  // WP13
-        new Vector2( 0.85f, -3.77f),  // WP14
-        new Vector2( 1.50f, -3.60f),  // WP15
+        // Right swirl — Circle 1 (Counter-Clockwise, center ~2.0, -5.0, radius ~1.0)
+        new Vector2( 2.80f, -4.40f),  // WP3  (Top-Right)
+        new Vector2( 2.00f, -4.00f),  // WP4  (Top)
+        new Vector2( 1.20f, -4.40f),  // WP5  (Top-Left)
+        new Vector2( 1.00f, -5.00f),  // WP6  (Left)
+        new Vector2( 1.20f, -5.60f),  // WP7  (Bottom-Left)
+        new Vector2( 2.00f, -6.00f),  // WP8  (Bottom)
+        new Vector2( 2.80f, -5.60f),  // WP9  (Bottom-Right)
+        new Vector2( 3.00f, -5.00f),  // WP10 (Right)
 
-        // Right swirl — Circle 2 (repeat)
-        new Vector2( 2.15f, -3.77f),  // WP16
-        new Vector2( 2.63f, -4.25f),  // WP17
-        new Vector2( 2.80f, -4.90f),  // WP18
-        new Vector2( 2.63f, -5.55f),  // WP19
-        new Vector2( 2.15f, -6.03f),  // WP20
-        new Vector2( 1.50f, -6.20f),  // WP21
-        new Vector2( 0.85f, -6.03f),  // WP22
-        new Vector2( 0.37f, -5.55f),  // WP23
-        new Vector2( 0.20f, -4.90f),  // WP24
-        new Vector2( 0.37f, -4.25f),  // WP25
-        new Vector2( 0.85f, -3.77f),  // WP26
-        new Vector2( 1.50f, -3.60f),  // WP27
+        // Right swirl — Circle 2 (repeat for TD loop)
+        new Vector2( 2.80f, -4.40f),  // WP11 (Top-Right)
+        new Vector2( 2.00f, -4.00f),  // WP12 (Top)
+        new Vector2( 1.20f, -4.40f),  // WP13 (Top-Left)
+        new Vector2( 1.00f, -5.00f),  // WP14 (Left)
 
-        // Transition to left swirl
-        new Vector2( 0.50f, -3.80f),  // WP28
-        new Vector2(-0.80f, -4.00f),  // WP29
-        new Vector2(-1.80f, -4.10f),  // WP30
+        // Transition to left swirl (flowing left and slightly up)
+        new Vector2( 0.00f, -4.50f),  // WP15
+        new Vector2(-1.00f, -4.20f),  // WP16
+        new Vector2(-2.00f, -4.00f),  // WP17
 
-        // Left swirl — Circle 1 (clockwise, 30° steps, radius 1.2, center -3.1,-5.2)
-        new Vector2(-2.50f, -4.16f),  // WP31
-        new Vector2(-2.06f, -4.60f),  // WP32
-        new Vector2(-1.90f, -5.20f),  // WP33
-        new Vector2(-2.06f, -5.80f),  // WP34
-        new Vector2(-2.50f, -6.24f),  // WP35
-        new Vector2(-3.10f, -6.40f),  // WP36
-        new Vector2(-3.70f, -6.24f),  // WP37
-        new Vector2(-4.14f, -5.80f),  // WP38
-        new Vector2(-4.30f, -5.20f),  // WP39
-        new Vector2(-4.14f, -4.60f),  // WP40
-        new Vector2(-3.70f, -4.16f),  // WP41
-        new Vector2(-3.10f, -4.00f),  // WP42
+        // Left swirl — Circle 1 (Counter-Clockwise, center ~-3.0, -4.5, radius ~1.0)
+        new Vector2(-2.20f, -3.90f),  // WP18 (Top-Right)
+        new Vector2(-3.00f, -3.50f),  // WP19 (Top)
+        new Vector2(-3.80f, -3.90f),  // WP20 (Top-Left)
+        new Vector2(-4.00f, -4.50f),  // WP21 (Left)
+        new Vector2(-3.80f, -5.10f),  // WP22 (Bottom-Left)
+        new Vector2(-3.00f, -5.50f),  // WP23 (Bottom)
+        new Vector2(-2.20f, -5.10f),  // WP24 (Bottom-Right)
+        new Vector2(-2.00f, -4.50f),  // WP25 (Right)
 
-        // Exit path
-        new Vector2(-4.20f, -4.50f),  // WP43
-        new Vector2(-5.20f, -4.90f),  // WP44
-        new Vector2(-5.90f, -5.10f),  // WP45
+        // Left swirl — Circle 2
+        new Vector2(-2.20f, -3.90f),  // WP26 (Top-Right)
+        new Vector2(-3.00f, -3.50f),  // WP27 (Top)
+        new Vector2(-3.80f, -3.90f),  // WP28 (Top-Left)
+        new Vector2(-4.00f, -4.50f),  // WP29 (Left)
+
+        // Exit path (flowing out to bottom-left)
+        new Vector2(-4.50f, -5.50f),  // WP30
+        new Vector2(-5.00f, -6.50f),  // WP31
     };
 
     [MenuItem("Tools/Setup Waypoints")]
@@ -102,5 +90,36 @@ public static class WaypointSetup
         EditorSceneManager.MarkSceneDirty(manager.gameObject.scene);
 
         Debug.Log($"WaypointSetup: Created {transforms.Length} waypoints successfully. Save the scene (Ctrl+S) to persist.");
+    }
+
+    [MenuItem("Tools/Fix Duplicate Waypoints")]
+    static void FixDuplicateWaypoints()
+    {
+        WaypointManager manager = Object.FindObjectOfType<WaypointManager>();
+        if (manager == null)
+        {
+            Debug.LogError("WaypointSetup: No WaypointManager found in scene!");
+            return;
+        }
+
+        int childCount = manager.transform.childCount;
+        Transform[] transforms = new Transform[childCount];
+
+        // Rename every child by its hierarchy position, clearing any " (1)" suffixes
+        for (int i = 0; i < childCount; i++)
+        {
+            Transform child = manager.transform.GetChild(i);
+            Undo.RecordObject(child.gameObject, "Renumber Waypoint");
+            child.name = "Waypoint" + i;
+            transforms[i] = child;
+        }
+
+        // Rebuild array in hierarchy order
+        Undo.RecordObject(manager, "Fix Duplicate Waypoints");
+        manager.waypoints = transforms;
+        EditorUtility.SetDirty(manager);
+        EditorSceneManager.MarkSceneDirty(manager.gameObject.scene);
+
+        Debug.Log($"WaypointSetup: Renumbered {transforms.Length} waypoints. Save scene (Ctrl+S) to persist.");
     }
 }
