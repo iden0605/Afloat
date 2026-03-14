@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a0813b27cdd4b3b95d21f6cb444989, type: 3}
   m_Name: BeetleData
   m_EditorClassIdentifier: 
-  troopName: 
-  portrait: {fileID: 0}
-  prefab: {fileID: 0}
+  troopName: Beetle
+  portrait: {fileID: 21300000, guid: a8f9470a391a44af9b650d8f234b23a6, type: 3}
+  prefab: {fileID: 751817462249862375, guid: d38dbeb9e24384956a7a8b533f226de6, type: 3}
   baseCost: 50
   upgrades: []

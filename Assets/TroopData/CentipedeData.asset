@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a0813b27cdd4b3b95d21f6cb444989, type: 3}
   m_Name: CentipedeData
   m_EditorClassIdentifier: 
-  troopName: 
-  portrait: {fileID: 0}
-  prefab: {fileID: 0}
+  troopName: Centipede
+  portrait: {fileID: 21300000, guid: 5c511a071f7b04fc7b7e74ca10aa5034, type: 3}
+  prefab: {fileID: 1592945629552844655, guid: dd7a2afb1827d480dbb7d76eac0344c3, type: 3}
   baseCost: 50
   upgrades: []
