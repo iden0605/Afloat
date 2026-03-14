@@ -44,10 +44,14 @@ public class TroopSelectionUI : MonoBehaviour
         _troopNameLabel.text = troop.Data.troopName;
         Refresh();
         _popup.RemoveFromClassList("sel-hidden");
+
+        var ind = _target.GetComponentInChildren<RangeIndicator>();
+        if (ind != null) { ind.SetRadius(_target.CurrentRange); ind.SetVisible(true); }
     }
 
     public void Hide()
     {
+        _target?.GetComponentInChildren<RangeIndicator>()?.SetVisible(false);
         _target = null;
         _popup?.AddToClassList("sel-hidden");
     }

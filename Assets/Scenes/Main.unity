@@ -3421,6 +3421,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
+  currentWaypointIndex: 0
 --- !u!1001 &8019167037003011906
 PrefabInstance:
   m_ObjectHideFlags: 0

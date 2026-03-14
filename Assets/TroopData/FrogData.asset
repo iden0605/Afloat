@@ -17,6 +17,15 @@ MonoBehaviour:
   prefab: {fileID: 7215667400850713856, guid: bbccc00195ec241a9a8a7315c24217d2, type: 3}
   placementType: 2
   baseCost: 50
+  attack: 1
+  attackSpeed: 1
+  range: 5
+  projectileType: 0
+  splashRadius: 0.5
+  effectType: 0
   upgrades:
   - description: Upgrade 1
     cost: 100
+    attackDelta: 0
+    attackSpeedDelta: 0
+    rangeDelta: 0

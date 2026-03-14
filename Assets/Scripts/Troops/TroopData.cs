@@ -8,6 +8,17 @@ public enum PlacementType
     LandAndWater,   // Frog
 }
 
+public enum ProjectileType { Single, Splash }
+
+public enum TroopEffectType
+{
+    None,
+    DoubleGoldDrop,        // Anchovies: hit enemies drop double gold
+    ConditionalAttackBuff, // Praying Mantis: attack → 3 when >1 enemy in range
+    ConditionalSpeedBuff,  // Dragonfly: attackSpeed → 1.2 when only 1 enemy in range
+    AllyProximityBuff,     // Ants: +0.5 attack per other Ant troop in range
+}
+
 /// <summary>
 /// Create one TroopData asset per troop type via:
 /// Right-click in Project → Create → Click n Claw → Troop Data
@@ -26,6 +37,14 @@ public class TroopData : ScriptableObject
     [Header("Economy")]
     public int baseCost = 50;
 
+    [Header("Combat Stats")]
+    public float attack = 1f;
+    public float attackSpeed = 1f;        // attacks per second (for future use)
+    public float range = 1.5f;            // detection radius in world units
+    public ProjectileType projectileType = ProjectileType.Single;
+    public float splashRadius = 0.5f;     // only used when projectileType == Splash
+    public TroopEffectType effectType = TroopEffectType.None;
+
     [Header("Upgrades — add one entry per upgrade tier")]
     public UpgradeTier[] upgrades;
 
@@ -33,6 +52,9 @@ public class TroopData : ScriptableObject
     public struct UpgradeTier
     {
         public string description;
-        public int cost;
+        public int    cost;
+        public float  attackDelta;
+        public float  attackSpeedDelta;
+        public float  rangeDelta;
     }
 }
