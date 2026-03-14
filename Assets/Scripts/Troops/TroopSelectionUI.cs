@@ -1,10 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-/// <summary>
-/// Builds and manages the floating Upgrade / Move / Sell popup that appears
-/// above a selected troop. Must be on the same GameObject as the UIDocument.
-/// </summary>
 [RequireComponent(typeof(UIDocument))]
 public class TroopSelectionUI : MonoBehaviour
 {
@@ -13,7 +9,6 @@ public class TroopSelectionUI : MonoBehaviour
     private UIDocument    _uiDoc;
     private TroopInstance _target;
 
-    // Popup elements (built entirely in C#)
     private VisualElement _popup;
     private Button        _upgradeBtn;
     private Label         _upgradeCostLabel;
@@ -22,9 +17,8 @@ public class TroopSelectionUI : MonoBehaviour
 
     private const float PopupHalfWidth = 90f;
 
-    // Used to prevent TroopManager from re-opening the popup on the same frame Hide() is called
-    private int _hideFrame = -1;
-    public bool JustHidden => Time.frameCount == _hideFrame;
+    // Prevents LateUpdate from closing the popup on the same frame Show() was called
+    private int _showFrame = -1;
 
     void Awake()
     {
@@ -45,6 +39,7 @@ public class TroopSelectionUI : MonoBehaviour
 
     public void Show(TroopInstance troop)
     {
+        _showFrame = Time.frameCount;
         _target = troop;
         _troopNameLabel.text = troop.Data.troopName;
         Refresh();
@@ -53,7 +48,6 @@ public class TroopSelectionUI : MonoBehaviour
 
     public void Hide()
     {
-        _hideFrame = Time.frameCount;
         _target = null;
         _popup?.AddToClassList("sel-hidden");
     }
@@ -77,17 +71,12 @@ public class TroopSelectionUI : MonoBehaviour
         _popup = new VisualElement();
         _popup.AddToClassList("sel-popup");
 
-        // ── Close button (top-right) ──────────────────────
-        var closeBtn = new Button(Hide) { text = "×" };
-        closeBtn.AddToClassList("sel-close");
-        _popup.Add(closeBtn);
-
-        // ── Troop name ────────────────────────────────────
+        // Troop name
         _troopNameLabel = new Label();
         _troopNameLabel.AddToClassList("sel-troop-name");
         _popup.Add(_troopNameLabel);
 
-        // ── Button row ────────────────────────────────────
+        // Button row
         var row = new VisualElement();
         row.AddToClassList("sel-row");
 
@@ -105,7 +94,7 @@ public class TroopSelectionUI : MonoBehaviour
         // Move group
         var moveGroup = new VisualElement();
         moveGroup.AddToClassList("sel-group");
-        var moveBtn = new Button(OnMoveClicked) { text = "\u271B" }; // ✛ open centre cross = 4-directional move
+        var moveBtn = new Button(OnMoveClicked) { text = "\u271B" };
         moveBtn.AddToClassList("sel-btn");
         moveBtn.AddToClassList("sel-move");
         moveGroup.Add(moveBtn);
@@ -126,19 +115,18 @@ public class TroopSelectionUI : MonoBehaviour
         row.Add(sellGroup);
         _popup.Add(row);
 
-        // Add to root last so it renders on top of sidebar
         _uiDoc.rootVisualElement.Add(_popup);
     }
 
     // -------------------------------------------------------
-    // Positioning (runs every late update while a troop is selected)
+    // LateUpdate — positioning + click-outside-to-close
     // -------------------------------------------------------
 
     void LateUpdate()
     {
-        if (_target == null || _popup.ClassListContains("sel-hidden")) return;
+        if (_popup.ClassListContains("sel-hidden")) return;
 
-        // Position popup just above the sprite's top edge.
+        // ── Position above sprite ──────────────────────────
         var sr = _target.GetComponent<SpriteRenderer>();
         float spriteTopY = sr != null
             ? _target.transform.position.y + sr.bounds.extents.y
@@ -148,11 +136,42 @@ public class TroopSelectionUI : MonoBehaviour
         var panelPos = RuntimePanelUtils.CameraTransformWorldToPanel(
                            _uiDoc.rootVisualElement.panel, worldTop, Camera.main);
 
-        // Use actual resolved height once layout has run, otherwise fall back to estimate.
         float popupH = _popup.resolvedStyle.height > 0 ? _popup.resolvedStyle.height : 110f;
+        float popupW = PopupHalfWidth * 2f;
 
-        _popup.style.left = panelPos.x - PopupHalfWidth;
-        _popup.style.top  = panelPos.y - popupH - 4f;
+        var  root       = _uiDoc.rootVisualElement;
+        float panelW    = root.resolvedStyle.width;
+        float panelH    = root.resolvedStyle.height;
+        const float pad = 6f;
+
+        float left = Mathf.Clamp(panelPos.x - PopupHalfWidth, pad, panelW - popupW - pad);
+        float top  = panelPos.y - popupH - 4f;
+
+        // If there isn't enough room above the sprite, flip below it instead
+        if (top < pad)
+        {
+            var worldBottom = new Vector3(_target.transform.position.x,
+                _target.transform.position.y - (sr != null ? sr.bounds.extents.y : 0.5f), 0f);
+            var belowPos = RuntimePanelUtils.CameraTransformWorldToPanel(
+                               _uiDoc.rootVisualElement.panel, worldBottom, Camera.main);
+            top = belowPos.y + 4f;
+        }
+
+        top = Mathf.Clamp(top, pad, panelH - popupH - pad);
+
+        _popup.style.left = left;
+        _popup.style.top  = top;
+
+        // ── Click-outside-to-close ─────────────────────────
+        if (!Input.GetMouseButtonDown(0)) return;
+        if (Time.frameCount == _showFrame) return; // just opened this frame — don't close
+
+        // Convert mouse position to panel space and check against popup bounds
+        float px = (Input.mousePosition.x / Screen.width)                    * root.resolvedStyle.width;
+        float py = ((Screen.height - Input.mousePosition.y) / Screen.height) * root.resolvedStyle.height;
+
+        if (!_popup.worldBound.Contains(new Vector2(px, py)))
+            Hide();
     }
 
     // -------------------------------------------------------
@@ -170,14 +189,13 @@ public class TroopSelectionUI : MonoBehaviour
     {
         if (_target == null) return;
         var t = _target;
-        Hide(); // hide first — BeginMoveDrag may re-select immediately
+        Hide();
         TroopDragController.Instance.BeginMoveDrag(t);
     }
 
     void OnSellClicked()
     {
         if (_target == null) return;
-        // TODO: award _target.SellValue gold to the player wallet here
         Debug.Log($"[TroopSelectionUI] Sold {_target.Data.troopName} for {_target.SellValue}g");
         _target.Sell();
         Hide();

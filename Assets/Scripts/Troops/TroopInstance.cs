@@ -36,6 +36,7 @@ public TroopData Data        { get; private set; }
     /// <summary>Destroys this troop. Call after awarding the sell gold.</summary>
     public void Sell()
     {
+        TroopManager.Instance.Unregister(this);
         Destroy(gameObject);
     }
 
