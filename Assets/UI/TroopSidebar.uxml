@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/TroopSidebar.uss?fileID=7433441132597879392&amp;guid=a3fc9934f905e49e2a0cf6b7ce9070cd&amp;type=3#TroopSidebar" />
+
+    <!-- Sidebar container — slides in/out via .open class -->
+    <ui:VisualElement name="sidebar-container" class="sidebar-container">
+
+        <!-- Dark panel (contains header + scroll list) -->
+        <ui:VisualElement name="sidebar-panel" class="sidebar-panel">
+            <ui:VisualElement class="sidebar-header">
+                <ui:Label text="TROOPS" class="sidebar-title" />
+            </ui:VisualElement>
+
+            <!-- Cards are built dynamically by TroopSidebarController.cs -->
+            <ui:ScrollView name="troop-list" class="troop-list"
+                           horizontal-scroller-visibility="Hidden"
+                           vertical-scroller-visibility="Auto" />
+        </ui:VisualElement>
+
+        <!-- Toggle tab — always visible at the right edge of the panel -->
+        <ui:Button name="toggle-btn" text="&#9776;" class="toggle-tab" />
+
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,248 @@
+/* =============================================================
+   TroopSidebar.uss  —  Sidebar + Drag Ghost + Selection Popup
+   ============================================================= */
+
+/* ── Sidebar container (slides in/out) ─────────────────────── */
+.sidebar-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 260px;
+    height: 100%;
+    translate: -260px 0;
+    transition-property: translate;
+    transition-duration: 0.35s;
+    transition-timing-function: ease-out;
+    overflow: visible;
+}
+
+.sidebar-container.open {
+    translate: 0 0;
+}
+
+/* ── Dark panel ──────────────────────────────────────────────── */
+.sidebar-panel {
+    width: 260px;
+    height: 100%;
+    background-color: rgba(12, 26, 12, 0.96);
+    border-right-width: 2px;
+    border-right-color: rgba(80, 160, 70, 0.55);
+    flex-direction: column;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.sidebar-header {
+    padding: 20px 16px 14px 16px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(80, 160, 70, 0.35);
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-title {
+    font-size: 15px;
+    color: rgb(145, 215, 120);
+    -unity-font-style: bold;
+    letter-spacing: 4px;
+}
+
+/* ── Scroll list ─────────────────────────────────────────────── */
+.troop-list {
+    flex-grow: 1;
+    padding: 10px;
+}
+
+/* ── Troop card (column: portrait on top, cost below) ────────── */
+.troop-card {
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(25, 50, 22, 0.85);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 10px 8px 8px 8px;
+    border-width: 1px;
+    border-color: rgba(70, 140, 60, 0.30);
+    cursor: link;
+}
+
+.troop-card:hover {
+    background-color: rgba(38, 72, 34, 0.95);
+    border-color: rgba(100, 195, 90, 0.55);
+}
+
+/* ── Portrait thumbnail ──────────────────────────────────────── */
+.troop-portrait {
+    width: 72px;
+    height: 72px;
+    border-radius: 8px;
+    background-color: rgba(18, 36, 16, 0.9);
+    background-size: contain;
+    background-position: center;
+    border-width: 1px;
+    border-color: rgba(70, 140, 60, 0.40);
+    margin-bottom: 6px;
+}
+
+/* ── Cost label (gold / yellow) ──────────────────────────────── */
+.troop-cost {
+    font-size: 13px;
+    color: rgb(220, 185, 60);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+/* ── Toggle tab ─────────────────────────────────────────────── */
+.toggle-tab {
+    position: absolute;
+    left: 260px;
+    top: 50%;
+    translate: 0 -50%;
+    width: 38px;
+    height: 68px;
+    background-color: rgba(12, 26, 12, 0.96);
+    color: rgb(145, 215, 120);
+    font-size: 20px;
+    -unity-text-align: middle-center;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left-width: 0;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-color: rgba(80, 160, 70, 0.55);
+    cursor: link;
+}
+
+.toggle-tab:hover {
+    background-color: rgba(28, 55, 25, 0.98);
+}
+
+/* =============================================================
+   Drag Ghost
+   ============================================================= */
+.drag-ghost {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    border-radius: 8px;
+    background-size: contain;
+    background-position: center;
+    border-width: 2px;
+    border-color: rgba(145, 215, 120, 0.85);
+    opacity: 0.88;
+    /* Rendered on top because it's added last to rootVisualElement */
+}
+
+/* =============================================================
+   Troop Selection Popup  (built entirely in C# by TroopSelectionUI)
+   ============================================================= */
+.sel-popup {
+    position: absolute;
+    min-width: 180px;
+    background-color: rgba(12, 26, 12, 0.96);
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: rgba(80, 160, 70, 0.55);
+    padding: 6px 6px 10px 6px;
+}
+
+.sel-hidden {
+    display: none;
+}
+
+/* Close button — top-right corner */
+.sel-close {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 18px;
+    height: 18px;
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    color: rgb(145, 215, 120);
+    background-color: transparent;
+    border-width: 0;
+    padding: 0;
+    cursor: link;
+}
+
+.sel-close:hover {
+    color: rgb(220, 255, 210);
+}
+
+/* Troop name */
+.sel-troop-name {
+    font-size: 13px;
+    color: rgb(200, 240, 185);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding-left: 18px;
+    padding-right: 18px;
+}
+
+/* Button row */
+.sel-row {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+    margin-top: 18px;
+}
+
+/* Individual button group (button + label stacked vertically) */
+.sel-group {
+    flex-direction: column;
+    align-items: center;
+    min-width: 50px;
+}
+
+/* Base button style */
+.sel-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    font-size: 20px;
+    padding: 0;
+    margin-bottom: 5px;
+    -unity-text-align: middle-center;
+    cursor: link;
+}
+
+/* Upgrade — green */
+.sel-upgrade {
+    background-color: rgba(50, 120, 50, 0.9);
+    color: rgb(200, 255, 190);
+    border-width: 1px;
+    border-color: rgba(90, 185, 80, 0.50);
+}
+.sel-upgrade:hover   { background-color: rgba(70, 155, 65, 0.95); }
+.sel-upgrade:disabled { opacity: 0.30; }
+
+/* Move — blue */
+.sel-move {
+    background-color: rgba(40, 90, 160, 0.9);
+    color: rgb(190, 220, 255);
+    border-width: 1px;
+    border-color: rgba(80, 140, 220, 0.50);
+}
+.sel-move:hover { background-color: rgba(55, 115, 195, 0.95); }
+
+/* Sell — red */
+.sel-sell {
+    background-color: rgba(150, 45, 35, 0.9);
+    color: rgb(255, 210, 190);
+    border-width: 1px;
+    border-color: rgba(210, 80, 70, 0.50);
+}
+.sel-sell:hover { background-color: rgba(185, 58, 48, 0.95); }
+
+/* Sub-labels (upgrade cost / sell value) — gold */
+.sel-sub {
+    font-size: 11px;
+    color: rgb(220, 185, 60);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
