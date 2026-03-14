@@ -48,7 +48,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 64
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -342,8 +342,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0a1d175a8519c462eb642215a18643e9
-      internalID: -1231527564
+      spriteID: 69cc88c96b54446639e8933feb9ddc6e
+      internalID: 1956325601
       vertices: []
       indices: 
       edges: []
@@ -362,7 +362,7 @@ TextureImporter:
       Centipede Idle Sheet_0: -477832394
       Centipede Idle Sheet_1: -348013986
       Centipede Idle Sheet_10: 1345643095
-      Centipede Idle Sheet_11: -1231527564
+      Centipede Idle Sheet_11: 1956325601
       Centipede Idle Sheet_2: 1959999119
       Centipede Idle Sheet_3: -1422467045
       Centipede Idle Sheet_4: 1537745839
