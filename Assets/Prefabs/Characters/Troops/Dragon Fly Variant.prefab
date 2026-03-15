@@ -63,6 +63,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1113247616572693604}
+    - targetCorrespondingSourceObject: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 263044758706657840}
   m_SourcePrefab: {fileID: 100100000, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
 --- !u!1 &9164315150359954072 stripped
 GameObject:
@@ -90,3 +93,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &263044758706657840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9164315150359954072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 369d919d8ba9d4e63ba4f9feeb58f548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  figure8Width: 1.8
+  figure8Height: 0.9
+  figure8Speed: 1.2
+  splashRadius: 0.55
+  fuseTime: 2
+  sortingLayerName: Default
+  sortingOrder: 4

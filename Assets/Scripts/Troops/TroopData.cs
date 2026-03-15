@@ -114,6 +114,7 @@ public enum PlacementType
     LandOnly,       // Centipede, Beetle, Praying Mantis
     WaterOnly,      // Lily Pad and future water-only units
     LandAndWater,   // Frog
+    PathOnly,       // Anchovies — must be placed directly on the enemy path
 }
 
 /// <summary>Which sidebar section this item belongs to.</summary>
@@ -148,6 +149,15 @@ public class TroopData : ScriptableObject
     public PlacementType placementType = PlacementType.LandOnly;
     [Tooltip("If true, land troops can be placed on top of this power (e.g. Lily Pad).")]
     public bool isLandPlatform = false;
+
+    [Header("Rectangular Range (PathOnly troops)")]
+    [Tooltip("If true, the range indicator draws a rectangle instead of a circle.\n" +
+             "The 'range' stat becomes half the long side (perpendicular to path).\n" +
+             "Only used when placementType is PathOnly.")]
+    public bool useRectangularRange = false;
+    [Tooltip("Full width of the rectangle along the path direction (world units).\n" +
+             "This is the shorter side — how wide a lane the swarm covers.")]
+    public float rangeRectWidth = 0.6f;
 
     [Header("Economy")]
     public int baseCost = 50;

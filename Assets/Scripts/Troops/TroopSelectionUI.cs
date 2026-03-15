@@ -97,10 +97,21 @@ public class TroopSelectionUI : MonoBehaviour
         var ind = _target.GetComponentInChildren<RangeIndicator>(true);
         if (ind != null)
         {
-            ind.SetRadius(_target.CurrentRange);
+            var d = _target.Data;
+            if (d != null && d.useRectangularRange)
+                ind.SetRect(_target.CurrentRange, d.rangeRectWidth / 2f);
+            else
+                ind.SetRadius(_target.CurrentRange);
+
             var silhouette = _target.GetComponent<TroopHomeSilhouette>();
             Vector3 indicatorPos = silhouette != null ? silhouette.HomePosition : _target.transform.position;
-            ind.SetVisible(true, indicatorPos);
+
+            // Rect indicators must match the troop's orientation on the path
+            Quaternion? indicatorRot = (d != null && d.useRectangularRange)
+                ? (Quaternion?)_target.transform.rotation
+                : null;
+
+            ind.SetVisible(true, indicatorPos, indicatorRot);
         }
         _activeIndicator = ind;
 
@@ -549,6 +560,7 @@ public class TroopSelectionUI : MonoBehaviour
         PlacementType.LandOnly     => "Land",
         PlacementType.WaterOnly    => "Water",
         PlacementType.LandAndWater => "Land & Water",
+        PlacementType.PathOnly     => "Enemy Path",
         _                          => ""
     };
 
