@@ -21,10 +21,10 @@ public class GoldHUD : MonoBehaviour
 
     [Header("Visuals")]
     [Tooltip("Padding inside the gold badge (px).")]
-    [SerializeField] private int paddingH = 10;
-    [SerializeField] private int paddingV = 4;
+    [SerializeField] private int paddingH = 8;
+    [SerializeField] private int paddingV = 0;
     [Tooltip("Top margin from the screen edge (px).")]
-    [SerializeField] private int topMargin = 8;
+    [SerializeField] private int topMargin = 0;
     [Tooltip("Corner radius of the badge (px).")]
     [SerializeField] private int cornerRadius = 6;
 
@@ -107,7 +107,7 @@ public class GoldHUD : MonoBehaviour
 
         // Gold badge
         _badge = new VisualElement();
-        _badge.style.marginTop                   = topMargin;
+        _badge.style.marginTop                   = 0;
         _badge.style.paddingTop                  = paddingV;
         _badge.style.paddingBottom               = paddingV;
         _badge.style.paddingLeft                 = paddingH;
@@ -125,6 +125,7 @@ public class GoldHUD : MonoBehaviour
         _badge.style.borderBottomColor           = new StyleColor(new Color(0.85f, 0.65f, 0.10f, 0.55f));
         _badge.style.borderLeftColor             = new StyleColor(new Color(0.85f, 0.65f, 0.10f, 0.55f));
         _badge.style.borderRightColor            = new StyleColor(new Color(0.85f, 0.65f, 0.10f, 0.55f));
+        _badge.style.height                      = 20;
         _badge.style.flexDirection               = FlexDirection.Row;
         _badge.style.alignItems                  = Align.Center;
         _badge.pickingMode                       = PickingMode.Ignore;
@@ -132,16 +133,26 @@ public class GoldHUD : MonoBehaviour
 
         // "G " prefix acts as the icon
         var prefix = new Label("G ");
-        prefix.style.fontSize                  = 11;
+        prefix.style.fontSize                  = 9;
         prefix.style.color                     = new StyleColor(new Color(0.85f, 0.65f, 0.25f, 0.85f));
         prefix.style.unityFontStyleAndWeight   = FontStyle.Bold;
+        prefix.style.marginTop                 = 0;
+        prefix.style.marginBottom              = 0;
+        prefix.style.paddingTop                = 0;
+        prefix.style.paddingBottom             = 0;
+        prefix.style.unityTextAlign            = TextAnchor.MiddleCenter;
         prefix.pickingMode                     = PickingMode.Ignore;
         _badge.Add(prefix);
 
         _goldLabel = new Label("0");
-        _goldLabel.style.fontSize                = 13;
+        _goldLabel.style.fontSize                = 9;
         _goldLabel.style.color                   = new StyleColor(GoldColour);
         _goldLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+        _goldLabel.style.marginTop               = 0;
+        _goldLabel.style.marginBottom            = 0;
+        _goldLabel.style.paddingTop              = 0;
+        _goldLabel.style.paddingBottom           = 0;
+        _goldLabel.style.unityTextAlign          = TextAnchor.MiddleCenter;
         _goldLabel.pickingMode                   = PickingMode.Ignore;
         _badge.Add(_goldLabel);
     }
