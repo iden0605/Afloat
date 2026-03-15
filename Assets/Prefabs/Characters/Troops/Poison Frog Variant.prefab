@@ -22,15 +22,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2851921080108693313, guid: bbccc00195ec241a9a8a7315c24217d2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.687
+      value: -2.439
       objectReference: {fileID: 0}
     - target: {fileID: 2851921080108693313, guid: bbccc00195ec241a9a8a7315c24217d2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.185
+      value: -0.461
       objectReference: {fileID: 0}
     - target: {fileID: 2851921080108693313, guid: bbccc00195ec241a9a8a7315c24217d2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.013870254
+      value: 0.027740508
       objectReference: {fileID: 0}
     - target: {fileID: 2851921080108693313, guid: bbccc00195ec241a9a8a7315c24217d2, type: 3}
       propertyPath: m_LocalRotation.w
@@ -66,7 +66,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 3650a01673fe5404395f458744f0de26, type: 2}
     - target: {fileID: 7215667400850713856, guid: bbccc00195ec241a9a8a7315c24217d2, type: 3}
       propertyPath: m_Name
-      value: Mutated Frog Variant
+      value: Poison Frog Variant
       objectReference: {fileID: 0}
     - target: {fileID: 7679985895225891764, guid: bbccc00195ec241a9a8a7315c24217d2, type: 3}
       propertyPath: m_Sprite

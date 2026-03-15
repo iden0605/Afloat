@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f5d155c75c634b9dbfeb032345d63a1, type: 3}
-  m_Name: Cockroach
+  m_Name: AlligatorData
   m_EditorClassIdentifier: 
-  enemyName: Cockroach
+  enemyName: Alligator
   description: 
-  portrait: {fileID: 21300000, guid: 5c1deee7d23b84f4c96cb7ee2109a6c4, type: 3}
-  prefab: {fileID: 8343956985839966932, guid: fa08d5f46995b4c75a7ee690712b5743, type: 3}
+  portrait: {fileID: 21300000, guid: d11056b818ac44d40be868c1d563e586, type: 3}
+  prefab: {fileID: 6215224273661497099, guid: 72e0c64ef131540819a67c6bd89b1e49, type: 3}
   baseHealth: 10
   speed: 3
   goldDrop: 5
   effectType: 0
   effectValue: 0
+  spawnEnemyData: {fileID: 0}
+  spawnCount: 1

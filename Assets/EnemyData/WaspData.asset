@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f5d155c75c634b9dbfeb032345d63a1, type: 3}
+  m_Name: WaspData
+  m_EditorClassIdentifier: 
+  enemyName: Wasp
+  description: 
+  portrait: {fileID: 21300000, guid: 02fab406714fd43f295572ccb6f8352d, type: 3}
+  prefab: {fileID: 6594975445279042201, guid: 7d624a3f385a844bab58644be340586c, type: 3}
+  baseHealth: 10
+  speed: 3
+  goldDrop: 5
+  effectType: 0
+  effectValue: 0
+  spawnEnemyData: {fileID: 0}
+  spawnCount: 1
