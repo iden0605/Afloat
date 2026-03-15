@@ -70,7 +70,7 @@ public class CentipedeAcidAttack : MonoBehaviour
             {
                 _phase = Phase.Idle;
                 if (_animator != null) _animator.speed = 1f;
-                _cooldown = _instance.CurrentAttackInterval;
+                _cooldown = _instance.GetEffectiveAttackInterval();
             }
         }
     }
@@ -104,6 +104,6 @@ public class CentipedeAcidAttack : MonoBehaviour
 
     void OnProjectileHit(EnemyMovement enemy)
     {
-        enemy.TakeDamage(_instance.CurrentAttack, AttackType.Ranged);
+        _instance.DealDamage(enemy, _instance.Data?.attackType ?? AttackType.Ranged, transform.position);
     }
 }

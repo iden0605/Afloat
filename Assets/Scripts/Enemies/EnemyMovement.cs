@@ -18,6 +18,12 @@ public class EnemyMovement : MonoBehaviour
     /// </summary>
     [HideInInspector] public float speed = 2f;
 
+    /// <summary>
+    /// Multiplied against speed each frame.
+    /// Set to 0 for stun, 0–1 for freeze/slow. Managed by EnemyStatusEffects.
+    /// </summary>
+    [HideInInspector] public float speedMultiplier = 1f;
+
     [Tooltip("Rotation offset (degrees) that corrects for the sprite's default facing direction.\n" +
              "0   = sprite already faces right (+X).\n" +
              "-90 = sprite faces up (+Y) — same convention as troops.\n" +
@@ -50,7 +56,7 @@ public class EnemyMovement : MonoBehaviour
         FaceToward(target.position);
 
         transform.position = Vector3.MoveTowards(
-            transform.position, target.position, speed * Time.deltaTime);
+            transform.position, target.position, speed * speedMultiplier * Time.deltaTime);
 
         if (Vector3.Distance(transform.position, target.position) < 0.1f)
         {
@@ -66,10 +72,12 @@ public class EnemyMovement : MonoBehaviour
     /// Convenience method so attack scripts can deal damage without needing a direct
     /// reference to EnemyInstance. Delegates to EnemyInstance.TakeDamage().
     /// </summary>
-    public void TakeDamage(float amount, AttackType attackType = AttackType.Generic)
+    /// <returns>True if damage landed; false if blocked/dodged.</returns>
+    public bool TakeDamage(float amount, AttackType attackType = AttackType.Generic, Vector3 attackerPos = default)
     {
         if (TryGetComponent<EnemyInstance>(out var inst))
-            inst.TakeDamage(amount, attackType);
+            return inst.TakeDamage(amount, attackType, attackerPos);
+        return false;
     }
 
     // ── Internal ──────────────────────────────────────────────────────────────

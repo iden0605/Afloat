@@ -20,6 +20,9 @@ public class TroopSidebarController : MonoBehaviour
     private Button        _toggleBtn;
     private bool          _isOpen;
 
+    // Kept so we can update affordability without rebuilding the whole card list
+    private readonly List<(TroopData data, VisualElement card)> _cards = new();
+
     // Detail overlay elements (built once, repopulated on show)
     private VisualElement _detailOverlay;
     private VisualElement _detailPortrait;
@@ -43,67 +46,86 @@ public class TroopSidebarController : MonoBehaviour
         _toggleBtn = root.Q<Button>("toggle-btn");
         _toggleBtn.clicked += ToggleSidebar;
 
-        BuildCards(root.Q("troop-list"));
+        BuildTroopCards(root.Q("troop-list"));
+        BuildPowerCards(root.Q("powers-list"));
         BuildDetailOverlay(root);
+
+        GoldManager.OnGoldChanged += OnGoldChanged;
     }
 
     void OnDisable()
     {
         if (_toggleBtn != null) _toggleBtn.clicked -= ToggleSidebar;
+        GoldManager.OnGoldChanged -= OnGoldChanged;
     }
+
+    void OnGoldChanged(int _) => RefreshAffordability();
 
     // -------------------------------------------------------
     // Card building
     // -------------------------------------------------------
 
-    void BuildCards(VisualElement list)
+    void RefreshAffordability()
     {
-        list.Clear();
+        var gm = GoldManager.Instance;
+        foreach (var (data, card) in _cards)
+        {
+            bool canAfford = gm == null || gm.CanAfford(data.baseCost);
+            card.EnableInClassList("troop-card--locked", !canAfford);
+        }
+    }
+
+    // ── Troop grid (2-per-row, inside the scroll view) ───────────────────────
+
+    void BuildTroopCards(VisualElement scrollView)
+    {
+        scrollView.Clear();
+        _cards.Clear();
+
+        // Wrap cards in a grid container so padding is inside the scrollable area
+        var grid = new VisualElement();
+        grid.AddToClassList("troop-grid");
+        scrollView.Add(grid);
+
+        VisualElement row = null;
+        int col = 0;
 
         foreach (var data in troops)
         {
             if (data == null) continue;
-            list.Add(MakeCard(data));
-        }
 
-        if (powers.Count > 0)
-        {
-            var divider = new VisualElement();
-            divider.AddToClassList("sidebar-divider");
-            list.Add(divider);
-
-            var header = new Label("POWERS");
-            header.AddToClassList("sidebar-section-label");
-            list.Add(header);
-
-            foreach (var data in powers)
+            if (col % 2 == 0)
             {
-                if (data == null) continue;
-                list.Add(MakeCard(data));
+                row = new VisualElement();
+                row.AddToClassList("troop-row");
+                grid.Add(row);
             }
+
+            var card = MakeTroopCard(data);
+            row.Add(card);
+            _cards.Add((data, card));
+            col++;
         }
+
+        RefreshAffordability();
     }
 
-    VisualElement MakeCard(TroopData data)
+    VisualElement MakeTroopCard(TroopData data)
     {
         var card = new VisualElement();
         card.AddToClassList("troop-card");
 
-        // Portrait thumbnail
         var portrait = new VisualElement();
         portrait.AddToClassList("troop-portrait");
         if (data.portrait != null)
             portrait.style.backgroundImage = new StyleBackground(data.portrait);
 
-        // Troop name
         var nameLabel = new Label(data.troopName);
         nameLabel.AddToClassList("troop-name");
 
-        // Cost label
         var costLabel = new Label($"{data.baseCost}g");
         costLabel.AddToClassList("troop-cost");
 
-        // Info button — opens detail overlay
         var captured = data;
         var infoBtn = new Button(() => ShowDetailOverlay(captured)) { text = "?" };
         infoBtn.AddToClassList("troop-info-btn");
@@ -116,11 +138,58 @@ public class TroopSidebarController : MonoBehaviour
         card.RegisterCallback<PointerDownEvent>(evt =>
         {
             if (evt.button != 0) return;
-            // Don't start drag if the info button was clicked
             if (evt.target is Button) return;
             evt.StopPropagation();
             TroopDragController.Instance.BeginNewDrag(captured);
         });
+
+        return card;
+    }
+
+    // ── Powers strip (sticky bottom, built separately) ───────────────────────
+
+    void BuildPowerCards(VisualElement list)
+    {
+        list.Clear();
+
+        foreach (var data in powers)
+        {
+            if (data == null) continue;
+            var card = MakePowerCard(data);
+            list.Add(card);
+            _cards.Add((data, card));
+        }
+
+        RefreshAffordability();
+    }
+
+    VisualElement MakePowerCard(TroopData data)
+    {
+        var card = new VisualElement();
+        card.AddToClassList("power-card");
+
+        var portrait = new VisualElement();
+        portrait.AddToClassList("power-portrait");
+        if (data.portrait != null)
+            portrait.style.backgroundImage = new StyleBackground(data.portrait);
+
+        var nameLabel = new Label(data.troopName);
+        nameLabel.AddToClassList("power-name");
+
+        var costLabel = new Label($"{data.baseCost}g");
+        costLabel.AddToClassList("power-cost");
+
+        var captured = data;
+        card.RegisterCallback<PointerDownEvent>(evt =>
+        {
+            if (evt.button != 0) return;
+            evt.StopPropagation();
+            TroopDragController.Instance.BeginNewDrag(captured);
+        });
+
+        card.Add(portrait);
+        card.Add(nameLabel);
+        card.Add(costLabel);
 
         return card;
     }
@@ -239,8 +308,8 @@ public class TroopSidebarController : MonoBehaviour
         _detailDesc.text = data.description;
         _detailDescRow.style.display = hasDesc ? DisplayStyle.Flex : DisplayStyle.None;
 
-        // Effect
-        string fx = EffectDescription(data.effectType);
+        // Base effect (detail panel always shows the base effect from the data asset)
+        string fx = EffectDescription(data.baseEffect);
         _detailEffect.text = string.IsNullOrEmpty(fx) ? "" : $"*  {fx}";
         _detailEffectRow.style.display = string.IsNullOrEmpty(fx) ? DisplayStyle.None : DisplayStyle.Flex;
 
@@ -341,12 +410,20 @@ public class TroopSidebarController : MonoBehaviour
         _                          => ""
     };
 
-    static string EffectDescription(TroopEffectType t) => t switch
+    static string EffectDescription(TroopEffectConfig cfg) => cfg?.effectType switch
     {
-        TroopEffectType.DoubleGoldDrop        => "Enemies hit drop double gold",
-        TroopEffectType.ConditionalAttackBuff => "Attack triples with multiple enemies in range",
-        TroopEffectType.ConditionalSpeedBuff  => "Attack speed increases with only 1 enemy in range",
-        TroopEffectType.AllyProximityBuff     => "Gains +0.5 ATK per nearby ally of the same type",
+        TroopEffectType.DoubleGoldDrop        => $"Drops {cfg.goldMultiplier:0.#}× gold",
+        TroopEffectType.BurnOnHit             => $"Burns enemies (tick every {cfg.dotInterval:0.#}s)",
+        TroopEffectType.PoisonOnHit           => $"Poisons enemies (tick every {cfg.dotInterval:0.#}s)",
+        TroopEffectType.PoisonSplash          => $"Splash + poison (tick every {cfg.dotInterval:0.#}s)",
+        TroopEffectType.FreezeOnHit           => $"Slows to {cfg.freezeSlowFactor * 100:0}% for {cfg.freezeDuration:0.#}s",
+        TroopEffectType.StunOnHit             => $"Stuns for {cfg.stunDuration:0.#}s",
+        TroopEffectType.ConditionalAttackBuff => $"ATK → {cfg.conditionalAttack:0.#} with multiple in range",
+        TroopEffectType.ConditionalSpeedBuff  => $"SPD → {cfg.conditionalSpeed:0.#}/s with 1 in range",
+        TroopEffectType.DoubleEveryFourth     => "4th hit = 2× damage",
+        TroopEffectType.RampingDoubleBuff     => $"Ramping ×2 per hit (max {cfg.rampingMaxStacks} stacks)",
+        TroopEffectType.AllyProximityBuff     => $"+{cfg.allyBonus:0.#} ATK per same-type ally",
+        TroopEffectType.AllySpeedBuff         => $"+{cfg.allyBonus:0.#} SPD per same-type ally",
         _                                     => ""
     };
 

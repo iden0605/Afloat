@@ -5,16 +5,23 @@
     <!-- Sidebar container — slides in/out via .open class -->
     <ui:VisualElement name="sidebar-container" class="sidebar-container">
 
-        <!-- Dark panel (contains header + scroll list) -->
+        <!-- Dark panel (contains header + scrollable troop grid + sticky powers) -->
         <ui:VisualElement name="sidebar-panel" class="sidebar-panel">
             <ui:VisualElement class="sidebar-header">
                 <ui:Label text="TROOPS" class="sidebar-title" />
             </ui:VisualElement>
 
-            <!-- Cards are built dynamically by TroopSidebarController.cs -->
+            <!-- Scrollable 2-column troop grid — built dynamically by TroopSidebarController.cs -->
             <ui:ScrollView name="troop-list" class="troop-list"
                            horizontal-scroller-visibility="Hidden"
                            vertical-scroller-visibility="Auto" />
+
+            <!-- Sticky powers strip — always visible at the bottom of the panel -->
+            <ui:VisualElement name="powers-section" class="powers-section">
+                <ui:Label text="POWERS" class="powers-title" />
+                <!-- Power cards built dynamically by TroopSidebarController.cs -->
+                <ui:VisualElement name="powers-list" class="powers-list" />
+            </ui:VisualElement>
         </ui:VisualElement>
 
         <!-- Toggle tab — always visible at the right edge of the panel -->

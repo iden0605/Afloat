@@ -33,6 +33,7 @@ public class TroopSelectionUI : MonoBehaviour
 
     // Evolution section
     private VisualElement _evolutionSection;
+    private VisualElement _evolutionPortraitEl;
     private Label         _evolutionNameLabel;
     private Label         _evolutionDescLabel;
     private Label         _evolutionBoostsLabel;
@@ -43,6 +44,9 @@ public class TroopSelectionUI : MonoBehaviour
     private Button _upgradeBtn;
     private Label  _upgradeCostLabel;
     private Label  _sellValueLabel;
+
+    // Cached so Hide() can reach it even after it's been unparented from the troop
+    private RangeIndicator _activeIndicator;
 
     // Prevents LateUpdate from closing the panel on the same frame Show() was called
     private int _showFrame = -1;
@@ -57,7 +61,15 @@ public class TroopSelectionUI : MonoBehaviour
     void OnEnable()
     {
         BuildPanel();
+        GoldManager.OnGoldChanged += OnGoldChanged;
     }
+
+    void OnDisable()
+    {
+        GoldManager.OnGoldChanged -= OnGoldChanged;
+    }
+
+    void OnGoldChanged(int _) => Refresh();
 
     // -------------------------------------------------------
     // Public API
@@ -72,7 +84,9 @@ public class TroopSelectionUI : MonoBehaviour
             return;
         }
 
-        _target?.GetComponentInChildren<RangeIndicator>(true)?.SetVisible(false);
+        _activeIndicator?.SetVisible(false);
+        _activeIndicator = null;
+        _target?.GetComponent<SpriteEffectsController>()?.HideOutline();
 
         _showFrame = Time.frameCount;
         _target    = troop;
@@ -81,12 +95,23 @@ public class TroopSelectionUI : MonoBehaviour
         _panel.AddToClassList("sel-open");
 
         var ind = _target.GetComponentInChildren<RangeIndicator>(true);
-        if (ind != null) { ind.SetRadius(_target.CurrentRange); ind.SetVisible(true); }
+        if (ind != null)
+        {
+            ind.SetRadius(_target.CurrentRange);
+            var silhouette = _target.GetComponent<TroopHomeSilhouette>();
+            Vector3 indicatorPos = silhouette != null ? silhouette.HomePosition : _target.transform.position;
+            ind.SetVisible(true, indicatorPos);
+        }
+        _activeIndicator = ind;
+
+        _target.GetComponent<SpriteEffectsController>()?.ShowSelectionOutline();
     }
 
     public void Hide()
     {
-        _target?.GetComponentInChildren<RangeIndicator>(true)?.SetVisible(false);
+        _activeIndicator?.SetVisible(false);
+        _activeIndicator = null;
+        _target?.GetComponent<SpriteEffectsController>()?.HideOutline();
         _target = null;
         _panel?.RemoveFromClassList("sel-open");
     }
@@ -110,8 +135,9 @@ public class TroopSelectionUI : MonoBehaviour
         _descriptionLabel.text = d.description;
         _descriptionLabel.style.display = hasDesc ? DisplayStyle.Flex : DisplayStyle.None;
 
-        string fx = EffectDescription(d.effectType);
-        _effectLabel.text = string.IsNullOrEmpty(fx) ? "" : $"*  {fx}";
+        // Build effect lines: base effect + any upgrade/evo effects at current level
+        string fx = BuildEffectLines(_target);
+        _effectLabel.text = string.IsNullOrEmpty(fx) ? "" : fx;
         _effectRow.style.display = string.IsNullOrEmpty(fx) ? DisplayStyle.None : DisplayStyle.Flex;
 
         // Evolution section visible only when evolutions exist
@@ -127,6 +153,11 @@ public class TroopSelectionUI : MonoBehaviour
         _atkLabel.text = $"{_target.CurrentAttack:0.#}";
         _spdLabel.text = $"{_target.CurrentAttackSpeed:0.#}/s";
         _rngLabel.text = $"{_target.CurrentRange:0.#}u";
+
+        // Effects (rebuild on every refresh — upgrade/evo may change them)
+        string fx = BuildEffectLines(_target);
+        _effectLabel.text = string.IsNullOrEmpty(fx) ? "" : fx;
+        _effectRow.style.display = string.IsNullOrEmpty(fx) ? DisplayStyle.None : DisplayStyle.Flex;
 
         // Name: show current evolution name if evolved, otherwise base troop name
         // Portrait always stays as the original TroopData portrait (set once in RefreshStatic)
@@ -152,9 +183,11 @@ public class TroopSelectionUI : MonoBehaviour
             _upgradeInfoRow.style.display = DisplayStyle.None;
         }
 
-        // Upgrade button
-        bool canUpgrade = _target.CanUpgrade;
-        _upgradeBtn.SetEnabled(canUpgrade);
+        // Upgrade button — disabled if maxed OR player can't afford it
+        bool canUpgrade      = _target.CanUpgrade;
+        bool canAffordUpgrade = GoldManager.Instance?.CanAfford(_target.NextUpgradeCost) ?? true;
+        _upgradeBtn.SetEnabled(canUpgrade && canAffordUpgrade);
+        _upgradeBtn.EnableInClassList("sel-btn--unaffordable", canUpgrade && !canAffordUpgrade);
         _upgradeCostLabel.text = canUpgrade ? $"{_target.NextUpgradeCost}g" : "MAX";
         _sellValueLabel.text   = $"{_target.SellValue}g";
 
@@ -165,8 +198,10 @@ public class TroopSelectionUI : MonoBehaviour
 
             if (next == null)
             {
-                // All evolutions done
-                _evolutionNameLabel.text  = _target.Data.evolutions[^1].evolutionName;
+                // All evolutions done — show the final evolution's portrait
+                var finalEvo = _target.Data.evolutions[^1];
+                _evolutionNameLabel.text  = finalEvo.evolutionName;
+                SetEvoPortrait(finalEvo.portrait);
                 _evolutionDescLabel.style.display   = DisplayStyle.None;
                 _evolutionBoostsLabel.style.display = DisplayStyle.None;
                 _evolutionReqLabel.text = "✓  Fully evolved";
@@ -180,6 +215,7 @@ public class TroopSelectionUI : MonoBehaviour
             {
                 // Show info for the next evolution
                 _evolutionNameLabel.text = next.evolutionName;
+                SetEvoPortrait(next.portrait);
 
                 bool hasDesc = !string.IsNullOrEmpty(next.description);
                 _evolutionDescLabel.text = next.description;
@@ -192,14 +228,19 @@ public class TroopSelectionUI : MonoBehaviour
                 int req = next.upgradesRequired;
                 int cur = _target.UpgradeLevel;
 
+                bool canAffordEvo = GoldManager.Instance?.CanAfford(next.evolutionCost) ?? true;
+
                 if (cur >= req)
                 {
-                    _evolutionReqLabel.text = "Ready to evolve!";
+                    _evolutionReqLabel.text = canAffordEvo
+                        ? $"Ready to evolve!  ({next.evolutionCost}g)"
+                        : $"Ready to evolve  — need {next.evolutionCost}g";
                     _evolutionReqLabel.RemoveFromClassList("sel-evo-req--lacking");
                     _evolutionReqLabel.RemoveFromClassList("sel-evo-req--done");
                     _evolutionReqLabel.AddToClassList("sel-evo-req--ready");
-                    _evolveBtn.SetEnabled(true);
-                    _evolveBtn.AddToClassList("sel-evolve-btn--ready");
+                    _evolveBtn.SetEnabled(canAffordEvo);
+                    _evolveBtn.EnableInClassList("sel-evolve-btn--ready", canAffordEvo);
+                    _evolveBtn.EnableInClassList("sel-btn--unaffordable", !canAffordEvo);
                 }
                 else
                 {
@@ -209,6 +250,7 @@ public class TroopSelectionUI : MonoBehaviour
                     _evolutionReqLabel.AddToClassList("sel-evo-req--lacking");
                     _evolveBtn.SetEnabled(false);
                     _evolveBtn.RemoveFromClassList("sel-evolve-btn--ready");
+                    _evolveBtn.RemoveFromClassList("sel-btn--unaffordable");
                 }
             }
         }
@@ -303,18 +345,24 @@ public class TroopSelectionUI : MonoBehaviour
         _evolutionSection = new VisualElement();
         _evolutionSection.AddToClassList("sel-evolution-section");
 
-        var evoHeaderRow = new VisualElement();
-        evoHeaderRow.AddToClassList("sel-evo-header-row");
-
+        // "EVOLUTION" badge label
         var evoHeaderLabel = new Label("EVOLUTION");
         evoHeaderLabel.AddToClassList("sel-evo-header");
+        _evolutionSection.Add(evoHeaderLabel);
+
+        // Portrait + name row (shown below the badge)
+        var evoIdentityRow = new VisualElement();
+        evoIdentityRow.AddToClassList("sel-evo-identity-row");
+
+        _evolutionPortraitEl = new VisualElement();
+        _evolutionPortraitEl.AddToClassList("sel-evo-portrait");
 
         _evolutionNameLabel = new Label();
         _evolutionNameLabel.AddToClassList("sel-evo-name");
 
-        evoHeaderRow.Add(evoHeaderLabel);
-        evoHeaderRow.Add(_evolutionNameLabel);
-        _evolutionSection.Add(evoHeaderRow);
+        evoIdentityRow.Add(_evolutionPortraitEl);
+        evoIdentityRow.Add(_evolutionNameLabel);
+        _evolutionSection.Add(evoIdentityRow);
 
         _evolutionDescLabel = new Label();
         _evolutionDescLabel.AddToClassList("sel-evo-desc");
@@ -432,16 +480,49 @@ public class TroopSelectionUI : MonoBehaviour
     void OnUpgradeClicked()
     {
         if (_target == null) return;
-        _target.Upgrade();
+        if (!_target.Upgrade()) return;
+
+        // Particle burst at the troop's world position
+        UpgradeVFX.Play(_target.transform.position);
+
+        // Brief gold flash on the upgrade button
+        _upgradeBtn.AddToClassList("sel-btn--upgraded");
+        _upgradeBtn.schedule.Execute(
+            () => _upgradeBtn.RemoveFromClassList("sel-btn--upgraded"))
+            .StartingIn(380);
+
         Refresh();
     }
 
     void OnEvolveClicked()
     {
-        if (_target == null) return;
-        var newInst = _target.Evolve();
-        if (newInst != null)
-            Show(newInst); // refreshes UI and moves range indicator to new instance
+        if (_target == null || !_target.CanEvolve) return;
+
+        var evo = _target.NextEvolution;
+        if (!(GoldManager.Instance?.CanAfford(evo.evolutionCost) ?? true)) return;
+
+        // Determine the "from" portrait: current evolution's portrait, or base portrait
+        Sprite fromSprite = _target.EvolutionLevel > 0
+            ? (_target.Data.evolutions[_target.EvolutionLevel - 1].portrait ?? _target.Data.portrait)
+            : _target.Data.portrait;
+        Sprite toSprite = evo.portrait ?? fromSprite;
+
+        // Key uniquely identifies this evolution type across all instances of this troop.
+        // e.g. "AntData_AntQueen" — same key means the cutscene already played once.
+        string evolutionKey = $"{_target.Data.name}_{evo.evolutionName}";
+
+        Vector3 worldPos = _target.transform.position;
+        var     captured = _target;
+
+        Hide(); // close panel while cutscene plays
+
+        EvolveCutscene.Play(fromSprite, toSprite, worldPos, evolutionKey, () =>
+        {
+            // Evolve() spends gold, swaps prefab, returns the new TroopInstance
+            var newInst = captured.Evolve();
+            if (newInst != null)
+                Show(newInst);
+        });
     }
 
     void OnMoveClicked()
@@ -455,8 +536,7 @@ public class TroopSelectionUI : MonoBehaviour
     void OnSellClicked()
     {
         if (_target == null) return;
-        Debug.Log($"[TroopSelectionUI] Sold {_target.Data.troopName} for {_target.SellValue}g");
-        _target.Sell();
+        _target.Sell(); // adds SellValue gold and destroys the troop
         Hide();
     }
 
@@ -472,12 +552,36 @@ public class TroopSelectionUI : MonoBehaviour
         _                          => ""
     };
 
-    static string EffectDescription(TroopEffectType t) => t switch
+    static string BuildEffectLines(TroopInstance inst)
     {
-        TroopEffectType.DoubleGoldDrop        => "Enemies hit drop double gold",
-        TroopEffectType.ConditionalAttackBuff => "Attack triples with multiple enemies in range",
-        TroopEffectType.ConditionalSpeedBuff  => "Attack speed increases with only 1 enemy in range",
-        TroopEffectType.AllyProximityBuff     => "Gains +0.5 ATK per nearby ally of the same type",
+        if (inst == null) return "";
+        var sb = new System.Text.StringBuilder();
+        foreach (var cfg in inst.ActiveEffects)
+        {
+            string line = EffectDescription(cfg);
+            if (!string.IsNullOrEmpty(line))
+            {
+                if (sb.Length > 0) sb.Append('\n');
+                sb.Append("*  ").Append(line);
+            }
+        }
+        return sb.ToString();
+    }
+
+    static string EffectDescription(TroopEffectConfig cfg) => cfg.effectType switch
+    {
+        TroopEffectType.DoubleGoldDrop        => $"Enemies hit drop {cfg.goldMultiplier:0.#}× gold",
+        TroopEffectType.BurnOnHit             => $"Burns enemies for ATK dmg every {cfg.dotInterval:0.#}s (stackable)",
+        TroopEffectType.PoisonOnHit           => $"Poisons enemies for ATK dmg every {cfg.dotInterval:0.#}s (stackable)",
+        TroopEffectType.PoisonSplash          => $"Splashes + poisons enemies every {cfg.dotInterval:0.#}s",
+        TroopEffectType.FreezeOnHit           => $"Slows enemies to {cfg.freezeSlowFactor * 100:0}% speed for {cfg.freezeDuration:0.#}s",
+        TroopEffectType.StunOnHit             => $"Stuns enemies for {cfg.stunDuration:0.#}s",
+        TroopEffectType.ConditionalAttackBuff => $"ATK → {cfg.conditionalAttack:0.#} with multiple enemies in range",
+        TroopEffectType.ConditionalSpeedBuff  => $"SPD → {cfg.conditionalSpeed:0.#}/s with only 1 enemy in range",
+        TroopEffectType.DoubleEveryFourth     => "Every 4th attack deals double damage",
+        TroopEffectType.RampingDoubleBuff     => $"Each hit doubles ATK & SPD ({cfg.rampingDuration:0.#}s, max {cfg.rampingMaxStacks} stacks)",
+        TroopEffectType.AllyProximityBuff     => $"+{cfg.allyBonus:0.#} ATK per nearby same-type ally",
+        TroopEffectType.AllySpeedBuff         => $"+{cfg.allyBonus:0.#} SPD per nearby same-type ally",
         _                                     => ""
     };
 
@@ -500,5 +604,19 @@ public class TroopSelectionUI : MonoBehaviour
         if (evo.attackSpeedBoost != 0) parts.Add($"SPD +{evo.attackSpeedBoost:0.#}");
         if (evo.rangeBoost       != 0) parts.Add($"RNG +{evo.rangeBoost:0.#}");
         return string.Join("   ", parts);
+    }
+
+    void SetEvoPortrait(Sprite portrait)
+    {
+        if (portrait != null)
+        {
+            _evolutionPortraitEl.style.backgroundImage = new StyleBackground(portrait);
+            _evolutionPortraitEl.style.display = DisplayStyle.Flex;
+        }
+        else
+        {
+            _evolutionPortraitEl.style.backgroundImage = StyleKeyword.Null;
+            _evolutionPortraitEl.style.display = DisplayStyle.None;
+        }
     }
 }

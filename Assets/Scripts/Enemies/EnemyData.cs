@@ -1,21 +1,26 @@
 using UnityEngine;
 
-/// <summary>
-/// Special behaviours that modify how an enemy takes damage or moves.
-/// </summary>
+// ── Enemy effect types ────────────────────────────────────────────────────────
+
 public enum EnemyEffectType
 {
     None,
-    ImmuneMelee,     // e.g. Plastic Bag: melee attacks (Ant, Mantis) deal no damage
-    DamageReduction, // e.g. Armoured Mosquito: all damage reduced by effectValue (0–1 fraction)
-    SpeedBurst,      // e.g. Baby Mosquito: speed doubles when health first drops below 50%
+    ImmuneMelee,        // Immune to Melee attacks
+    ImmuneRanged,       // Immune to Ranged attacks
+    DamageReduction,    // effectValue: 0–1 fraction of each hit blocked
+    MaxDamagePerHit,    // effectValue: maximum damage allowed per single hit
+    DodgeChance,        // effectValue: 0–1 probability to fully dodge any attack
+    SpeedBurst,         // effectValue: HP threshold — doubles speed once when health drops to/below it
+                        //   (effectValue = 0 → defaults to 50% of max health)
+    SpeedDoubleOnHit,   // Doubles movement speed the first time it is hit
+    SpawnOnDeath,       // Spawns spawnEnemyData.prefab × spawnCount when killed
 }
+
+// ── EnemyData ScriptableObject ────────────────────────────────────────────────
 
 /// <summary>
 /// Create one EnemyData asset per enemy type via:
 /// Right-click in Project → Create → Click n Claw → Enemy Data
-///
-/// Each enemy prefab variant of the base Enemy prefab should have one corresponding asset.
 /// </summary>
 [CreateAssetMenu(fileName = "NewEnemyData", menuName = "Click n Claw/Enemy Data")]
 public class EnemyData : ScriptableObject
@@ -40,7 +45,17 @@ public class EnemyData : ScriptableObject
 
     [Header("Special Effect")]
     public EnemyEffectType effectType = EnemyEffectType.None;
-    [Tooltip("Modifier used by certain effects.\n" +
-             "• DamageReduction: fraction of damage blocked (0.5 = 50% reduction).")]
+
+    [Tooltip("Effect-specific value:\n" +
+             "• DamageReduction: fraction blocked (0–1, e.g. 0.3 = 30%)\n" +
+             "• MaxDamagePerHit: max damage allowed per hit (e.g. 5)\n" +
+             "• DodgeChance: 0–1 dodge probability (e.g. 0.3 = 30%)\n" +
+             "• SpeedBurst: HP threshold that triggers the speed double (0 = use 50% of max health)")]
     public float effectValue = 0f;
+
+    [Header("Spawn on Death  (SpawnOnDeath effect only)")]
+    [Tooltip("The EnemyData whose prefab is spawned when this enemy dies.")]
+    public EnemyData spawnEnemyData;
+    [Tooltip("How many enemies to spawn on death.")]
+    public int spawnCount = 1;
 }

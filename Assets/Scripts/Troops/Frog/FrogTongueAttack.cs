@@ -161,7 +161,7 @@ public class FrogTongueAttack : MonoBehaviour
     {
         _phase          = Phase.Idle;
         _tongue.enabled = false;
-        _cooldown       = _instance.CurrentAttackInterval;
+        _cooldown       = _instance.GetEffectiveAttackInterval();
     }
 
     // ── Drawing ───────────────────────────────────────────────
@@ -208,7 +208,72 @@ public class FrogTongueAttack : MonoBehaviour
         if (_phase != Phase.Extending) return;
         if (!_hitThisStrike.Add(enemy)) return; // already hit this strike
 
-        enemy.TakeDamage(_instance.CurrentAttack, AttackType.Ranged);
+        _instance.DealDamage(enemy, _instance.Data?.attackType ?? AttackType.Ranged, transform.position);
+        SpawnTongueSplat(_tipTransform.position);
+    }
+
+    // ── Tongue tip VFX ────────────────────────────────────────
+
+    void SpawnTongueSplat(Vector3 pos)
+    {
+        SpawnSplatParticles(pos);
+        SpawnSplatRing(pos);
+    }
+
+    void SpawnSplatParticles(Vector3 pos)
+    {
+        var go   = new GameObject("TongueSplat_Particles");
+        go.transform.position = pos;
+
+        var ps   = go.AddComponent<ParticleSystem>();
+        var main = ps.main;
+        main.loop            = false;
+        main.startLifetime   = new ParticleSystem.MinMaxCurve(0.10f, 0.25f);
+        main.startSpeed      = new ParticleSystem.MinMaxCurve(1.0f, 3.2f);
+        main.startSize       = new ParticleSystem.MinMaxCurve(0.025f, 0.07f);
+        main.startColor      = new ParticleSystem.MinMaxGradient(
+                                   tongueColor,
+                                   new Color(1.00f, 0.62f, 0.70f));
+        main.gravityModifier = 0.4f;  // droplets fall slightly after impact
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.maxParticles    = 14;
+        main.stopAction      = ParticleSystemStopAction.Destroy;
+
+        var emission = ps.emission;
+        emission.rateOverTime = 0;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 10) });
+
+        var shape = ps.shape;
+        shape.enabled   = true;
+        shape.shapeType = ParticleSystemShapeType.Circle;
+        shape.radius    = 0.03f;
+
+        var col = ps.colorOverLifetime;
+        col.enabled = true;
+        var grad = new Gradient();
+        grad.SetKeys(
+            new GradientColorKey[] { new(tongueColor, 0f), new(Color.white, 0.4f) },
+            new GradientAlphaKey[] { new(1f, 0f), new(0f, 1f) });
+        col.color = new ParticleSystem.MinMaxGradient(grad);
+
+        var sizeLife = ps.sizeOverLifetime;
+        sizeLife.enabled = true;
+        sizeLife.size    = new ParticleSystem.MinMaxCurve(1f,
+                               new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0f)));
+
+        var psr = go.GetComponent<ParticleSystemRenderer>();
+        psr.material         = new Material(Shader.Find("Sprites/Default"));
+        psr.sortingLayerName = sortingLayerName;
+        psr.sortingOrder     = sortingOrder + 1;
+
+        ps.Play();
+    }
+
+    void SpawnSplatRing(Vector3 pos)
+    {
+        var go = new GameObject("TongueSplat_Ring");
+        go.transform.position = pos;
+        go.AddComponent<TongueSplatRing>().Init(tongueColor, sortingLayerName, sortingOrder);
     }
 
     // ── Easing functions ─────────────────────────────────────
@@ -222,4 +287,59 @@ public class FrogTongueAttack : MonoBehaviour
 
     // Accelerates back in — tongue snaps home quickly at the end
     static float EaseInQuart(float t) => t * t * t * t;
+}
+
+// ── Tongue splat ring ─────────────────────────────────────────────────────────
+
+/// <summary>Tiny expanding ring at the tongue impact point. Self-destructs in ~0.18s.</summary>
+public class TongueSplatRing : MonoBehaviour
+{
+    private LineRenderer _ring;
+    private Color        _color;
+    private float        _timer;
+
+    private const float Duration   = 0.18f;
+    private const float MaxRadius  = 0.18f;
+    private const int   Segments   = 18;
+    private const float StartWidth = 0.035f;
+
+    public void Init(Color color, string sortingLayer, int sortingOrder)
+    {
+        _color = color;
+        _ring  = gameObject.AddComponent<LineRenderer>();
+        _ring.useWorldSpace     = true;
+        _ring.loop              = true;
+        _ring.positionCount     = Segments;
+        _ring.numCapVertices    = 0;
+        _ring.numCornerVertices = 0;
+        _ring.widthMultiplier   = StartWidth;
+
+        var mat = new Material(Shader.Find("Sprites/Default"));
+        mat.color              = color;
+        _ring.material         = mat;
+        _ring.sortingLayerName = sortingLayer;
+        _ring.sortingOrder     = sortingOrder;
+    }
+
+    void Update()
+    {
+        _timer += Time.deltaTime;
+        float t      = Mathf.Clamp01(_timer / Duration);
+        float radius = Mathf.Lerp(0f, MaxRadius, t);
+        float alpha  = Mathf.Lerp(0.85f, 0f, t);
+        float width  = Mathf.Lerp(StartWidth, 0.003f, t);
+
+        _ring.widthMultiplier = width;
+        _ring.startColor = new Color(_color.r, _color.g, _color.b, alpha);
+        _ring.endColor   = new Color(_color.r, _color.g, _color.b, alpha);
+
+        Vector3 c = transform.position;
+        for (int i = 0; i < Segments; i++)
+        {
+            float a = 2f * Mathf.PI * i / Segments;
+            _ring.SetPosition(i, c + new Vector3(Mathf.Cos(a) * radius, Mathf.Sin(a) * radius, 0f));
+        }
+
+        if (t >= 1f) Destroy(gameObject);
+    }
 }

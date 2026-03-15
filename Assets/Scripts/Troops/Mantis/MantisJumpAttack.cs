@@ -43,6 +43,8 @@ public class MantisJumpAttack : MonoBehaviour
     private TroopInstance _instance;
     private Animator      _animator;
     private Vector3       _baseScale;
+    private SquashStretch _squash;
+    private AttackTrail   _trail;
 
     private Phase _phase      = Phase.Idle;
     private float _phaseTimer = 0f;
@@ -67,6 +69,8 @@ public class MantisJumpAttack : MonoBehaviour
         _animator  = GetComponent<Animator>();
         _baseScale = transform.localScale;
         _homePos   = transform.position;
+        _squash    = GetComponent<SquashStretch>();
+        _trail     = GetComponent<AttackTrail>();
     }
 
     void OnDisable()
@@ -122,6 +126,7 @@ public class MantisJumpAttack : MonoBehaviour
         _jumpTarget   = _behavior.CurrentTarget.transform.position;
 
         if (_animator != null) _animator.speed = 0f; // freeze idle during air-time
+        _trail?.StartTrail(); // leave a motion trail during the leap
     }
 
     void TickJumpOut()
@@ -159,8 +164,63 @@ public class MantisJumpAttack : MonoBehaviour
             _animator.Play("PrayingMantisAttack", 0, 0f);
         }
 
+        _trail?.StopTrail();           // stop trail on land
+        _squash?.PunchLand();          // wide squash on landing impact
+
+        SpawnLandingDust(transform.position);
+
         // Register damage immediately on landing
         RegisterHit();
+    }
+
+    // ── Landing dust VFX ─────────────────────────────────────────────────────
+
+    static void SpawnLandingDust(Vector3 pos)
+    {
+        var go   = new GameObject("MantisLanding_Dust");
+        go.transform.position = pos;
+
+        var ps   = go.AddComponent<ParticleSystem>();
+        var main = ps.main;
+        main.loop            = false;
+        main.startLifetime   = new ParticleSystem.MinMaxCurve(0.15f, 0.35f);
+        main.startSpeed      = new ParticleSystem.MinMaxCurve(0.8f, 2.5f);
+        main.startSize       = new ParticleSystem.MinMaxCurve(0.03f, 0.10f);
+        main.startColor      = new ParticleSystem.MinMaxGradient(
+                                   new Color(0.70f, 0.88f, 0.55f),   // lime-green puff
+                                   new Color(0.90f, 1.00f, 0.75f));
+        main.gravityModifier = 0.2f;
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.maxParticles    = 18;
+        main.stopAction      = ParticleSystemStopAction.Destroy;
+
+        var emission = ps.emission;
+        emission.rateOverTime = 0;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 12) });
+
+        var shape = ps.shape;
+        shape.enabled   = true;
+        shape.shapeType = ParticleSystemShapeType.Circle;
+        shape.radius    = 0.04f;
+
+        var col = ps.colorOverLifetime;
+        col.enabled = true;
+        var grad = new Gradient();
+        grad.SetKeys(
+            new GradientColorKey[] { new(new Color(0.90f, 1.00f, 0.75f), 0f), new(new Color(0.70f, 0.88f, 0.55f), 1f) },
+            new GradientAlphaKey[] { new(1f, 0f), new(0f, 1f) });
+        col.color = new ParticleSystem.MinMaxGradient(grad);
+
+        var sizeLife = ps.sizeOverLifetime;
+        sizeLife.enabled = true;
+        sizeLife.size    = new ParticleSystem.MinMaxCurve(1f,
+                               new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0f)));
+
+        var psr = go.GetComponent<ParticleSystemRenderer>();
+        psr.material     = new Material(Shader.Find("Sprites/Default"));
+        psr.sortingOrder = 6;
+
+        ps.Play();
     }
 
     void TickStrike()
@@ -191,13 +251,8 @@ public class MantisJumpAttack : MonoBehaviour
 
         if (_behavior.CurrentTarget == null) return;
 
-        float damage = _instance.CurrentAttack;
-
-        // ConditionalAttackBuff: triple attack when more than one enemy is in range
-        if (_behavior.EnemiesInRange > 1)
-            damage *= 3f;
-
-        _behavior.CurrentTarget.TakeDamage(damage, AttackType.Melee);
+        _instance.DealDamage(_behavior.CurrentTarget,
+            _instance.Data?.attackType ?? AttackType.Melee, transform.position);
     }
 
     // ── JumpBack ─────────────────────────────────────────────────────────────
@@ -251,7 +306,7 @@ public class MantisJumpAttack : MonoBehaviour
     void EndAttack()
     {
         _phase    = Phase.Idle;
-        _cooldown = _instance.CurrentAttackInterval;
+        _cooldown = _instance.GetEffectiveAttackInterval();
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

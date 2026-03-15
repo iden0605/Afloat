@@ -60,6 +60,10 @@ public class TroopDragController : MonoBehaviour
 
     public void BeginNewDrag(TroopData data)
     {
+        // Block drag entirely if the player cannot afford this troop
+        if (GoldManager.Instance != null && !GoldManager.Instance.CanAfford(data.baseCost))
+            return;
+
         _newTroopData    = data;
         _mode            = DragMode.NewTroop;
         _activationFrame = Time.frameCount;

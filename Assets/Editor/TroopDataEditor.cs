@@ -44,7 +44,7 @@ public class TroopDataEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("range"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("projectileType"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("splashRadius"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("effectType"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("baseEffect"));
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Upgrades  (attackDelta / attackSpeedDelta / rangeDelta add to current stats)", EditorStyles.boldLabel);

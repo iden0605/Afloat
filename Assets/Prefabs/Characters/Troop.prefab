@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8048712891681077835}
   - component: {fileID: -6273178330366151579}
   - component: {fileID: 1600834430133785866}
+  - component: {fileID: 1591034859257664611}
   m_Layer: 0
   m_Name: Troop
   m_TagString: Untagged
@@ -150,6 +151,20 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 256
+--- !u!114 &1591034859257664611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1478405365187898479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0f7c0cb2b81d4fa2aa3c7b951635b28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveThreshold: 0.05
+  silhouetteColor: {r: 0, g: 0, b: 0, a: 0.45}
 --- !u!1 &8890494523725976735
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,6 +176,8 @@ GameObject:
   - component: {fileID: 7288613538691643786}
   - component: {fileID: 7668370286868355277}
   - component: {fileID: 7356913351011156419}
+  - component: {fileID: 8161007715005947121}
+  - component: {fileID: 6459446621642922188}
   m_Layer: 0
   m_Name: RangeIndicator
   m_TagString: Untagged
@@ -297,4 +314,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fa5387773498bc4696d998607747527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lineRenderer: {fileID: 7668370286868355277}
+  fillAlpha: 0.22
+  ringAlpha: 0.65
+  sortingLayerName: Default
+  sortingOrder: 10
+--- !u!33 &8161007715005947121
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8890494523725976735}
+  m_Mesh: {fileID: 0}
+--- !u!23 &6459446621642922188
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8890494523725976735}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}

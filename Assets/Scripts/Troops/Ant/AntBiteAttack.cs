@@ -199,7 +199,7 @@ public class AntBiteAttack : MonoBehaviour
         // Start the attack cooldown NOW so it ticks down during the bite+return.
         // This keeps attack rate predictable and lets the ant re-engage the moment
         // it gets back to its tile if the cooldown has already expired.
-        _cooldown    = _instance.CurrentAttackInterval;
+        _cooldown    = _instance.GetEffectiveAttackInterval();
         PlayAttack();
     }
 
@@ -213,7 +213,7 @@ public class AntBiteAttack : MonoBehaviour
             _damageDealt = true;
             if (_target != null)
             {
-                _target.TakeDamage(_instance.CurrentAttack, AttackType.Melee);
+                _instance.DealDamage(_target, _instance.Data?.attackType ?? AttackType.Melee, transform.position);
             }
             SpawnBiteVFX(transform.position);
         }

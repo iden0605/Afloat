@@ -40,6 +40,8 @@ public class BeetleGroundPoundAttack : MonoBehaviour
     private TroopInstance _instance;
     private Animator      _animator;
     private Vector3       _baseScale;
+    private SquashStretch _squash;
+    private AttackTrail   _trail;
 
     private Phase _phase      = Phase.Idle;
     private float _phaseTimer = 0f;
@@ -65,6 +67,8 @@ public class BeetleGroundPoundAttack : MonoBehaviour
         _instance  = GetComponent<TroopInstance>();
         _animator  = GetComponent<Animator>();
         _baseScale = transform.localScale;
+        _squash    = GetComponent<SquashStretch>();
+        _trail     = GetComponent<AttackTrail>();
 
         BuildRing();
         BuildCollider();
@@ -175,7 +179,7 @@ public class BeetleGroundPoundAttack : MonoBehaviour
                 if (!_shockwaveActive)
                 {
                     _phase    = Phase.Idle;
-                    _cooldown = _instance.CurrentAttackInterval;
+                    _cooldown = _instance.GetEffectiveAttackInterval();
                     if (_animator != null) _animator.speed = 1f;
                 }
                 break;
@@ -188,12 +192,15 @@ public class BeetleGroundPoundAttack : MonoBehaviour
         _phase      = Phase.WindUp;
         _phaseTimer = 0f;
         if (_animator != null) _animator.speed = 0f; // freeze idle animation
+        _trail?.StartTrail(); // brief trail during the charged wind-up
     }
 
     void BeginSlam()
     {
         _phase      = Phase.Slam;
         _phaseTimer = 0f;
+        _trail?.StopTrail();     // stop trail on slam
+        _squash?.PunchLand();    // wide squash on impact
         LaunchShockwave();           // shockwave fires the instant the beetle starts slamming
     }
 
@@ -218,6 +225,60 @@ public class BeetleGroundPoundAttack : MonoBehaviour
         _shockwaveCollider.radius = 0.01f;
         _ringGO.SetActive(true);
         _colliderGO.SetActive(true);
+
+        SpawnSlamDust(_slamPos);
+    }
+
+    // ── Slam dust VFX ─────────────────────────────────────────
+
+    void SpawnSlamDust(Vector3 pos)
+    {
+        // Dirt/debris burst radiating outward from the impact point
+        var go   = new GameObject("BeetleSlam_Dust");
+        go.transform.position = pos;
+
+        var ps   = go.AddComponent<ParticleSystem>();
+        var main = ps.main;
+        main.loop            = false;
+        main.startLifetime   = new ParticleSystem.MinMaxCurve(0.25f, 0.65f);
+        main.startSpeed      = new ParticleSystem.MinMaxCurve(1.2f, 4.0f);
+        main.startSize       = new ParticleSystem.MinMaxCurve(0.04f, 0.13f);
+        main.startColor      = new ParticleSystem.MinMaxGradient(
+                                   new Color(0.55f, 0.38f, 0.14f),   // earthy brown
+                                   new Color(0.72f, 0.60f, 0.35f));  // sandy tan
+        main.gravityModifier = 0.5f;  // debris falls under gravity
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.maxParticles    = 32;
+        main.stopAction      = ParticleSystemStopAction.Destroy;
+
+        var emission = ps.emission;
+        emission.rateOverTime = 0;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 24) });
+
+        var shape = ps.shape;
+        shape.enabled   = true;
+        shape.shapeType = ParticleSystemShapeType.Circle;
+        shape.radius    = 0.05f;
+
+        var col = ps.colorOverLifetime;
+        col.enabled = true;
+        var grad = new Gradient();
+        grad.SetKeys(
+            new GradientColorKey[] { new(new Color(0.72f, 0.60f, 0.35f), 0f), new(new Color(0.55f, 0.38f, 0.14f), 1f) },
+            new GradientAlphaKey[] { new(1f, 0f), new(0f, 1f) });
+        col.color = new ParticleSystem.MinMaxGradient(grad);
+
+        var sizeLife = ps.sizeOverLifetime;
+        sizeLife.enabled = true;
+        sizeLife.size    = new ParticleSystem.MinMaxCurve(1f,
+                               new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0f)));
+
+        var psr = go.GetComponent<ParticleSystemRenderer>();
+        psr.material         = new Material(Shader.Find("Sprites/Default"));
+        psr.sortingLayerName = sortingLayerName;
+        psr.sortingOrder     = sortingOrder + 1;
+
+        ps.Play();
     }
 
     void UpdateShockwave()
@@ -270,7 +331,7 @@ public class BeetleGroundPoundAttack : MonoBehaviour
         if (!_shockwaveActive) return;
         if (!_hitThisStrike.Add(enemy)) return; // already hit this strike
 
-        enemy.TakeDamage(_instance.CurrentAttack, AttackType.Splash);
+        _instance.DealDamage(enemy, _instance.Data?.attackType ?? AttackType.Splash, transform.position);
     }
 
     // ── Easing ────────────────────────────────────────────────

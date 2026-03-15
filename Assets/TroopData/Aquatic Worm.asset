@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84a0813b27cdd4b3b95d21f6cb444989, type: 3}
+  m_Name: Aquatic Worm
+  m_EditorClassIdentifier: 
+  troopName: Aquatic Worm
+  description: 
+  portrait: {fileID: 21300000, guid: 8c2d999c84d7f47a8b0f5f58234ea8ca, type: 3}
+  prefab: {fileID: 5218539016367959010, guid: 8bb2d85515dc045efbbfaca6874f0321, type: 3}
+  category: 0
+  placementType: 1
+  isLandPlatform: 0
+  baseCost: 50
+  attack: 1
+  attackSpeed: 1
+  range: 1.5
+  projectileType: 0
+  splashRadius: 0.5
+  effectType: 0
+  upgrades: []
+  evolutions: []

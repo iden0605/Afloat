@@ -27,6 +27,8 @@ public class RangeIndicator : MonoBehaviour
     private LineRenderer _ring;
     private bool         _initialized;
 
+    private Transform _originalParent;
+
     void Awake() => Initialize();
 
     void Initialize()
@@ -67,9 +69,27 @@ public class RangeIndicator : MonoBehaviour
         BuildRing(radius);
     }
 
-    public void SetVisible(bool visible)
+    public void SetVisible(bool visible, Vector3? atWorldPosition = null)
     {
-        if (visible) Initialize();
+        if (visible)
+        {
+            Initialize();
+            // Always re-capture the parent in case we were re-parented since last hide.
+            _originalParent = transform.parent;
+            Vector3 worldPos = atWorldPosition ?? transform.position;
+            transform.SetParent(null, false);
+            transform.position = worldPos;
+        }
+        else
+        {
+            if (_originalParent != null)
+            {
+                transform.SetParent(_originalParent, false);
+                transform.localPosition = Vector3.zero;
+            }
+            _originalParent = null;
+        }
+
         gameObject.SetActive(visible);
     }
 

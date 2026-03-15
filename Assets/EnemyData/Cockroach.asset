@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f5d155c75c634b9dbfeb032345d63a1, type: 3}
+  m_Name: Cockroach
+  m_EditorClassIdentifier: 
+  enemyName: Cockroach
+  description: 
+  portrait: {fileID: 21300000, guid: 5c1deee7d23b84f4c96cb7ee2109a6c4, type: 3}
+  prefab: {fileID: 8343956985839966932, guid: fa08d5f46995b4c75a7ee690712b5743, type: 3}
+  baseHealth: 10
+  speed: 3
+  goldDrop: 5
+  effectType: 0
+  effectValue: 0

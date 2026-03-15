@@ -23,22 +23,81 @@ MonoBehaviour:
   attack: 1
   attackSpeed: 1
   range: 0.8
+  attackType: 1
   projectileType: 0
   splashRadius: 0.5
-  effectType: 4
-  upgrades: []
+  baseEffect:
+    effectType: 11
+    goldMultiplier: 0
+    conditionalAttack: 0
+    conditionalSpeed: 0
+    allyBonus: 1
+    dotInterval: 0
+    rampingDuration: 0
+    rampingMaxStacks: 0
+    freezeDuration: 0
+    freezeSlowFactor: 0
+    stunDuration: 0
+  upgrades:
+  - description: 
+    cost: 0
+    attackDelta: 0
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects: []
+  - description: 
+    cost: 0
+    attackDelta: 0
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects: []
+  - description: 
+    cost: 0
+    attackDelta: 0
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects: []
+  - description: 
+    cost: 0
+    attackDelta: 0
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects: []
+  - description: 
+    cost: 0
+    attackDelta: 0
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects: []
   evolutions:
   - evolutionName: Fire Ant
     description: 
+    portrait: {fileID: 21300000, guid: 8ea76daa45747472aa2993fdf6e30ca1, type: 3}
     prefab: {fileID: 6102032580315816842, guid: f8a5b5a96f5b342d195a6d10305c262e, type: 3}
     upgradesRequired: 2
+    evolutionCost: 100
     attackBoost: 0
     attackSpeedBoost: 0
     rangeBoost: 0
+    effects:
+    - effectType: 2
+      goldMultiplier: 0
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotInterval: 2
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
   - evolutionName: Bullet Ant
     description: 
+    portrait: {fileID: 21300000, guid: 9ec2fa9df8a7e492e90c9056893b0b21, type: 3}
     prefab: {fileID: 389132586245534007, guid: 35c19ae0c17384c46b8c5a1f911b9742, type: 3}
     upgradesRequired: 3
+    evolutionCost: 100
     attackBoost: 0
     attackSpeedBoost: 0
     rangeBoost: 0
+    effects: []

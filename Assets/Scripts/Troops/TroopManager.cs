@@ -38,8 +38,23 @@ public class TroopManager : MonoBehaviour
         {
             if (hit.collider.TryGetComponent<TroopInstance>(out var troop))
             {
+                EnemySelectionUI.Instance?.Hide();
                 TroopSelectionUI.Instance.Show(troop);
-                break;
+                return;
+            }
+
+            if (hit.collider.TryGetComponent<TroopHomeProxy>(out var proxy) && proxy.Troop != null)
+            {
+                EnemySelectionUI.Instance?.Hide();
+                TroopSelectionUI.Instance.Show(proxy.Troop);
+                return;
+            }
+
+            if (hit.collider.TryGetComponent<EnemyInstance>(out var enemy))
+            {
+                TroopSelectionUI.Instance?.Hide();
+                EnemySelectionUI.Instance?.Show(enemy);
+                return;
             }
         }
     }
@@ -49,6 +64,13 @@ public class TroopManager : MonoBehaviour
         if (data == null || data.prefab == null)
         {
             Debug.LogWarning($"[TroopManager] TroopData '{data?.troopName}' has no prefab assigned.");
+            return null;
+        }
+
+        // Safety-net gold check (primary check is in TroopDragController.BeginNewDrag)
+        if (GoldManager.Instance != null && !GoldManager.Instance.SpendGold(data.baseCost))
+        {
+            Debug.LogWarning($"[TroopManager] Cannot afford {data.troopName} ({data.baseCost}g).");
             return null;
         }
 

@@ -2,15 +2,17 @@ using UnityEngine;
 
 /// <summary>
 /// Singleton that tracks the player's gold.
-/// Gold is earned by defeating enemies (via EnemyInstance.Die) and spent on
-/// placing troops (connect to TroopDragController).
 ///
-/// Add this component to a persistent scene GameObject.
-/// Connect the current gold value to your UI by reading GoldManager.Instance.Gold.
+/// Subscribe to the static OnGoldChanged event to be notified whenever gold changes:
+///   GoldManager.OnGoldChanged += myCallback;   // int param = new total
+///   GoldManager.OnGoldChanged -= myCallback;   // always unsubscribe in OnDisable
 /// </summary>
 public class GoldManager : MonoBehaviour
 {
     public static GoldManager Instance { get; private set; }
+
+    /// <summary>Fired whenever gold is added or spent. Carries the new total.</summary>
+    public static event System.Action<int> OnGoldChanged;
 
     [Header("Economy")]
     [Tooltip("Starting gold at the beginning of the game.")]
@@ -28,29 +30,37 @@ public class GoldManager : MonoBehaviour
         Gold = startingGold;
     }
 
+    void Start()
+    {
+        // Broadcast the starting value so any HUD that missed Awake is still correct
+        OnGoldChanged?.Invoke(Gold);
+    }
+
     // ── API ───────────────────────────────────────────────────────────────────
 
-    /// <summary>Increases gold. Called by EnemyInstance when an enemy is defeated.</summary>
+    /// <summary>
+    /// Adds gold to the balance (e.g. enemy defeated, troop sold).
+    /// Always succeeds.
+    /// </summary>
     public void AddGold(int amount)
     {
+        if (amount <= 0) return;
         Gold += amount;
-        Debug.Log($"[GoldManager] +{amount} gold. Total: {Gold}");
-        // TODO: fire an event / update UI here
+        OnGoldChanged?.Invoke(Gold);
     }
 
     /// <summary>
-    /// Attempts to spend gold. Returns false (and does nothing) if the player
-    /// cannot afford it.
+    /// Deducts gold. Returns false without changing balance if the player cannot afford it.
     /// </summary>
     public bool SpendGold(int amount)
     {
+        if (amount <= 0) return true;
         if (Gold < amount) return false;
         Gold -= amount;
-        Debug.Log($"[GoldManager] -{amount} gold. Total: {Gold}");
-        // TODO: fire an event / update UI here
+        OnGoldChanged?.Invoke(Gold);
         return true;
     }
 
     /// <summary>Returns true if the player can afford the given cost.</summary>
-    public bool CanAfford(int amount) => Gold >= amount;
+    public bool CanAfford(int amount) => amount <= 0 || Gold >= amount;
 }
