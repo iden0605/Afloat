@@ -89,31 +89,56 @@
 }
 
 /* ── Play section: contains button + centipede deco ─────────── */
-/*
-   padding-top reserves space above the button so the centipede
-   can sit there without being clipped (overflow: visible).
-   The centipede element is declared AFTER the button in UXML so
-   it renders on top, creating the "perched on the button" look.
-*/
 .play-section {
-    padding-top: 88px;
+    padding-top: 10px;
     overflow: visible;
     margin-bottom: 14px;
 }
 
-/* Centipede decoration — absolutely over the play button */
+/* Centipede decoration — hangs off the top-right corner of the play button */
 .centipede-deco {
     position: absolute;
-    top: 0;
-    left: 0;
-    /* Full-width so background centering works without calc() */
-    width: 360px;
+    top: -30px;
+    right: -15px;
+    width: 100px;
     height: 100px;
-    background-size: 200px auto;
-    background-position: center bottom;
+    background-size: contain;
+    background-position: center;
     background-repeat: no-repeat;
-    /* Slight tilt — looks like it's draped/hanging */
-    rotate: -10deg;
+    rotate: 20deg;
+}
+
+/* ── Enemy floats (in water strip) ───────────────────────────── */
+.enemy-float {
+    position: absolute;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.78;
+}
+
+.enemy-float--bag {
+    bottom: 22px;
+    left: 7%;
+    width: 54px;
+    height: 64px;
+    rotate: -14deg;
+}
+
+.enemy-float--mosq {
+    bottom: 28px;
+    right: 9%;
+    width: 62px;
+    height: 62px;
+    rotate: 10deg;
+}
+
+.enemy-float--straw {
+    bottom: 16px;
+    left: 46%;
+    width: 36px;
+    height: 72px;
+    rotate: 22deg;
 }
 
 /* ── Base button ─────────────────────────────────────────────── */

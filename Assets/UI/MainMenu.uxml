@@ -11,6 +11,11 @@
         <!-- Decorative water strip at bottom -->
         <ui:VisualElement class="water-strip" />
 
+        <!-- Enemy sprites floating in the water strip (threat indicators) -->
+        <ui:VisualElement name="deco-plastic-bag" class="enemy-float enemy-float--bag" />
+        <ui:VisualElement name="deco-mosquito"    class="enemy-float enemy-float--mosq" />
+        <ui:VisualElement name="deco-straw"       class="enemy-float enemy-float--straw" />
+
         <!-- ── Centred content column ────────────────────────── -->
         <ui:VisualElement class="menu-content">
 

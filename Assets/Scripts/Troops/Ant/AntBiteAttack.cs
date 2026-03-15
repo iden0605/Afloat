@@ -213,8 +213,7 @@ public class AntBiteAttack : MonoBehaviour
             _damageDealt = true;
             if (_target != null)
             {
-                // TODO: _target.TakeDamage(_instance.CurrentAttack);
-                Debug.Log($"[AntBite] {name} bit {_target.name} — damage: {_instance.CurrentAttack}");
+                _target.TakeDamage(_instance.CurrentAttack, AttackType.Melee);
             }
             SpawnBiteVFX(transform.position);
         }

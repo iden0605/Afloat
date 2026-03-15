@@ -104,7 +104,6 @@ public class CentipedeAcidAttack : MonoBehaviour
 
     void OnProjectileHit(EnemyMovement enemy)
     {
-        Debug.Log($"[CentipedeAcid] Hit {enemy.name} — damage pending: {_instance.CurrentAttack}");
-        // TODO: enemy.TakeDamage(_instance.CurrentAttack);
+        enemy.TakeDamage(_instance.CurrentAttack, AttackType.Ranged);
     }
 }

@@ -208,8 +208,7 @@ public class FrogTongueAttack : MonoBehaviour
         if (_phase != Phase.Extending) return;
         if (!_hitThisStrike.Add(enemy)) return; // already hit this strike
 
-        Debug.Log($"[FrogTongue] Hit {enemy.name} — damage pending: {_instance.CurrentAttack}");
-        // TODO: enemy.TakeDamage(_instance.CurrentAttack);
+        enemy.TakeDamage(_instance.CurrentAttack, AttackType.Ranged);
     }
 
     // ── Easing functions ─────────────────────────────────────

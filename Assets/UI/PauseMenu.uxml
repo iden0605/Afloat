@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/PauseMenu.uss" />
+
+    <!-- Full-screen root — hidden by default, shown when paused -->
+    <ui:VisualElement name="pause-root" class="pause-root">
+
+        <!-- Semi-transparent backdrop (blocks game input) -->
+        <ui:VisualElement class="pause-backdrop" />
+
+        <!-- Centred dialog panel -->
+        <ui:VisualElement class="pause-panel">
+
+            <ui:Label text="PAUSED" class="pause-title" />
+            <ui:VisualElement class="pause-divider" />
+
+            <ui:Button name="continue-btn" text="CONTINUE"       class="pause-btn pause-btn--continue" />
+            <ui:Button name="restart-btn"  text="RESTART LEVEL"  class="pause-btn pause-btn--restart"  />
+            <ui:Button name="quit-btn"     text="QUIT TO MENU"   class="pause-btn pause-btn--quit"     />
+
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

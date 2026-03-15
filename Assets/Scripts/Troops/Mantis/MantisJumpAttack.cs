@@ -197,10 +197,7 @@ public class MantisJumpAttack : MonoBehaviour
         if (_behavior.EnemiesInRange > 1)
             damage *= 3f;
 
-        Debug.Log($"[MantisJump] Hit {_behavior.CurrentTarget.name} — damage: {damage} " +
-                  $"(enemies in range: {_behavior.EnemiesInRange})");
-
-        // TODO: _behavior.CurrentTarget.TakeDamage(damage);
+        _behavior.CurrentTarget.TakeDamage(damage, AttackType.Melee);
     }
 
     // ── JumpBack ─────────────────────────────────────────────────────────────

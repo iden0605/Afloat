@@ -22,6 +22,11 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private Sprite beetleSprite;
     [SerializeField] private Sprite mantisSprite;
 
+    [Header("Enemy Icons (water strip)")]
+    [SerializeField] private Sprite plasticBagSprite;
+    [SerializeField] private Sprite mosquitoSprite;
+    [SerializeField] private Sprite strawSprite;
+
     void OnEnable()
     {
         var root = GetComponent<UIDocument>().rootVisualElement;
@@ -29,10 +34,13 @@ public class MainMenuManager : MonoBehaviour
         // ── Sprite assignments ─────────────────────────────────
         SetBg(root, "bg-image",        backgroundSprite);
         SetBg(root, "centipede-deco",  centipedeSprite);
-        SetBg(root, "deco-frog",       frogSprite);
-        SetBg(root, "deco-ant",        antSprite);
-        SetBg(root, "deco-beetle",     beetleSprite);
-        SetBg(root, "deco-mantis",     mantisSprite);
+        SetBg(root, "deco-frog",        frogSprite);
+        SetBg(root, "deco-ant",         antSprite);
+        SetBg(root, "deco-beetle",      beetleSprite);
+        SetBg(root, "deco-mantis",      mantisSprite);
+        SetBg(root, "deco-plastic-bag", plasticBagSprite);
+        SetBg(root, "deco-mosquito",    mosquitoSprite);
+        SetBg(root, "deco-straw",       strawSprite);
 
         // ── Button callbacks ───────────────────────────────────
         root.Q<Button>("play-btn")    .clicked += OnPlay;

@@ -270,8 +270,7 @@ public class BeetleGroundPoundAttack : MonoBehaviour
         if (!_shockwaveActive) return;
         if (!_hitThisStrike.Add(enemy)) return; // already hit this strike
 
-        Debug.Log($"[BeetleSlam] Hit {enemy.name} — damage pending: {_instance.CurrentAttack}");
-        // TODO: enemy.TakeDamage(_instance.CurrentAttack);
+        enemy.TakeDamage(_instance.CurrentAttack, AttackType.Splash);
     }
 
     // ── Easing ────────────────────────────────────────────────
