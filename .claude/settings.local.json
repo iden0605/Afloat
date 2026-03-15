@@ -8,7 +8,14 @@
       "Bash(grep -r \"CurrentWaveIndex\\\\|IsWaveActive\\\\|EnemiesAlive\\\\|Wave.*UI\\\\|Wave.*Text\" /c/Users/Jorvan/Documents/Projects/Click-n-Claw-game/Assets/Scripts --include=*.cs)",
       "Bash(find /c/Users/Jorvan/Documents/Projects/Click-n-Claw-game/Assets/EnemyData -type f -name *.asset)",
       "Bash(find c:UsersJorvanDocumentsProjectsClick-n-Claw-gameAssetsScripts -type f -name *.cs -exec grep -l \"LocalScale\\\\|scale\\\\|lerp\\\\|Lerp\" {})",
-      "Bash(ls -la \"c:\\\\Users\\\\Jorvan\\\\Documents\\\\Projects\\\\Click-n-Claw-game\\\\Assets\\\\Scripts\\\\Troops\\\\Ant\"\" \"c:UsersJorvanDocumentsProjectsClick-n-Claw-gameAssetsScriptsTroopsBeetle\"\" \"c:\\\\Users\\\\Jorvan\\\\Documents\\\\Projects\\\\Click-n-Claw-game\\\\Assets\\\\Scripts\\\\Troops\\\\Mantis\"\" \"c:UsersJorvanDocumentsProjectsClick-n-Claw-gameAssetsScriptsTroopsCentipede\"\" \"c:\\\\Users\\\\Jorvan\\\\Documents\\\\Projects\\\\Click-n-Claw-game\\\\Assets\\\\Scripts\\\\Troops\\\\Frog\"\" 2>/dev/null | grep \".cs \")"
+      "Bash(ls -la \"c:\\\\Users\\\\Jorvan\\\\Documents\\\\Projects\\\\Click-n-Claw-game\\\\Assets\\\\Scripts\\\\Troops\\\\Ant\"\" \"c:UsersJorvanDocumentsProjectsClick-n-Claw-gameAssetsScriptsTroopsBeetle\"\" \"c:\\\\Users\\\\Jorvan\\\\Documents\\\\Projects\\\\Click-n-Claw-game\\\\Assets\\\\Scripts\\\\Troops\\\\Mantis\"\" \"c:UsersJorvanDocumentsProjectsClick-n-Claw-gameAssetsScriptsTroopsCentipede\"\" \"c:\\\\Users\\\\Jorvan\\\\Documents\\\\Projects\\\\Click-n-Claw-game\\\\Assets\\\\Scripts\\\\Troops\\\\Frog\"\" 2>/dev/null | grep \".cs \")",
+      "Bash(ls /c/Users/Jorvan/Documents/Projects/Click-n-Claw-game/Assets/TroopData/*.asset)",
+      "Bash(ls /c/Users/Jorvan/Documents/Projects/Click-n-Claw-game/Assets/EnemyData/*.asset)",
+      "Bash(ls /c/Users/Jorvan/Documents/Projects/Click-n-Claw-game/Assets/WaveData/*.asset)",
+      "Bash(done)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/Jorvan/Documents/Projects/Click-n-Claw-game/Assets/EnemyData/**)"
     ]
   }
 }

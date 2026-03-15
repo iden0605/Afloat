@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71bdc0d77ded94e53b987da58d95c257, type: 3}
+  m_Name: Wave 18
+  m_EditorClassIdentifier: 
+  entries:
+  - enemyData: {fileID: 11400000, guid: 453d76bcb818f4bc6b12652bfa52cf20, type: 2}
+    count: 15
+    spawnInterval: 1
+    groupDelay: 0
+  - enemyData: {fileID: 11400000, guid: 71b9b34347e724b46b43c6dcc951c721, type: 2}
+    count: 20
+    spawnInterval: 1
+    groupDelay: 6
+  - enemyData: {fileID: 11400000, guid: 2d23214962a7e4bff9ca3d397a854b9c, type: 2}
+    count: 5
+    spawnInterval: 1
+    groupDelay: 6
+  preWaveDelay: 5
