@@ -22,18 +22,23 @@ MonoBehaviour:
   baseCost: 50
   attack: 1
   attackSpeed: 1
-  range: 1.5
+  range: 0.8
   projectileType: 0
   splashRadius: 0.5
   effectType: 4
   upgrades: []
-  canEvolve: 1
-  evolution:
-    evolutionName: 
+  evolutions:
+  - evolutionName: Fire Ant
     description: 
-    uiPortrait: {fileID: 0}
-    worldSprite: {fileID: 0}
-    upgradesRequired: 1
+    prefab: {fileID: 6102032580315816842, guid: f8a5b5a96f5b342d195a6d10305c262e, type: 3}
+    upgradesRequired: 2
+    attackBoost: 0
+    attackSpeedBoost: 0
+    rangeBoost: 0
+  - evolutionName: Bullet Ant
+    description: 
+    prefab: {fileID: 389132586245534007, guid: 35c19ae0c17384c46b8c5a1f911b9742, type: 3}
+    upgradesRequired: 3
     attackBoost: 0
     attackSpeedBoost: 0
     rangeBoost: 0

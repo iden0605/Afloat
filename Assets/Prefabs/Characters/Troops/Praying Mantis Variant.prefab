@@ -75,6 +75,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4903622876910777127}
+    - targetCorrespondingSourceObject: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3982035202551670669}
   m_SourcePrefab: {fileID: 100100000, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
 --- !u!1 &1390176710375397592 stripped
 GameObject:
@@ -137,3 +140,21 @@ CapsuleCollider2D:
   m_Offset: {x: 0.0064287186, y: -0.0070706904}
   m_Size: {x: 0.29802513, y: 0.6258586}
   m_Direction: 0
+--- !u!114 &3982035202551670669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390176710375397592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8109b3ef9cd947b982e0468bfbccbfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpOutDuration: 0.32
+  strikeHoldDuration: 0.22
+  jumpBackDuration: 0.26
+  recoverDuration: 0.12
+  arcHeight: 0.6
+  peakScaleBoost: 1.35

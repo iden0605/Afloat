@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &4208441318672272830
+--- !u!1001 &1288631880974851416
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
       propertyPath: m_Name
-      value: Ant Variant
+      value: Bullet Ant Variant
       objectReference: {fileID: 0}
     - target: {fileID: 1888029581385915099, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: faffa8fe8960b46b9a9d9966a035c424, type: 3}
+      objectReference: {fileID: 21300000, guid: 9ec2fa9df8a7e492e90c9056893b0b21, type: 3}
     - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.8380451
+      value: 1.764
       objectReference: {fileID: 0}
     - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
       propertyPath: m_LocalPosition.y
@@ -62,24 +62,27 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 9101693026928175648}
+      addedObject: {fileID: 322894894366833524}
+    - targetCorrespondingSourceObject: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7542766780502287344}
   m_SourcePrefab: {fileID: 100100000, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
---- !u!1 &3378608800881172945 stripped
+--- !u!1 &389132586245534007 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
-  m_PrefabInstance: {fileID: 4208441318672272830}
+  m_PrefabInstance: {fileID: 1288631880974851416}
   m_PrefabAsset: {fileID: 0}
---- !u!95 &9101693026928175648
+--- !u!95 &322894894366833524
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3378608800881172945}
+  m_GameObject: {fileID: 389132586245534007}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 5a9ffe79802724cec93b3d3f25e6cf5f, type: 2}
+  m_Controller: {fileID: 9100000, guid: 697a1548cccff4c3b96eef36acb55e68, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -90,3 +93,25 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7542766780502287344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 389132586245534007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5b48930ba26e4b82b384f50bbd60984, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleStateName: AntIdle
+  attackStateName: AntAttack
+  lungeSpeed: 7
+  returnSpeed: 5
+  maxLungeDistance: 0.4
+  biteReach: 0.15
+  biteDuration: 0.5
+  biteColor: {r: 0.5028737, g: 0, b: 0.735849, a: 1}
+  vfxSortingLayer: Default
+  vfxSortingOrder: 5
