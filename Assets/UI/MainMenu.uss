@@ -1,0 +1,224 @@
+/* =============================================================
+   MainMenu.uss  —  Click 'n' Claw main menu
+   ============================================================= */
+
+/* ── Root ────────────────────────────────────────────────────── */
+.menu-root {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(6, 18, 8);
+    overflow: hidden;
+}
+
+/* ── Background layers ───────────────────────────────────────── */
+.bg-image {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.bg-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(4, 14, 6, 0.68);
+}
+
+/* Decorative water strip at the bottom */
+.water-strip {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 110px;
+    background-color: rgba(12, 48, 82, 0.50);
+    border-top-width: 1px;
+    border-top-color: rgba(55, 135, 195, 0.30);
+}
+
+/* ── Content column ──────────────────────────────────────────── */
+.menu-content {
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ── Title card ──────────────────────────────────────────────── */
+.title-card {
+    align-items: center;
+    padding: 26px 52px 22px 52px;
+    background-color: rgba(8, 26, 10, 0.92);
+    border-radius: 18px;
+    border-width: 1px;
+    border-color: rgba(88, 200, 76, 0.40);
+    margin-bottom: 44px;
+}
+
+.title-main {
+    font-size: 54px;
+    color: rgb(178, 255, 134);
+    -unity-font-style: bold;
+    letter-spacing: 5px;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+    margin-bottom: 6px;
+}
+
+.title-sub {
+    font-size: 13px;
+    color: rgba(145, 215, 120, 0.55);
+    -unity-font-style: italic;
+    letter-spacing: 7px;
+    -unity-text-align: middle-center;
+    white-space: nowrap;
+}
+
+/* ── Button stack ────────────────────────────────────────────── */
+.btn-stack {
+    flex-direction: column;
+    align-items: stretch;
+    width: 360px;
+}
+
+/* ── Play section: contains button + centipede deco ─────────── */
+/*
+   padding-top reserves space above the button so the centipede
+   can sit there without being clipped (overflow: visible).
+   The centipede element is declared AFTER the button in UXML so
+   it renders on top, creating the "perched on the button" look.
+*/
+.play-section {
+    padding-top: 88px;
+    overflow: visible;
+    margin-bottom: 14px;
+}
+
+/* Centipede decoration — absolutely over the play button */
+.centipede-deco {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* Full-width so background centering works without calc() */
+    width: 360px;
+    height: 100px;
+    background-size: 200px auto;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    /* Slight tilt — looks like it's draped/hanging */
+    rotate: -10deg;
+}
+
+/* ── Base button ─────────────────────────────────────────────── */
+.menu-btn {
+    height: 58px;
+    border-radius: 10px;
+    font-size: 17px;
+    -unity-font-style: bold;
+    letter-spacing: 4px;
+    -unity-text-align: middle-center;
+    padding: 0;
+    border-width: 2px;
+    margin-bottom: 13px;
+    transition-property: background-color, border-color;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out;
+}
+
+/* Play — vivid emerald green, larger than the others */
+.play-btn {
+    height: 68px;
+    font-size: 20px;
+    letter-spacing: 6px;
+    background-color: rgba(38, 148, 44, 0.94);
+    color: rgb(210, 255, 200);
+    border-color: rgba(88, 200, 76, 0.72);
+    border-width: 2px;
+}
+
+.play-btn:hover {
+    background-color: rgba(52, 178, 58, 1.0);
+    border-color: rgba(115, 240, 100, 0.90);
+}
+
+/* Tutorial — muted teal */
+.secondary-btn {
+    background-color: rgba(25, 82, 110, 0.88);
+    color: rgb(180, 225, 255);
+    border-color: rgba(60, 145, 195, 0.50);
+}
+
+.secondary-btn:hover {
+    background-color: rgba(34, 106, 142, 0.95);
+    border-color: rgba(82, 170, 220, 0.72);
+}
+
+/* Exit — deep red */
+.exit-btn {
+    background-color: rgba(108, 26, 20, 0.82);
+    color: rgb(255, 195, 182);
+    border-color: rgba(180, 55, 46, 0.46);
+}
+
+.exit-btn:hover {
+    background-color: rgba(145, 36, 28, 0.95);
+    border-color: rgba(215, 72, 60, 0.68);
+}
+
+/* ── Critter decoration row ──────────────────────────────────── */
+/*
+   Sits above the water strip. The two height variants give a
+   staggered, naturalistic look.
+*/
+.critter-row {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    margin-top: 40px;
+    /* Lift row above the water strip */
+    margin-bottom: 32px;
+}
+
+.critter-icon {
+    width: 60px;
+    height: 60px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-left: 14px;
+    margin-right: 14px;
+    opacity: 0.72;
+    transition-property: opacity, scale;
+    transition-duration: 0.15s;
+}
+
+.critter-icon:hover {
+    opacity: 1.0;
+    scale: 1.12;
+}
+
+/* Alternate heights for staggered look */
+.critter-icon--lo {
+    margin-bottom: 0;
+}
+
+.critter-icon--hi {
+    margin-bottom: 14px;
+}
+
+/* ── Version watermark ───────────────────────────────────────── */
+.version-label {
+    position: absolute;
+    right: 16px;
+    bottom: 10px;
+    font-size: 10px;
+    color: rgba(145, 215, 120, 0.28);
+    letter-spacing: 1px;
+}

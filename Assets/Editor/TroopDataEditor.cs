@@ -10,6 +10,7 @@ public class TroopDataEditor : Editor
 
         // ── Identity ──────────────────────────────────────────
         EditorGUILayout.PropertyField(serializedObject.FindProperty("troopName"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("description"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("portrait"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("prefab"));
 
@@ -46,8 +47,13 @@ public class TroopDataEditor : Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("effectType"));
 
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Upgrades", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Upgrades  (attackDelta / attackSpeedDelta / rangeDelta add to current stats)", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(serializedObject.FindProperty("upgrades"), true);
+
+            // ── Evolutions ──────────────────────────────────────────
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Evolutions  (one entry per evolved form, in order)", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("evolutions"), true);
         }
 
         serializedObject.ApplyModifiedProperties();

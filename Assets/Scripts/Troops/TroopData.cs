@@ -1,5 +1,30 @@
 using UnityEngine;
 
+/// <summary>
+/// One step in a troop's evolution chain.
+/// Each entry in TroopData.evolutions defines a distinct evolved form with its own prefab.
+/// </summary>
+[System.Serializable]
+public class EvolutionData
+{
+    public string evolutionName;
+    [TextArea(1, 3)]
+    public string description;
+
+    [Header("Prefab")]
+    [Tooltip("The prefab that replaces the current troop when this evolution triggers.")]
+    public GameObject prefab;
+
+    [Header("Requirement")]
+    [Tooltip("Total upgrade tiers that must be purchased before this evolution unlocks.")]
+    public int upgradesRequired = 1;
+
+    [Header("Stat Boosts on Evolve")]
+    public float attackBoost;
+    public float attackSpeedBoost;
+    public float rangeBoost;
+}
+
 /// <summary>Where this troop/power is allowed to be placed.</summary>
 public enum PlacementType
 {
@@ -35,6 +60,8 @@ public class TroopData : ScriptableObject
 {
     [Header("Identity")]
     public string troopName;
+    [TextArea(2, 4)]
+    public string description;
     public Sprite portrait;
     public GameObject prefab;
 
@@ -58,7 +85,15 @@ public class TroopData : ScriptableObject
     public TroopEffectType effectType = TroopEffectType.None;
 
     [Header("Upgrades — add one entry per upgrade tier")]
+    [Tooltip("Each tier's attackDelta/attackSpeedDelta/rangeDelta are added to current stats on purchase.")]
     public UpgradeTier[] upgrades;
+
+    [Header("Evolutions — add one entry per evolved form in order")]
+    [Tooltip("Each entry is one step in the evolution chain. Leave empty for no evolutions.")]
+    public EvolutionData[] evolutions;
+
+    /// <summary>True if this troop has at least one evolution defined.</summary>
+    public bool HasEvolutions => evolutions != null && evolutions.Length > 0;
 
     [System.Serializable]
     public struct UpgradeTier

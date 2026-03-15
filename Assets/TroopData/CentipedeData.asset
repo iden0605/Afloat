@@ -13,7 +13,27 @@ MonoBehaviour:
   m_Name: CentipedeData
   m_EditorClassIdentifier: 
   troopName: Centipede
+  description: 
   portrait: {fileID: 21300000, guid: 5c511a071f7b04fc7b7e74ca10aa5034, type: 3}
   prefab: {fileID: 1592945629552844655, guid: dd7a2afb1827d480dbb7d76eac0344c3, type: 3}
+  category: 0
+  placementType: 0
+  isLandPlatform: 0
   baseCost: 50
+  attack: 1
+  attackSpeed: 1
+  range: 1.5
+  projectileType: 0
+  splashRadius: 0.5
+  effectType: 0
   upgrades: []
+  canEvolve: 0
+  evolution:
+    evolutionName: 
+    description: 
+    uiPortrait: {fileID: 0}
+    worldSprite: {fileID: 0}
+    upgradesRequired: 1
+    attackBoost: 0
+    attackSpeedBoost: 0
+    rangeBoost: 0

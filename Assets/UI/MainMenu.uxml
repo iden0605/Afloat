@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainMenu.uss" />
+
+    <ui:VisualElement name="menu-root" class="menu-root">
+
+        <!-- Background image (sprite set via C#) -->
+        <ui:VisualElement name="bg-image" class="bg-image" />
+        <!-- Dark overlay for readability -->
+        <ui:VisualElement class="bg-overlay" />
+        <!-- Decorative water strip at bottom -->
+        <ui:VisualElement class="water-strip" />
+
+        <!-- ── Centred content column ────────────────────────── -->
+        <ui:VisualElement class="menu-content">
+
+            <!-- Title card -->
+            <ui:VisualElement class="title-card">
+                <ui:Label text="CLICK 'N' CLAW" class="title-main" />
+                <ui:Label text="PROTECT  THE  POND" class="title-sub" />
+            </ui:VisualElement>
+
+            <!-- Button stack -->
+            <ui:VisualElement class="btn-stack">
+
+                <!-- Play button — centipede rendered AFTER button so it sits on top -->
+                <ui:VisualElement name="play-section" class="play-section">
+                    <ui:Button name="play-btn" text="PLAY" class="menu-btn play-btn" />
+                    <ui:VisualElement name="centipede-deco" class="centipede-deco" />
+                </ui:VisualElement>
+
+                <ui:Button name="tutorial-btn" text="TUTORIAL" class="menu-btn secondary-btn" />
+                <ui:Button name="exit-btn"     text="EXIT"     class="menu-btn exit-btn" />
+
+            </ui:VisualElement>
+
+            <!-- Critter decoration row — sits above the water strip -->
+            <ui:VisualElement class="critter-row">
+                <ui:VisualElement name="deco-frog"   class="critter-icon critter-icon--lo" />
+                <ui:VisualElement name="deco-ant"    class="critter-icon critter-icon--hi" />
+                <ui:VisualElement name="deco-beetle" class="critter-icon critter-icon--lo" />
+                <ui:VisualElement name="deco-mantis" class="critter-icon critter-icon--hi" />
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+
+        <!-- Version watermark -->
+        <ui:Label text="v0.1  Early Access" name="version-label" class="version-label" />
+
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,160 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &562597570799219895
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_Name
+      value: Praying Mantis Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 1888029581385915099, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_Size.x
+      value: 0.64
+      objectReference: {fileID: 0}
+    - target: {fileID: 1888029581385915099, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_Size.y
+      value: 0.64
+      objectReference: {fileID: 0}
+    - target: {fileID: 1888029581385915099, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 16e2655f7c98b45f8be4c902691c31f5, type: 3}
+    - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.23804474
+      objectReference: {fileID: 0}
+    - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.38898134
+      objectReference: {fileID: 0}
+    - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.013870254
+      objectReference: {fileID: 0}
+    - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6283477510580565550, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7668370286868355277, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4675985264631419000}
+    - targetCorrespondingSourceObject: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4903622876910777127}
+    - targetCorrespondingSourceObject: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3982035202551670669}
+  m_SourcePrefab: {fileID: 100100000, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+--- !u!1 &1390176710375397592 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1478405365187898479, guid: f7329f9ea5af641cda0ee7ff6971b758, type: 3}
+  m_PrefabInstance: {fileID: 562597570799219895}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &4675985264631419000
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390176710375397592}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5c7c519c34fd3460b8e361aac782472d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!70 &4903622876910777127
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390176710375397592}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.0064287186, y: -0.0070706904}
+  m_Size: {x: 0.29802513, y: 0.6258586}
+  m_Direction: 0
+--- !u!114 &3982035202551670669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390176710375397592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8109b3ef9cd947b982e0468bfbccbfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpOutDuration: 0.32
+  strikeHoldDuration: 0.22
+  jumpBackDuration: 0.26
+  recoverDuration: 0.12
+  arcHeight: 0.6
+  peakScaleBoost: 1.35
