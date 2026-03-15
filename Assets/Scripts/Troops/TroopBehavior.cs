@@ -20,6 +20,13 @@ public class TroopBehavior : MonoBehaviour
     /// <summary>Number of enemies detected inside range this frame.</summary>
     public int EnemiesInRange           { get; private set; }
 
+    /// <summary>
+    /// When true, target detection still runs (EnemiesInRange / CurrentTarget are updated)
+    /// but the rotate-toward-target step is skipped. Set by attack scripts that manage
+    /// their own rotation (e.g. DragonFlyAttack).
+    /// </summary>
+    [HideInInspector] public bool suppressRotation = false;
+
     void Awake()
     {
         _instance = GetComponent<TroopInstance>();
@@ -50,7 +57,7 @@ public class TroopBehavior : MonoBehaviour
         CurrentTarget = best;
 
         // ── Rotate toward current target ──────────────────
-        if (CurrentTarget != null)
+        if (CurrentTarget != null && !suppressRotation)
         {
             Vector2 dir = CurrentTarget.transform.position - transform.position;
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;

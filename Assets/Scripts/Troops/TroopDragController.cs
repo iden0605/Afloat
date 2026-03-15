@@ -5,6 +5,12 @@ using UnityEngine.UIElements;
 /// Manages the drag gesture for both placing new troops (from sidebar)
 /// and moving existing placed troops.
 /// Must be on the same GameObject as the UIDocument.
+///
+/// PathOnly troops (e.g. Anchovies):
+///   • Placement is ONLY valid when the cursor is over the enemy path.
+///   • The range indicator rotates each frame so its long side stays
+///     perpendicular to the nearest path segment.
+///   • The placed troop inherits that orientation on drop.
 /// </summary>
 [RequireComponent(typeof(UIDocument))]
 public class TroopDragController : MonoBehaviour
@@ -37,6 +43,9 @@ public class TroopDragController : MonoBehaviour
     private VisualElement _ghost;
     private int           _activationFrame;
 
+    // Rotation to apply to the placed troop (updated each frame for PathOnly troops)
+    private Quaternion _pendingPlacementRotation = Quaternion.identity;
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -60,23 +69,24 @@ public class TroopDragController : MonoBehaviour
 
     public void BeginNewDrag(TroopData data)
     {
-        // Block drag entirely if the player cannot afford this troop
         if (GoldManager.Instance != null && !GoldManager.Instance.CanAfford(data.baseCost))
             return;
 
-        _newTroopData    = data;
-        _mode            = DragMode.NewTroop;
-        _activationFrame = Time.frameCount;
+        _newTroopData              = data;
+        _mode                      = DragMode.NewTroop;
+        _activationFrame           = Time.frameCount;
+        _pendingPlacementRotation  = Quaternion.identity;
         SpawnGhost(data.portrait);
         ShowDragRange(data.range);
     }
 
     public void BeginMoveDrag(TroopInstance instance)
     {
-        _movingInstance  = instance;
-        _mode            = DragMode.MoveTroop;
-        _activationFrame = Time.frameCount;
-        TroopManager.Instance.Unregister(instance); // exclude from distance checks while moving
+        _movingInstance            = instance;
+        _mode                      = DragMode.MoveTroop;
+        _activationFrame           = Time.frameCount;
+        _pendingPlacementRotation  = Quaternion.identity;
+        TroopManager.Instance.Unregister(instance);
         instance.gameObject.SetActive(false);
         SpawnGhost(instance.Data.portrait);
         ShowDragRange(instance.CurrentRange);
@@ -90,21 +100,38 @@ public class TroopDragController : MonoBehaviour
     {
         if (_mode == DragMode.None || _ghost == null) return;
 
-        // Map mouse position to panel coordinates (handles Scale With Screen Size)
         var root = _uiDoc.rootVisualElement;
         float px = (Input.mousePosition.x / Screen.width)                    * root.resolvedStyle.width;
         float py = ((Screen.height - Input.mousePosition.y) / Screen.height) * root.resolvedStyle.height;
         _ghost.style.left = px - 36f;
         _ghost.style.top  = py - 36f;
 
-        // Check validity and update ghost colour
-        var worldPos = ScreenToWorld(Input.mousePosition);
-        bool valid   = IsPlacementValid(worldPos);
+        var  worldPos = ScreenToWorld(Input.mousePosition);
+        bool valid    = IsPlacementValid(worldPos);
         _ghost.EnableInClassList("drag-ghost--invalid", !valid);
 
         // Keep the range preview centred on the cursor
         if (dragRangeIndicator != null)
+        {
             dragRangeIndicator.transform.position = worldPos;
+
+            // PathOnly: rotate the indicator so its long side is ⊥ to the path,
+            // and cache that rotation for application on drop.
+            if (GetCurrentPlacementType() == PlacementType.PathOnly
+                && WaypointManager.Instance != null)
+            {
+                Vector2 pathDir = WaypointManager.Instance.GetPathDirectionAt(worldPos);
+                // -90° so the troop's local-Y points along the path direction
+                float angle = Mathf.Atan2(pathDir.y, pathDir.x) * Mathf.Rad2Deg - 90f;
+                _pendingPlacementRotation         = Quaternion.Euler(0f, 0f, angle);
+                dragRangeIndicator.transform.rotation = _pendingPlacementRotation;
+            }
+            else
+            {
+                _pendingPlacementRotation         = Quaternion.identity;
+                dragRangeIndicator.transform.rotation = Quaternion.identity;
+            }
+        }
 
         // NewTroop: release to place
         if (_mode == DragMode.NewTroop && Input.GetMouseButtonUp(0))
@@ -112,12 +139,14 @@ public class TroopDragController : MonoBehaviour
             if (valid)
             {
                 var data = _newTroopData;
+                var rot  = _pendingPlacementRotation;
                 CancelDrag();
-                TroopManager.Instance.PlaceTroop(data, worldPos);
+                var inst = TroopManager.Instance.PlaceTroop(data, worldPos);
+                if (inst != null) inst.transform.rotation = rot;
             }
             else
             {
-                CancelDrag(); // just cancel — don't place
+                CancelDrag();
             }
         }
         // MoveTroop: click to place (skip activation frame)
@@ -128,10 +157,12 @@ public class TroopDragController : MonoBehaviour
             if (valid)
             {
                 var instance = _movingInstance;
+                var rot      = _pendingPlacementRotation;
                 CancelDrag();
                 instance.gameObject.SetActive(true);
                 instance.transform.position = worldPos;
-                TroopManager.Instance.Register(instance); // re-register at new position
+                instance.transform.rotation = rot;
+                TroopManager.Instance.Register(instance);
             }
             // Invalid position: ghost stays up so the player can try again
         }
@@ -143,30 +174,52 @@ public class TroopDragController : MonoBehaviour
 
     bool IsPlacementValid(Vector3 worldPos)
     {
-        var pos2D = new Vector2(worldPos.x, worldPos.y);
+        var  pos2D        = new Vector2(worldPos.x, worldPos.y);
         bool placingPower = GetCurrentTroopData()?.category == TroopCategory.Power;
 
-        // Never allow placement on the enemy path
+        // ── PathOnly troops (e.g. Anchovies) ──────────────────
+        // Must be ON the enemy path; terrain and platform checks are skipped.
+        if (GetCurrentPlacementType() == PlacementType.PathOnly)
+        {
+            if (!Physics2D.OverlapCircle(pos2D, zoneCheckRadius, enemyPathMask))
+                return false; // center not on path
+
+            // The short sides are the two ends of the rectangle in the perpendicular-to-path
+            // direction (±halfLong along local X). They must lie OUTSIDE the path to confirm
+            // the rectangle spans the full path width with the troop centred on it.
+            var data = GetCurrentTroopData();
+            if (data != null && data.useRectangularRange)
+            {
+                float   halfLong   = data.range;
+                Vector2 localRight = _pendingPlacementRotation * Vector3.right;
+                if (Physics2D.OverlapCircle(pos2D + localRight *  halfLong, zoneCheckRadius, enemyPathMask))
+                    return false;
+                if (Physics2D.OverlapCircle(pos2D + localRight * -halfLong, zoneCheckRadius, enemyPathMask))
+                    return false;
+            }
+
+            // Still prevent stacking two troops on the exact same spot
+            if (overlapRadius > 0 && IsTroopOverlapping(worldPos))
+                return false;
+
+            return true;
+        }
+
+        // ── All other troops: never on the enemy path ──────────
         if (Physics2D.OverlapCircle(pos2D, zoneCheckRadius, enemyPathMask)) return false;
 
-        // Check if a land platform (e.g. Lily Pad) is present — reads PlacedPowers only,
-        // so it is never blocked by the troop overlap check.
         bool onLilyPad = HasLandPlatformAt(pos2D);
-
-        // If standing on a land platform, treat as land regardless of the water zone beneath
-        bool onWater = !onLilyPad && Physics2D.OverlapCircle(pos2D, zoneCheckRadius, waterMask);
+        bool onWater   = !onLilyPad && Physics2D.OverlapCircle(pos2D, zoneCheckRadius, waterMask);
 
         bool terrainValid = GetCurrentPlacementType() switch
         {
-            PlacementType.LandOnly     => !onWater,   // land or lily pad = valid
-            PlacementType.WaterOnly    =>  onWater,   // open water only — not on a lily pad
+            PlacementType.LandOnly     => !onWater,
+            PlacementType.WaterOnly    =>  onWater,
             PlacementType.LandAndWater => true,
             _                          => true,
         };
         if (!terrainValid) return false;
 
-        // Powers overlap-check against other powers only (no stacking lily pads).
-        // Troops overlap-check against other troops only (powers are invisible to this check).
         if (overlapRadius > 0)
         {
             if (placingPower  && IsPowerOverlapping(worldPos))  return false;
@@ -181,7 +234,6 @@ public class TroopDragController : MonoBehaviour
 
     bool HasLandPlatformAt(Vector2 pos)
     {
-        // Reads PlacedPowers — lily pads are never in PlacedTroops, so this is clean.
         foreach (var power in TroopManager.Instance.PlacedPowers)
         {
             if (!power.Data.isLandPlatform) continue;
@@ -247,7 +299,7 @@ public class TroopDragController : MonoBehaviour
         if (_movingInstance != null)
         {
             _movingInstance.gameObject.SetActive(true);
-            TroopManager.Instance.Register(_movingInstance); // restore if move was cancelled
+            TroopManager.Instance.Register(_movingInstance);
             _movingInstance = null;
         }
 
@@ -260,10 +312,16 @@ public class TroopDragController : MonoBehaviour
         if (dragRangeIndicator != null) dragRangeIndicator.SetVisible(false);
     }
 
-    void ShowDragRange(float radius)
+    void ShowDragRange(float range)
     {
         if (dragRangeIndicator == null) return;
-        dragRangeIndicator.SetRadius(radius);
+
+        var data = GetCurrentTroopData();
+        if (data != null && data.useRectangularRange)
+            dragRangeIndicator.SetRect(range, data.rangeRectWidth / 2f);
+        else
+            dragRangeIndicator.SetRadius(range);
+
         dragRangeIndicator.SetVisible(true);
     }
 

@@ -25,8 +25,17 @@ public class TroopDataEditor : Editor
 
         // ── Placement ────────────────────────────────────────
         EditorGUILayout.LabelField("Placement", EditorStyles.boldLabel);
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("placementType"));
+        var placementTypeProp = serializedObject.FindProperty("placementType");
+        EditorGUILayout.PropertyField(placementTypeProp);
         EditorGUILayout.PropertyField(serializedObject.FindProperty("isLandPlatform"));
+
+        if (placementTypeProp.enumValueIndex == (int)PlacementType.PathOnly)
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Rectangular Range", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("useRectangularRange"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("rangeRectWidth"));
+        }
 
         EditorGUILayout.Space();
 
