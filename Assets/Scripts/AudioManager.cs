@@ -29,6 +29,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip sfxEnemyHit;
     public AudioClip sfxPlayerHpLoss;  // optional — leave empty until you have the clip
     public AudioClip sfxWaveStart;     // optional — leave empty until you have the clip
+    public AudioClip sfxEvolve;        // optional — leave empty until you have the clip
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 

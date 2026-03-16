@@ -22,7 +22,9 @@
       "Bash(xargs head:*)",
       "Bash(xargs cat:*)",
       "Bash(find c:UserszonesDesktopProjectsClick-n-Claw-gameAssets -type f -name *.wav -o -name *.mp3 -o -name *.ogg)",
-      "Bash(find c:UserszonesDesktopProjectsClick-n-Claw-gameAssets -name *.uxml)"
+      "Bash(find c:UserszonesDesktopProjectsClick-n-Claw-gameAssets -name *.uxml)",
+      "Bash(find c:UserszonesDesktopProjectsClick-n-Claw-game -type d -name *audio* -o -type d -name *assets* -o -type d -name *sounds*)",
+      "Bash(find c:UserszonesDesktopProjectsClick-n-Claw-game -maxdepth 3 -type f \\\\\\(-name *.cs -o -name *.json \\\\\\))"
     ]
   }
 }

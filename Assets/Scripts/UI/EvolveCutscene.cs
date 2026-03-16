@@ -136,6 +136,7 @@ public class EvolveCutscene : MonoBehaviour
         yield return FadePanel(0f, 1f, FadeInDuration);
 
         // 2 ── Zoom in (EaseOutBack = slight overshoot for a "charging up" feel)
+        AudioManager.Instance?.PlaySFX(AudioManager.Instance.sfxEvolve);
         float t = 0f;
         while (t < ZoomInDuration)
         {
