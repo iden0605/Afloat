@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: MetalScrapsData
   m_EditorClassIdentifier: 
   enemyName: Metal Scraps
-  description: 
+  description: "Dense industrial scrap. Its thick shielding absorbs laser and projectile
+    impacts entirely \u2014 only physical force can dent it."
   portrait: {fileID: 21300000, guid: 4c7c6b0e5635d4735a69fa5fa3bbf45d, type: 3}
   prefab: {fileID: 1038269491366093797, guid: 360a802a8ec804a9785f81d17cdd5f6f, type: 3}
-  baseHealth: 250
+  baseHealth: 600
   speed: 0.6
   goldDrop: 30
   effectType: 2

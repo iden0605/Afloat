@@ -85,6 +85,16 @@ public class EnemyStatusEffects : MonoBehaviour
         vis?.ApplyStun(duration);
     }
 
+    /// <summary>Applies or refreshes a daze (reverse movement) effect.</summary>
+    public static void ApplyDaze(GameObject target, float duration)
+    {
+        var movement = target.GetComponent<EnemyMovement>();
+        movement?.Daze(duration);
+
+        var vis = EnsureVisuals(target);
+        vis?.ApplyDaze(duration);
+    }
+
     // ── Update ────────────────────────────────────────────────────────────────
 
     void Update()

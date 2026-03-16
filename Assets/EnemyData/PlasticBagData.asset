@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: PlasticBagData
   m_EditorClassIdentifier: 
   enemyName: Plastic Bag
-  description: 
+  description: "A flimsy bag drifting on the current. Slow and paper-thin \u2014
+    an introductory foe with no tricks."
   portrait: {fileID: 21300000, guid: 938510b5cac27485c9037336d2d6d9d3, type: 3}
   prefab: {fileID: 1946824381765956117, guid: 340e4bce2b50641ca9d2af43c487c05a, type: 3}
   baseHealth: 20
-  speed: 1.0
+  speed: 0.7
   goldDrop: 5
   effectType: 0
   effectValue: 0

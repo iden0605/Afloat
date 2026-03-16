@@ -3,18 +3,14 @@ using UnityEngine;
 /// <summary>
 /// Jump attack for the Praying Mantis troop.
 ///
-/// Sequence per attack:
-///   1. JumpOut   — Mantis leaps toward the tracked enemy along a quadratic arc
-///                  (scales up at the apex — cartoon "in-air" feel). Idle anim frozen.
-///                  Soft-tracks the enemy position each frame so the landing stays accurate.
-///   2. Strike    — Plays attack animation for a short hold near the enemy.
-///                  Damage is applied immediately on landing.
-///                  ConditionalAttackBuff: damage × 3 if multiple enemies are in range.
-///   3. JumpBack  — Arcs back to the original resting position.
-///                  Rotation is overridden in LateUpdate to face home during this phase.
-///   4. Recovering — Brief land-settle pause; idle resumes; attack cooldown starts.
+/// Normal sequence (1 enemy in range):
+///   JumpOut → Strike → JumpBack → Recovering
 ///
-/// The mantis cannot jump again until it has fully returned home (Phase.Idle).
+/// Double-leap sequence (2+ enemies in range when attack begins):
+///   JumpOut → Strike → JumpOut2 → Strike2 → JumpBack → Recovering
+///   The mantis leaps to a second enemy before returning home.
+///   Both leaps are clamped to the troop's attack range so the mantis
+///   never drifts outside its placement area.
 /// </summary>
 [RequireComponent(typeof(TroopBehavior), typeof(TroopInstance))]
 public class MantisJumpAttack : MonoBehaviour
@@ -37,7 +33,7 @@ public class MantisJumpAttack : MonoBehaviour
 
     // ── Phase state machine ──────────────────────────────────────────────────
 
-    private enum Phase { Idle, JumpOut, Strike, JumpBack, Recovering }
+    private enum Phase { Idle, JumpOut, Strike, JumpOut2, Strike2, JumpBack, Recovering }
 
     private TroopBehavior _behavior;
     private TroopInstance _instance;
@@ -53,12 +49,17 @@ public class MantisJumpAttack : MonoBehaviour
     /// <summary>Mantis resting position in world space. Set once from transform on Awake.</summary>
     private Vector3 _homePos;
 
-    // Jump-out arc
-    private Vector3 _jumpOutStart;   // position when JumpOut began
-    private Vector3 _jumpTarget;     // enemy position, soft-updated each frame during JumpOut
+    // Jump-out arc (first leap)
+    private Vector3       _jumpOutStart;
+    private Vector3       _jumpTarget;     // soft-tracked toward first enemy
+
+    // Jump-out arc (second leap)
+    private Vector3       _jumpOut2Start;
+    private Vector3       _jumpTarget2;    // soft-tracked toward second enemy
+    private EnemyMovement _secondTarget;   // second enemy — found at BeginJumpOut
 
     // Jump-back arc
-    private Vector3 _returnStart;    // where the mantis landed near the enemy
+    private Vector3 _returnStart;          // where the mantis was when JumpBack began
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -71,6 +72,9 @@ public class MantisJumpAttack : MonoBehaviour
         _homePos   = transform.position;
         _squash    = GetComponent<SquashStretch>();
         _trail     = GetComponent<AttackTrail>();
+
+        if (GetComponent<MantisTroopAura>() == null)
+            gameObject.AddComponent<MantisTroopAura>();
     }
 
     void OnDisable()
@@ -94,14 +98,16 @@ public class MantisJumpAttack : MonoBehaviour
 
             case Phase.JumpOut:    TickJumpOut();    break;
             case Phase.Strike:     TickStrike();     break;
+            case Phase.JumpOut2:   TickJumpOut2();   break;
+            case Phase.Strike2:    TickStrike2();    break;
             case Phase.JumpBack:   TickJumpBack();   break;
             case Phase.Recovering: TickRecover();    break;
         }
     }
 
     /// <summary>
-    /// During JumpBack, override the rotation that TroopBehavior sets in Update()
-    /// so the mantis faces toward home instead of facing the (now behind-it) enemy.
+    /// During JumpBack phases, override the rotation that TroopBehavior sets in Update()
+    /// so the mantis faces toward home rather than the (now behind-it) enemy.
     /// </summary>
     void LateUpdate()
     {
@@ -111,29 +117,30 @@ public class MantisJumpAttack : MonoBehaviour
         if (dir.sqrMagnitude > 0.001f)
         {
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-            // -90° matches the convention used in TroopBehavior (sprite "up" = forward)
             transform.rotation = Quaternion.Euler(0f, 0f, angle - 90f);
         }
     }
 
-    // ── JumpOut ──────────────────────────────────────────────────────────────
+    // ── JumpOut (first leap) ─────────────────────────────────────────────────
 
     void BeginJumpOut()
     {
         _phase        = Phase.JumpOut;
         _phaseTimer   = 0f;
         _jumpOutStart = transform.position;
-        _jumpTarget   = _behavior.CurrentTarget.transform.position;
+        _jumpTarget   = ClampToRange(_behavior.CurrentTarget.transform.position);
 
-        if (_animator != null) _animator.speed = 0f; // freeze idle during air-time
-        _trail?.StartTrail(); // leave a motion trail during the leap
+        // Look for a second enemy now so we know whether to double-leap
+        _secondTarget = FindSecondTarget(_behavior.CurrentTarget);
+
+        if (_animator != null) _animator.speed = 0f;
+        _trail?.StartTrail();
     }
 
     void TickJumpOut()
     {
-        // Soft-track: update landing point every frame so the mantis adjusts to a moving enemy
         if (_behavior.CurrentTarget != null)
-            _jumpTarget = _behavior.CurrentTarget.transform.position;
+            _jumpTarget = ClampToRange(_behavior.CurrentTarget.transform.position);
 
         _phaseTimer += Time.deltaTime;
         float t = Mathf.Clamp01(_phaseTimer / jumpOutDuration);
@@ -149,28 +156,244 @@ public class MantisJumpAttack : MonoBehaviour
         }
     }
 
-    // ── Strike ───────────────────────────────────────────────────────────────
+    // ── Strike (first hit) ───────────────────────────────────────────────────
 
     void BeginStrike()
     {
-        _phase        = Phase.Strike;
-        _phaseTimer   = 0f;
-        _returnStart  = transform.position; // record landing spot for the return arc
+        _phase       = Phase.Strike;
+        _phaseTimer  = 0f;
+        _returnStart = transform.position;
 
-        // Play the attack animation from the beginning
         if (_animator != null)
         {
             _animator.speed = 1f;
             _animator.Play("PrayingMantisAttack", 0, 0f);
         }
 
-        _trail?.StopTrail();           // stop trail on land
-        _squash?.PunchLand();          // wide squash on landing impact
-
+        _trail?.StopTrail();
+        _squash?.PunchLand();
         SpawnLandingDust(transform.position);
+        RegisterHit(_behavior.CurrentTarget);
+    }
 
-        // Register damage immediately on landing
-        RegisterHit();
+    void TickStrike()
+    {
+        if (_behavior.CurrentTarget != null)
+        {
+            Vector3 toward = _behavior.CurrentTarget.transform.position - transform.position;
+            if (toward.magnitude > 0.2f)
+                transform.position += toward * (10f * Time.deltaTime);
+        }
+
+        _phaseTimer += Time.deltaTime;
+        if (_phaseTimer >= strikeHoldDuration)
+        {
+            _returnStart = transform.position;
+
+            // Double-leap: only if the second target is still alive and in range
+            if (_secondTarget != null && IsTargetValid(_secondTarget))
+                BeginJumpOut2();
+            else
+                BeginJumpBack();
+        }
+    }
+
+    // ── JumpOut2 (second leap) ────────────────────────────────────────────────
+
+    void BeginJumpOut2()
+    {
+        _phase         = Phase.JumpOut2;
+        _phaseTimer    = 0f;
+        _jumpOut2Start = transform.position;
+        _jumpTarget2   = ClampToRange(_secondTarget.transform.position);
+
+        if (_animator != null) _animator.speed = 0f;
+        _trail?.StartTrail();
+    }
+
+    void TickJumpOut2()
+    {
+        if (_secondTarget != null)
+            _jumpTarget2 = ClampToRange(_secondTarget.transform.position);
+
+        _phaseTimer += Time.deltaTime;
+        float t = Mathf.Clamp01(_phaseTimer / jumpOutDuration);
+
+        transform.position   = ArcPosition(_jumpOut2Start, _jumpTarget2, arcHeight * 0.85f, EaseInOutQuad(t));
+        transform.localScale = ArcScale(t);
+
+        if (t >= 1f)
+        {
+            transform.position   = _jumpTarget2;
+            transform.localScale = _baseScale;
+            BeginStrike2();
+        }
+    }
+
+    // ── Strike2 (second hit) ─────────────────────────────────────────────────
+
+    void BeginStrike2()
+    {
+        _phase      = Phase.Strike2;
+        _phaseTimer = 0f;
+        _returnStart = transform.position;
+
+        if (_animator != null)
+        {
+            _animator.speed = 1f;
+            _animator.Play("PrayingMantisAttack", 0, 0f);
+        }
+
+        _trail?.StopTrail();
+        _squash?.PunchLand();
+        SpawnLandingDust(transform.position);
+        RegisterHit(_secondTarget);
+    }
+
+    void TickStrike2()
+    {
+        if (_secondTarget != null)
+        {
+            Vector3 toward = _secondTarget.transform.position - transform.position;
+            if (toward.magnitude > 0.2f)
+                transform.position += toward * (10f * Time.deltaTime);
+        }
+
+        _phaseTimer += Time.deltaTime;
+        if (_phaseTimer >= strikeHoldDuration)
+        {
+            _returnStart  = transform.position;
+            _secondTarget = null;
+            BeginJumpBack();
+        }
+    }
+
+    // ── JumpBack ─────────────────────────────────────────────────────────────
+
+    void BeginJumpBack()
+    {
+        _phase      = Phase.JumpBack;
+        _phaseTimer = 0f;
+
+        if (_animator != null) _animator.speed = 0f;
+    }
+
+    void TickJumpBack()
+    {
+        _phaseTimer += Time.deltaTime;
+        float t = Mathf.Clamp01(_phaseTimer / jumpBackDuration);
+
+        transform.position   = ArcPosition(_returnStart, _homePos, arcHeight * 0.7f, EaseInOutQuad(t));
+        transform.localScale = ArcScale(t);
+
+        if (t >= 1f)
+        {
+            transform.position   = _homePos;
+            transform.localScale = _baseScale;
+            BeginRecover();
+        }
+    }
+
+    // ── Recovering ───────────────────────────────────────────────────────────
+
+    void BeginRecover()
+    {
+        _phase      = Phase.Recovering;
+        _phaseTimer = 0f;
+
+        if (_animator != null)
+        {
+            _animator.speed = 1f;
+            _animator.Play("PrayingMantisIdle", 0, 0f);
+        }
+    }
+
+    void TickRecover()
+    {
+        _phaseTimer += Time.deltaTime;
+        if (_phaseTimer >= recoverDuration)
+            EndAttack();
+    }
+
+    void EndAttack()
+    {
+        _phase    = Phase.Idle;
+        _cooldown = _instance.GetEffectiveAttackInterval();
+    }
+
+    // ── Hit registration ─────────────────────────────────────────────────────
+
+    void RegisterHit(EnemyMovement target)
+    {
+        MantisSlashEffect.Spawn(transform.position, transform.up);
+
+        if (target == null) return;
+
+        _instance.DealDamage(target,
+            _instance.Data?.attackType ?? AttackType.Melee, transform.position);
+    }
+
+    // ── Second-target search ─────────────────────────────────────────────────
+
+    /// <summary>
+    /// Finds an enemy in range that is NOT <paramref name="firstTarget"/>.
+    /// Returns null if no second valid target exists.
+    /// Only called when EnemiesInRange >= 2 is already confirmed.
+    /// </summary>
+    EnemyMovement FindSecondTarget(EnemyMovement firstTarget)
+    {
+        if (_behavior.EnemiesInRange < 2) return null;
+
+        var hits = Physics2D.OverlapCircleAll(_homePos, _instance.CurrentRange,
+            LayerMask.GetMask("Enemy"));
+
+        EnemyMovement best   = null;
+        int           bestWP = -1;
+
+        foreach (var col in hits)
+        {
+            if (!col.TryGetComponent<EnemyMovement>(out var em)) continue;
+            if (em == firstTarget) continue;
+            if (!IsTargetValid(em)) continue;
+            if (em.currentWaypointIndex > bestWP)
+            {
+                bestWP = em.currentWaypointIndex;
+                best   = em;
+            }
+        }
+        return best;
+    }
+
+    /// <summary>True when an enemy target is non-null, alive, and within home range.</summary>
+    bool IsTargetValid(EnemyMovement em)
+    {
+        if (em == null) return false;
+        if (em.TryGetComponent<EnemyInstance>(out var inst) && inst.IsDead) return false;
+        return Vector2.Distance(_homePos, em.transform.position) <= _instance.CurrentRange + 0.1f;
+    }
+
+    /// <summary>
+    /// Clamps a world position to within <see cref="TroopInstance.CurrentRange"/> of home,
+    /// so the mantis never leaps outside its placement area.
+    /// </summary>
+    Vector3 ClampToRange(Vector3 worldPos)
+    {
+        Vector2 offset = (Vector2)(worldPos - _homePos);
+        if (offset.magnitude > _instance.CurrentRange)
+            worldPos = _homePos + (Vector3)(offset.normalized * _instance.CurrentRange);
+        return worldPos;
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    void CancelAttack()
+    {
+        _secondTarget        = null;
+        transform.position   = _homePos;
+        transform.localScale = _baseScale;
+        if (_animator != null) _animator.speed = 1f;
+        _phase    = Phase.Idle;
+        _cooldown = 0f;
     }
 
     // ── Landing dust VFX ─────────────────────────────────────────────────────
@@ -187,7 +410,7 @@ public class MantisJumpAttack : MonoBehaviour
         main.startSpeed      = new ParticleSystem.MinMaxCurve(0.8f, 2.5f);
         main.startSize       = new ParticleSystem.MinMaxCurve(0.03f, 0.10f);
         main.startColor      = new ParticleSystem.MinMaxGradient(
-                                   new Color(0.70f, 0.88f, 0.55f),   // lime-green puff
+                                   new Color(0.70f, 0.88f, 0.55f),
                                    new Color(0.90f, 1.00f, 0.75f));
         main.gravityModifier = 0.2f;
         main.simulationSpace = ParticleSystemSimulationSpace.World;
@@ -223,107 +446,8 @@ public class MantisJumpAttack : MonoBehaviour
         ps.Play();
     }
 
-    void TickStrike()
-    {
-        // Gently follow the enemy so the mantis doesn't drift too far if it's fast
-        if (_behavior.CurrentTarget != null)
-        {
-            Vector3 toward = _behavior.CurrentTarget.transform.position - transform.position;
-            if (toward.magnitude > 0.2f)
-                transform.position += toward * (10f * Time.deltaTime);
-        }
+    // ── Arc math ─────────────────────────────────────────────────────────────
 
-        _phaseTimer += Time.deltaTime;
-
-        if (_phaseTimer >= strikeHoldDuration)
-        {
-            _returnStart = transform.position; // update for accurate return arc
-            BeginJumpBack();
-        }
-    }
-
-    void RegisterHit()
-    {
-        // Spawn slash effect at the landing position, oriented in the attack direction.
-        // transform.up points toward the enemy because TroopBehavior uses a -90° offset
-        // when it sets rotation (sprite "up" = forward).
-        MantisSlashEffect.Spawn(transform.position, transform.up);
-
-        if (_behavior.CurrentTarget == null) return;
-
-        _instance.DealDamage(_behavior.CurrentTarget,
-            _instance.Data?.attackType ?? AttackType.Melee, transform.position);
-    }
-
-    // ── JumpBack ─────────────────────────────────────────────────────────────
-
-    void BeginJumpBack()
-    {
-        _phase      = Phase.JumpBack;
-        _phaseTimer = 0f;
-
-        if (_animator != null) _animator.speed = 0f; // freeze during return flight
-    }
-
-    void TickJumpBack()
-    {
-        _phaseTimer += Time.deltaTime;
-        float t = Mathf.Clamp01(_phaseTimer / jumpBackDuration);
-
-        // Return arc is slightly lower than the outbound arc (0.7× height)
-        transform.position   = ArcPosition(_returnStart, _homePos, arcHeight * 0.7f, EaseInOutQuad(t));
-        transform.localScale = ArcScale(t);
-
-        if (t >= 1f)
-        {
-            transform.position   = _homePos;
-            transform.localScale = _baseScale;
-            BeginRecover();
-        }
-    }
-
-    // ── Recovering ───────────────────────────────────────────────────────────
-
-    void BeginRecover()
-    {
-        _phase      = Phase.Recovering;
-        _phaseTimer = 0f;
-
-        if (_animator != null)
-        {
-            _animator.speed = 1f;
-            _animator.Play("PrayingMantisIdle", 0, 0f); // return to idle anim on landing
-        }
-    }
-
-    void TickRecover()
-    {
-        _phaseTimer += Time.deltaTime;
-        if (_phaseTimer >= recoverDuration)
-            EndAttack();
-    }
-
-    void EndAttack()
-    {
-        _phase    = Phase.Idle;
-        _cooldown = _instance.GetEffectiveAttackInterval();
-    }
-
-    // ── Helpers ──────────────────────────────────────────────────────────────
-
-    void CancelAttack()
-    {
-        transform.position   = _homePos;
-        transform.localScale = _baseScale;
-        if (_animator != null) _animator.speed = 1f;
-        _phase    = Phase.Idle;
-        _cooldown = 0f;
-    }
-
-    /// <summary>
-    /// Quadratic bezier arc that always bulges upward in world space.
-    /// The control point sits above the midpoint of the straight path by <paramref name="height"/> units.
-    /// </summary>
     static Vector3 ArcPosition(Vector3 from, Vector3 to, float height, float t)
     {
         Vector3 mid = (from + to) * 0.5f + Vector3.up * height;
@@ -332,20 +456,15 @@ public class MantisJumpAttack : MonoBehaviour
         return Vector3.Lerp(a, b, t);
     }
 
-    /// <summary>
-    /// Uniform scale that peaks at <see cref="peakScaleBoost"/> × base at t = 0.5,
-    /// using a parabola (4t(1−t)) so it's normal at take-off and landing.
-    /// </summary>
     Vector3 ArcScale(float t)
     {
-        float parabola  = 4f * t * (1f - t);          // 0→1→0 across [0,1]
+        float parabola  = 4f * t * (1f - t);
         float scaleMult = 1f + (peakScaleBoost - 1f) * parabola;
         return _baseScale * scaleMult;
     }
 
     // ── Easing ───────────────────────────────────────────────────────────────
 
-    /// <summary>Smooth start and end — natural parabolic arc feel.</summary>
     static float EaseInOutQuad(float t)
         => t < 0.5f ? 2f * t * t : 1f - Mathf.Pow(-2f * t + 2f, 2f) / 2f;
 }

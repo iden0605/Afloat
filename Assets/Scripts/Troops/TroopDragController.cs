@@ -34,6 +34,10 @@ public class TroopDragController : MonoBehaviour
     [Tooltip("Optional: assign a scene RangeIndicator — auto-created at runtime if left empty")]
     [SerializeField] private RangeIndicator dragRangeIndicator;
 
+    [Header("Drag Behaviour")]
+    [Tooltip("Pixels the mouse must move from pointer-down before the sidebar auto-closes")]
+    [SerializeField] private float dragThreshold = 8f;
+
     private enum DragMode { None, NewTroop, MoveTroop }
 
     private UIDocument    _uiDoc;
@@ -45,6 +49,15 @@ public class TroopDragController : MonoBehaviour
 
     // Rotation to apply to the placed troop (updated each frame for PathOnly troops)
     private Quaternion _pendingPlacementRotation = Quaternion.identity;
+
+    // Sidebar auto-close on drag
+    private Vector2 _dragStartScreenPos;
+    private bool    _sidebarClosedThisDrag;
+
+    // Cancel bin
+    private VisualElement _cancelBinWrapper;
+    private VisualElement _cancelBin;
+    private bool          _overCancelBin;
 
     void Awake()
     {
@@ -59,6 +72,15 @@ public class TroopDragController : MonoBehaviour
             go.AddComponent<MeshRenderer>();
             dragRangeIndicator = go.AddComponent<RangeIndicator>();
         }
+
+        // Keep the cursor inside the game window at all times
+        UnityEngine.Cursor.lockState = CursorLockMode.Confined;
+    }
+
+    void Start()
+    {
+        // Build cancel bin after the UIDocument root is ready
+        BuildCancelBin();
     }
 
     void OnDisable() => CancelDrag();
@@ -76,8 +98,11 @@ public class TroopDragController : MonoBehaviour
         _mode                      = DragMode.NewTroop;
         _activationFrame           = Time.frameCount;
         _pendingPlacementRotation  = Quaternion.identity;
+        _dragStartScreenPos        = Input.mousePosition;
+        _sidebarClosedThisDrag     = false;
         SpawnGhost(data.portrait);
         ShowDragRange(data.range);
+        ShowCancelBin(true);
     }
 
     public void BeginMoveDrag(TroopInstance instance)
@@ -86,10 +111,12 @@ public class TroopDragController : MonoBehaviour
         _mode                      = DragMode.MoveTroop;
         _activationFrame           = Time.frameCount;
         _pendingPlacementRotation  = Quaternion.identity;
+        _sidebarClosedThisDrag     = true; // no sidebar to close for move drags
         TroopManager.Instance.Unregister(instance);
         instance.gameObject.SetActive(false);
         SpawnGhost(instance.Data.portrait);
         ShowDragRange(instance.CurrentRange);
+        ShowCancelBin(true);
     }
 
     // -------------------------------------------------------
@@ -106,9 +133,23 @@ public class TroopDragController : MonoBehaviour
         _ghost.style.left = px - 36f;
         _ghost.style.top  = py - 36f;
 
+        // Close sidebar once the mouse has dragged past the threshold
+        if (!_sidebarClosedThisDrag &&
+            Vector2.Distance(Input.mousePosition, _dragStartScreenPos) > dragThreshold)
+        {
+            _sidebarClosedThisDrag = true;
+            TroopSidebarController.Instance?.CloseSidebar();
+        }
+
+        // Cancel bin hover highlight
+        _overCancelBin = _cancelBin != null &&
+                         _cancelBin.worldBound.Contains(new Vector2(px, py));
+        _cancelBin?.EnableInClassList("drag-cancel-bin--hover", _overCancelBin);
+
         var  worldPos = ScreenToWorld(Input.mousePosition);
         bool valid    = IsPlacementValid(worldPos);
-        _ghost.EnableInClassList("drag-ghost--invalid", !valid);
+        // Ghost shows invalid style when placement is bad, but not when hovering the cancel bin
+        _ghost.EnableInClassList("drag-ghost--invalid", !valid && !_overCancelBin);
 
         // Keep the range preview centred on the cursor
         if (dragRangeIndicator != null)
@@ -136,17 +177,19 @@ public class TroopDragController : MonoBehaviour
         // NewTroop: release to place
         if (_mode == DragMode.NewTroop && Input.GetMouseButtonUp(0))
         {
-            if (valid)
+            if (_overCancelBin || !valid)
+            {
+                CancelDrag();
+                TroopSidebarController.Instance?.OpenSidebar();
+            }
+            else
             {
                 var data = _newTroopData;
                 var rot  = _pendingPlacementRotation;
                 CancelDrag();
                 var inst = TroopManager.Instance.PlaceTroop(data, worldPos);
                 if (inst != null) inst.transform.rotation = rot;
-            }
-            else
-            {
-                CancelDrag();
+                TroopSidebarController.Instance?.OpenSidebar();
             }
         }
         // MoveTroop: click to place (skip activation frame)
@@ -154,7 +197,11 @@ public class TroopDragController : MonoBehaviour
                  && Input.GetMouseButtonDown(0)
                  && Time.frameCount > _activationFrame)
         {
-            if (valid)
+            if (_overCancelBin)
+            {
+                CancelDrag(); // restore troop to original position
+            }
+            else if (valid)
             {
                 var instance = _movingInstance;
                 var rot      = _pendingPlacementRotation;
@@ -293,8 +340,10 @@ public class TroopDragController : MonoBehaviour
 
     void CancelDrag()
     {
-        _mode         = DragMode.None;
-        _newTroopData = null;
+        _mode                  = DragMode.None;
+        _newTroopData          = null;
+        _sidebarClosedThisDrag = false;
+        _overCancelBin         = false;
 
         if (_movingInstance != null)
         {
@@ -310,6 +359,43 @@ public class TroopDragController : MonoBehaviour
         }
 
         if (dragRangeIndicator != null) dragRangeIndicator.SetVisible(false);
+        ShowCancelBin(false);
+    }
+
+    void BuildCancelBin()
+    {
+        // Full-width invisible row anchored to the bottom — allows centering the bin with flex
+        _cancelBinWrapper = new VisualElement();
+        _cancelBinWrapper.style.position     = Position.Absolute;
+        _cancelBinWrapper.style.left         = 0;
+        _cancelBinWrapper.style.right        = 0;
+        _cancelBinWrapper.style.bottom       = 24;
+        _cancelBinWrapper.style.alignItems   = Align.Center;
+        _cancelBinWrapper.pickingMode        = PickingMode.Ignore;
+        _cancelBinWrapper.style.display      = DisplayStyle.None;
+
+        _cancelBin = new VisualElement();
+        _cancelBin.AddToClassList("drag-cancel-bin");
+        _cancelBin.pickingMode = PickingMode.Ignore;
+
+        var icon = new Label("\U0001f5d1"); // 🗑 wastebasket
+        icon.AddToClassList("drag-cancel-bin-icon");
+
+        var label = new Label("CANCEL");
+        label.AddToClassList("drag-cancel-bin-label");
+
+        _cancelBin.Add(icon);
+        _cancelBin.Add(label);
+        _cancelBinWrapper.Add(_cancelBin);
+        _uiDoc.rootVisualElement.Add(_cancelBinWrapper);
+    }
+
+    void ShowCancelBin(bool show)
+    {
+        if (_cancelBinWrapper != null)
+            _cancelBinWrapper.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
+        if (_cancelBin != null)
+            _cancelBin.RemoveFromClassList("drag-cancel-bin--hover");
     }
 
     void ShowDragRange(float range)

@@ -13,34 +13,106 @@ MonoBehaviour:
   m_Name: EagleData
   m_EditorClassIdentifier: 
   troopName: Eagle
-  description: 
+  description: Analyses far from battle, then dives on a target enemy, delivering
+    a devastating blow before returning to altitude. Must fully return before the
+    next attack cycle begins.
   portrait: {fileID: 21300000, guid: 968a9b7304f3048998390c1fbcba0189, type: 3}
   prefab: {fileID: 3531158701887146364, guid: 5a0f43b104a434ce18f7db74c8bbf526, type: 3}
   category: 0
-  placementType: 2
+  placementType: 0
   isLandPlatform: 0
   useRectangularRange: 0
   rangeRectWidth: 0.6
-  baseCost: 50
-  attack: 1
+  baseCost: 225
+  attack: 70
   attackSpeed: 1
-  range: 1.5
+  range: 10
   attackType: 1
   projectileType: 0
   splashRadius: 0.5
   baseEffect:
-    effectType: 0
-    goldMultiplier: 2
-    conditionalAttack: 3
-    conditionalSpeed: 1.2
-    allyBonus: 0.5
+    effectType: 9
+    goldMultiplier: 0
+    conditionalAttack: 0
+    conditionalSpeed: 0
+    allyBonus: 0
     dotDamage: 0
-    dotInterval: 0.5
+    dotInterval: 0
     dotDuration: 0
-    rampingDuration: 2
-    rampingMaxStacks: 3
-    freezeDuration: 2
-    freezeSlowFactor: 0.3
-    stunDuration: 1
-  upgrades: []
+    rampingDuration: 0
+    rampingMaxStacks: 4
+    freezeDuration: 0
+    freezeSlowFactor: 0
+    stunDuration: 0
+  upgrades:
+  - description: "Sharper instincts \u2014 every 3rd attack deals double damage."
+    cost: 100
+    attackDelta: 10
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects:
+    - effectType: 9
+      goldMultiplier: 0
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 3
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: "Relentless hunter \u2014 every 2nd attack deals double damage and dazes the target."
+    cost: 150
+    attackDelta: 15
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects:
+    - effectType: 9
+      goldMultiplier: 0
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 2
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+    - effectType: 14
+      goldMultiplier: 0
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 1
+  - description: "Apex predator \u2014 attacks faster and strikes with greater force."
+    cost: 200
+    attackDelta: 20
+    attackSpeedDelta: 0.2
+    rangeDelta: 0
+    effects:
+    - effectType: 9
+      goldMultiplier: 0
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 2
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
   evolutions: []

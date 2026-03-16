@@ -295,7 +295,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 14px 14px 16px;
+    padding: 10px 14px 10px 16px;
     border-bottom-width: 1px;
     border-bottom-color: rgba(80, 160, 70, 0.35);
 }
@@ -331,50 +331,65 @@
     overflow: hidden;
 }
 
-/* ── Portrait section (centered) ────────────────────────────── */
+/* ── Portrait section ────────────────────────────────────────── */
 .sel-portrait-section {
     align-items: center;
-    padding: 20px 14px 12px 14px;
+    padding: 10px 14px 8px 14px;
+}
+
+/* Row layout for troop panel (not applied to enemy panel) */
+.sel-portrait-section--troop {
+    flex-direction: row;
+    align-items: center;
 }
 
 .sel-portrait {
-    width: 88px;
-    height: 88px;
-    border-radius: 10px;
+    width: 62px;
+    height: 62px;
+    border-radius: 8px;
     background-color: rgba(18, 36, 16, 0.9);
     background-size: contain;
     background-position: center;
     border-width: 1px;
     border-color: rgba(70, 140, 60, 0.45);
-    margin-bottom: 10px;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+
+/* Identity column (name + placement) beside portrait */
+.sel-identity-col {
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
 }
 
 .sel-troop-name {
-    font-size: 16px;
+    font-size: 15px;
     color: rgb(200, 240, 185);
     -unity-font-style: bold;
-    -unity-text-align: middle-center;
-    margin-bottom: 4px;
+    -unity-text-align: middle-left;
+    margin-bottom: 3px;
+    white-space: normal;
 }
 
 .sel-placement-badge {
     font-size: 10px;
     color: rgba(145, 215, 120, 0.60);
-    -unity-text-align: middle-center;
+    -unity-text-align: middle-left;
 }
 
 /* ── Divider ─────────────────────────────────────────────────── */
 .sel-divider {
     height: 1px;
     background-color: rgba(80, 160, 70, 0.25);
-    margin: 6px 14px;
+    margin: 3px 14px;
 }
 
 /* ── Stats row ───────────────────────────────────────────────── */
 .sel-stats-row {
     flex-direction: row;
     justify-content: space-around;
-    padding: 8px 10px;
+    padding: 4px 10px;
 }
 
 .sel-stat-item {
@@ -413,16 +428,16 @@
 
 /* ── Description ─────────────────────────────────────────────── */
 .sel-description {
-    font-size: 12px;
-    color: rgba(200, 230, 190, 0.80);
+    font-size: 11px;
+    color: rgba(200, 230, 190, 0.65);
     -unity-font-style: italic;
     white-space: normal;
-    padding: 6px 16px;
+    padding: 3px 16px 2px 16px;
 }
 
 /* ── Special ability ─────────────────────────────────────────── */
 .sel-effect-row {
-    padding: 2px 16px 6px 16px;
+    padding: 2px 16px 2px 16px;
 }
 
 .sel-effect {
@@ -431,10 +446,41 @@
     white-space: normal;
 }
 
+/* ── Live buff status (War Frenzy / Rampage) ─────────────────── */
+.sel-live-buff-section {
+    padding: 2px 16px 3px 16px;
+}
+
+.sel-live-buff-label {
+    font-size: 10px;
+    -unity-font-style: bold;
+    color: rgb(255, 135, 60);
+    white-space: normal;
+    margin-bottom: 1px;
+}
+
+/* Focus Strike — cyan/teal when idle, bright white-cyan when focused */
+.sel-live-buff-label--focus {
+    color: rgb(80, 210, 220);
+}
+
+.sel-live-buff-label--focus-active {
+    color: rgb(180, 245, 255);
+}
+
+/* Colony / Swarm — muted green when no allies, bright green when active */
+.sel-live-buff-label--colony {
+    color: rgb(100, 200, 80);
+}
+
+.sel-live-buff-label--colony-active {
+    color: rgb(160, 240, 120);
+}
+
 /* ── Upgrade info ────────────────────────────────────────────── */
 .sel-upgrade-info {
     flex-direction: column;
-    padding: 6px 16px;
+    padding: 4px 16px;
 }
 
 .sel-tier-label {
@@ -454,7 +500,7 @@
 .sel-actions {
     border-top-width: 1px;
     border-top-color: rgba(80, 160, 70, 0.35);
-    padding: 10px 8px 16px 8px;
+    padding: 8px 8px 10px 8px;
 }
 
 /* ── Button row ──────────────────────────────────────────────── */
@@ -471,12 +517,12 @@
 }
 
 .sel-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    font-size: 22px;
+    width: 44px;
+    height: 44px;
+    border-radius: 7px;
+    font-size: 20px;
     padding: 0;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     -unity-text-align: middle-center;
 }
 
@@ -530,37 +576,38 @@
    ============================================================= */
 
 .sel-evolution-section {
-    padding: 8px 16px 12px 16px;
+    padding: 5px 16px 8px 16px;
 }
 
-/* Portrait + name row below the "EVOLUTION" badge */
+/* Portrait + name/boosts row */
 .sel-evo-identity-row {
     flex-direction: row;
     align-items: center;
-    margin-top: 6px;
-    margin-bottom: 6px;
+    margin-top: 4px;
+    margin-bottom: 3px;
 }
 
 /* Evolution portrait thumbnail */
 .sel-evo-portrait {
-    width: 52px;
-    height: 52px;
-    min-width: 52px;
-    border-radius: 8px;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    border-radius: 7px;
     background-color: rgba(80, 55, 10, 0.55);
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     border-width: 1px;
     border-color: rgba(220, 175, 60, 0.45);
-    margin-right: 10px;
+    margin-right: 8px;
+    flex-shrink: 0;
 }
 
-/* Header row: "EVOLUTION" label + evolution name side by side */
-.sel-evo-header-row {
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 5px;
+/* Name + boosts column beside portrait */
+.sel-evo-text-col {
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
 }
 
 .sel-evo-header {
@@ -570,39 +617,33 @@
     letter-spacing: 2px;
     background-color: rgba(80, 55, 10, 0.55);
     border-radius: 3px;
-    padding: 2px 6px;
-    margin-right: 8px;
+    padding: 1px 5px;
+    margin-bottom: 3px;
+    align-self: flex-start;
 }
 
 .sel-evo-name {
-    font-size: 14px;
+    font-size: 13px;
     color: rgb(240, 215, 130);
     -unity-font-style: bold;
-}
-
-/* Description of what the evolution is */
-.sel-evo-desc {
-    font-size: 11px;
-    color: rgba(210, 200, 160, 0.75);
-    -unity-font-style: italic;
+    margin-bottom: 1px;
     white-space: normal;
-    margin-bottom: 5px;
 }
 
-/* Stat boost summary  e.g.  ⚔ +1.0   ⚡ +0.5   ◎ +2.0 */
+/* Stat boost summary  e.g.  ATK +20 */
 .sel-evo-boosts {
-    font-size: 13px;
+    font-size: 11px;
     color: rgb(145, 215, 120);
     -unity-font-style: bold;
     -unity-text-align: middle-left;
-    margin-bottom: 6px;
 }
 
 /* Requirement label — three modifier classes */
 .sel-evo-req {
-    font-size: 11px;
+    font-size: 10px;
     white-space: normal;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    margin-top: 2px;
 }
 
 /* Not enough upgrades yet */
@@ -624,7 +665,7 @@
 
 /* Evolve button — base (locked) */
 .sel-evolve-btn {
-    height: 42px;
+    height: 36px;
     border-radius: 8px;
     font-size: 14px;
     -unity-font-style: bold;
@@ -944,8 +985,8 @@
 .skill-tags-row {
     flex-direction: row;
     flex-wrap: wrap;
-    padding: 6px 10px 2px 10px;
-    margin-bottom: 2px;
+    padding: 3px 10px 1px 10px;
+    margin-bottom: 1px;
 }
 
 /* Base pill */
@@ -965,6 +1006,7 @@
 .skill-tag--poison  { background-color: rgba(40,  135, 35, 0.88); }   /* poison / toxic    */
 .skill-tag--freeze  { background-color: rgba(30,  110, 190, 0.88); }  /* ice / slow        */
 .skill-tag--stun    { background-color: rgba(110, 35, 190, 0.88); }   /* stun / electric   */
+.skill-tag--daze    { background-color: rgba(160, 20, 220, 0.88); }   /* daze / violet     */
 .skill-tag--gold    { background-color: rgba(145, 100, 10, 0.88); }   /* gold / economy    */
 .skill-tag--power   { background-color: rgba(45,  85,  200, 0.88); }  /* atk buff / power  */
 .skill-tag--teal    { background-color: rgba(20,  135, 135, 0.88); }  /* spd / tactical    */
@@ -976,3 +1018,75 @@
 .skill-tag--dodge   { background-color: rgba(20,  140, 155, 0.88); }  /* evasion           */
 .skill-tag--speed   { background-color: rgba(195, 85,  20,  0.88); }  /* reactive speed    */
 .skill-tag--spawn   { background-color: rgba(170, 35,  35,  0.88); }  /* spawner / danger  */
+
+/* Preview tag — shown for effects locked behind the next upgrade / evolution */
+.skill-tag--preview {
+    opacity: 0.50;
+}
+
+/* Inline preview tag row inside upgrade-info and evo sections — strip excess padding */
+.sel-upgrade-preview-tags {
+    padding: 2px 0 0 0;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   DRAG CANCEL BIN — shown at bottom-centre while dragging a troop
+   ════════════════════════════════════════════════════════════════ */
+
+/* Level badge in the troop selection top bar */
+.sel-level-badge {
+    font-size: 9px;
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    color: rgb(200, 220, 170);
+    background-color: rgba(60, 80, 40, 0.75);
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: rgba(120, 175, 70, 0.55);
+    padding: 1px 6px;
+    -unity-text-align: middle-center;
+    flex-shrink: 0;
+    margin-left: auto;
+    margin-right: 6px;
+}
+
+.sel-level-badge--max {
+    color: rgb(255, 215, 100);
+    background-color: rgba(90, 65, 10, 0.80);
+    border-color: rgba(210, 160, 40, 0.65);
+}
+
+.drag-cancel-bin {
+    width: 68px;
+    height: 68px;
+    border-radius: 34px;
+    background-color: rgba(30, 20, 20, 0.88);
+    border-width: 2px;
+    border-color: rgba(160, 55, 45, 0.70);
+    align-items: center;
+    justify-content: center;
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out;
+}
+
+.drag-cancel-bin--hover {
+    background-color: rgba(175, 45, 35, 0.96);
+    border-color: rgba(255, 90, 75, 1.0);
+    scale: 1.15 1.15;
+}
+
+.drag-cancel-bin-icon {
+    font-size: 24px;
+    color: rgba(230, 210, 210, 0.90);
+    -unity-text-align: middle-center;
+    margin-bottom: 2px;
+}
+
+.drag-cancel-bin-label {
+    font-size: 7px;
+    color: rgba(210, 190, 190, 0.65);
+    -unity-font-style: bold;
+    letter-spacing: 1px;
+    -unity-text-align: middle-center;
+}

@@ -13,18 +13,20 @@ MonoBehaviour:
   m_Name: FrogData
   m_EditorClassIdentifier: 
   troopName: Frog
-  description: 
+  description: Fires a giant sticky tongue that snaps out and retracts, dragging
+    the enemy slightly backward. Long range for early-mid game makes it a reliable
+    anchor tower.
   portrait: {fileID: 21300000, guid: 19e157e3c8c014744b1389fd4306f880, type: 3}
   prefab: {fileID: 7215667400850713856, guid: bbccc00195ec241a9a8a7315c24217d2, type: 3}
   category: 0
-  placementType: 2
+  placementType: 0
   isLandPlatform: 0
   useRectangularRange: 0
   rangeRectWidth: 0.6
-  baseCost: 50
-  attack: 25
-  attackSpeed: 1.0
-  range: 3.0
+  baseCost: 300
+  attack: 70
+  attackSpeed: 0.9
+  range: 2.3
   attackType: 2
   projectileType: 0
   splashRadius: 0.5
@@ -43,89 +45,96 @@ MonoBehaviour:
     freezeSlowFactor: 0.3
     stunDuration: 1
   upgrades:
-  - description: ATK 37
+  - description: "Tongue thickens like a whip \u2014 every lick hits with bone-rattling
+      force."
     cost: 100
-    attackDelta: 12
+    attackDelta: 20
     attackSpeedDelta: 0
     rangeDelta: 0
     effects: []
-  - description: ATK 52 · RNG 3.5u
+  - description: "Extends its reach across the lily pads \u2014 few can outrun the
+      tongue. "
     cost: 150
-    attackDelta: 15
+    attackDelta: 23
     attackSpeedDelta: 0
     rangeDelta: 0.5
     effects: []
-  - description: ATK 75
+  - description: "Bulked and battle-ready \u2014 each strike sends shockwaves that
+      slows enemies."
     cost: 200
-    attackDelta: 23
-    attackSpeedDelta: 0
+    attackDelta: 29
+    attackSpeedDelta: 0.1
     rangeDelta: 0
     effects: []
-  - description: ATK 95 · Poison 18/1.5s
-    cost: 200
-    attackDelta: 25
+  - description: "The toxin grows more potent \u2014 the burning is far from gentle
+      now."
+    cost: 500
+    attackDelta: 33
     attackSpeedDelta: 0
     rangeDelta: 0
     effects:
     - effectType: 4
-          goldMultiplier: 2
-          conditionalAttack: 0
-          conditionalSpeed: 0
-          allyBonus: 0
-          dotDamage: 18
-          dotInterval: 1.5
-          dotDuration: 5
-          rampingDuration: 0
-          rampingMaxStacks: 0
-          freezeDuration: 0
-          freezeSlowFactor: 0
-          stunDuration: 0
-  - description: ATK 125 · Poison 7s
-    cost: 300
-    attackDelta: 30
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 18
+      dotInterval: 1.5
+      dotDuration: 5
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: "The venom is relentless \u2014 it eats away long after the strike."
+    cost: 520
+    attackDelta: 37
     attackSpeedDelta: 0
     rangeDelta: 0
     effects:
     - effectType: 4
-          goldMultiplier: 2
-          conditionalAttack: 0
-          conditionalSpeed: 0
-          allyBonus: 0
-          dotDamage: 18
-          dotInterval: 1.5
-          dotDuration: 7
-          rampingDuration: 0
-          rampingMaxStacks: 0
-          freezeDuration: 0
-          freezeSlowFactor: 0
-          stunDuration: 0
-  - description: ATK 175 · Poison 25/s
-    cost: 400
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 18
+      dotInterval: 1.5
+      dotDuration: 7
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: "A single touch is a death sentence \u2014 the pond's most feared
+      predator."
+    cost: 600
     attackDelta: 50
     attackSpeedDelta: 0
     rangeDelta: 0
     effects:
     - effectType: 4
-          goldMultiplier: 2
-          conditionalAttack: 0
-          conditionalSpeed: 0
-          allyBonus: 0
-          dotDamage: 25
-          dotInterval: 1.0
-          dotDuration: 7
-          rampingDuration: 0
-          rampingMaxStacks: 0
-          freezeDuration: 0
-          freezeSlowFactor: 0
-          stunDuration: 0
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 25
+      dotInterval: 1
+      dotDuration: 7
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
   evolutions:
   - evolutionName: Poison Frog
-    description: 
+    description: The tongue now delivers a toxic splash on impact, coating all nearby
+      enemies in poison. A transformed apex predator of the pond. (Requires Frog
+      Upgrade 2 to evolve.)
     portrait: {fileID: 21300000, guid: 60abb8bde733e4b349bc39f09abce725, type: 3}
     prefab: {fileID: 3929819066816662095, guid: c968edb8ed9954b8680327e10ee2e1d1, type: 3}
-    upgradesRequired: 2
-    evolutionCost: 100
-    attackBoost: 0
+    upgradesRequired: 3
+    evolutionCost: 350
+    attackBoost: 10
     attackSpeedBoost: 0
     rangeBoost: 0
     effects:
@@ -134,7 +143,9 @@ MonoBehaviour:
       conditionalAttack: 0
       conditionalSpeed: 0
       allyBonus: 0
+      dotDamage: 0
       dotInterval: 2
+      dotDuration: 6
       rampingDuration: 0
       rampingMaxStacks: 0
       freezeDuration: 0

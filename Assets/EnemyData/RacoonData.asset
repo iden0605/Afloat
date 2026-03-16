@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: RacoonData
   m_EditorClassIdentifier: 
   enemyName: Racoon
-  description: 
+  description: "A chunky, stubborn raccoon that tanked the waterway. Its thick hide
+    distributes incoming force \u2014 no single hit can do serious damage, making
+    burst-damage troops less effective."
   portrait: {fileID: 21300000, guid: 004dac72ec528464d8a0fa868ce4b674, type: 3}
   prefab: {fileID: 211002822741366538, guid: b28067ccb41174231a7a6b5045f04291, type: 3}
-  baseHealth: 500
-  speed: 1.0
+  baseHealth: 1200
+  speed: 0.8
   goldDrop: 60
   effectType: 4
   effectValue: 30

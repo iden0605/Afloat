@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: WaspData
   m_EditorClassIdentifier: 
   enemyName: Wasp
-  description: 
+  description: "An aggressive wasp that darts down the path. Already fast \u2014
+    but getting hit makes it panic and accelerate. Best eliminated before it takes
+    any damage."
   portrait: {fileID: 21300000, guid: 02fab406714fd43f295572ccb6f8352d, type: 3}
   prefab: {fileID: 6594975445279042201, guid: 7d624a3f385a844bab58644be340586c, type: 3}
-  baseHealth: 45
-  speed: 3.0
+  baseHealth: 70
+  speed: 1.8
   goldDrop: 20
   effectType: 9
   effectValue: 0.6

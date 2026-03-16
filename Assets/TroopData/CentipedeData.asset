@@ -40,5 +40,36 @@ MonoBehaviour:
     freezeDuration: 0
     freezeSlowFactor: 0
     stunDuration: 0
-  upgrades: []
+  upgrades:
+  - description: Spit range increased
+    cost: 75
+    attackDelta: 2
+    attackSpeedDelta: 0
+    rangeDelta: 0.5
+    effects: []
+  - description: Acid burns more intensely
+    cost: 100
+    attackDelta: 3
+    attackSpeedDelta: 0.15
+    rangeDelta: 0
+    effects: []
+  - description: Piercing Shot — acid pierces through enemies
+    cost: 150
+    attackDelta: 5
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects:
+    - effectType: 13
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 2
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
   evolutions: []

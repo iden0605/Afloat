@@ -19,6 +19,10 @@ public class TroopUnlockManager : MonoBehaviour
     /// <summary>Fired whenever the unlocked troop set changes (new troops become available).</summary>
     public static event Action OnUnlocksChanged;
 
+    [Header("Debug")]
+    [Tooltip("Unlock every troop instantly for testing. Has no effect in builds.")]
+    [SerializeField] private bool unlockAllForTesting = false;
+
     [Header("Troops available from the very start of the game")]
     [SerializeField] private TroopData[] startingTroops = Array.Empty<TroopData>();
 
@@ -52,7 +56,24 @@ public class TroopUnlockManager : MonoBehaviour
     // ── Public API ────────────────────────────────────────────────────────────
 
     /// <summary>Returns true if the given troop is currently unlocked.</summary>
-    public bool IsUnlocked(TroopData data) => data != null && _unlocked.Contains(data);
+    public bool IsUnlocked(TroopData data)
+    {
+#if UNITY_EDITOR
+        if (unlockAllForTesting) return data != null;
+#endif
+        return data != null && _unlocked.Contains(data);
+    }
+
+    // ── Editor hot-reload ─────────────────────────────────────────────────────
+
+#if UNITY_EDITOR
+    void OnValidate()
+    {
+        // Notify the sidebar to rebuild whenever the checkbox is toggled in the inspector
+        if (Application.isPlaying)
+            OnUnlocksChanged?.Invoke();
+    }
+#endif
 
     // ── Internal ──────────────────────────────────────────────────────────────
 

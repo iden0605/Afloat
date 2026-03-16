@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: GlitchedWaspData
   m_EditorClassIdentifier: 
   enemyName: Glitched Wasp
-  description: 
+  description: "An iridescent, corrupted wasp \u2014 faster baseline than a standard
+    Wasp and armoured enough to take a few hits before going down. Getting hit still
+    triggers its speed surge."
   portrait: {fileID: 223822315, guid: ebde22762ed654117940d7c4ae8b851f, type: 3}
   prefab: {fileID: 2390453046999063911, guid: a3eb0712ce9564e55b18c59f73abe8b1, type: 3}
-  baseHealth: 120
-  speed: 3.0
+  baseHealth: 300
+  speed: 2.2
   goldDrop: 30
   effectType: 9
   effectValue: 0.6

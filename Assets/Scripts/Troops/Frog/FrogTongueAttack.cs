@@ -49,6 +49,9 @@ public class FrogTongueAttack : MonoBehaviour
         _instance = GetComponent<TroopInstance>();
         BuildTongue();
         BuildTipCollider();
+
+        if (GetComponent<FrogPoisonDrool>() == null)
+            gameObject.AddComponent<FrogPoisonDrool>().SetMouthOffset(mouthOffset);
     }
 
     void BuildTongue()
@@ -210,6 +213,21 @@ public class FrogTongueAttack : MonoBehaviour
 
         _instance.DealDamage(enemy, _instance.Data?.attackType ?? AttackType.Ranged, transform.position);
         SpawnTongueSplat(_tipTransform.position);
+
+        if (_instance.UpgradeLevel >= 3)
+            SpawnShockwave(_tipTransform.position);
+    }
+
+    void SpawnShockwave(Vector3 pos)
+    {
+        // Two concentric ripple rings — inner fires immediately, outer with a slight delay
+        var go1 = new GameObject("FrogShockwave_1");
+        go1.transform.position = pos;
+        go1.AddComponent<FrogShockwaveRing>().Init(_instance, delay: 0.00f, sortingLayerName, sortingOrder - 1);
+
+        var go2 = new GameObject("FrogShockwave_2");
+        go2.transform.position = pos;
+        go2.AddComponent<FrogShockwaveRing>().Init(_instance, delay: 0.08f, sortingLayerName, sortingOrder - 1);
     }
 
     // ── Tongue tip VFX ────────────────────────────────────────
@@ -342,4 +360,107 @@ public class TongueSplatRing : MonoBehaviour
 
         if (t >= 1f) Destroy(gameObject);
     }
+}
+
+// ── Frog shockwave ring (U3+) ──────────────────────────────────────────────────
+
+/// <summary>
+/// A single expanding water-ripple ring spawned on each tongue hit at upgrade level 3+.
+/// Two rings are spawned with a slight delay between them for a shockwave feel.
+/// Each ring deals 50% of the frog's current attack as splash damage and applies
+/// a slow to every enemy the wave front passes through (each enemy hit once per ring).
+/// </summary>
+public class FrogShockwaveRing : MonoBehaviour
+{
+    private TroopInstance _instance;
+    private LineRenderer  _ring;
+    private float         _delay;
+    private float         _timer;
+    private bool          _started;
+
+    private const float Duration    = 0.45f;
+    private const float MaxRadius   = 0.70f;
+    private const int   Segments    = 32;
+    private const float StartWidth  = 0.055f;
+    private const float SlowDur     = 1.8f;
+    private const float SlowFactor  = 0.45f;   // enemy moves at 45% speed
+
+    private static readonly Color RingColor = new Color(0.50f, 0.88f, 1.00f, 0.80f);
+
+    // Enemies already processed — each hit exactly once per ring
+    private readonly System.Collections.Generic.HashSet<EnemyMovement> _hit = new();
+
+    public void Init(TroopInstance instance, float delay, string sortingLayer, int sortingOrder)
+    {
+        _instance = instance;
+        _delay    = delay;
+
+        _ring = gameObject.AddComponent<LineRenderer>();
+        _ring.useWorldSpace     = true;
+        _ring.loop              = true;
+        _ring.positionCount     = Segments;
+        _ring.numCapVertices    = 0;
+        _ring.numCornerVertices = 0;
+        _ring.widthMultiplier   = StartWidth;
+        _ring.enabled           = false;
+
+        var mat = new Material(Shader.Find("Sprites/Default"));
+        mat.color              = RingColor;
+        _ring.material         = mat;
+        _ring.sortingLayerName = sortingLayer;
+        _ring.sortingOrder     = sortingOrder;
+    }
+
+    void Update()
+    {
+        _timer += Time.deltaTime;
+
+        if (!_started)
+        {
+            if (_timer < _delay) return;
+            _started      = true;
+            _timer        = 0f;
+            _ring.enabled = true;
+        }
+
+        float t      = Mathf.Clamp01(_timer / Duration);
+        float radius = Mathf.Lerp(0f, MaxRadius, EaseOutCubic(t));
+        float alpha  = Mathf.Lerp(0.70f, 0f, t);
+        float width  = Mathf.Lerp(StartWidth, 0.004f, t);
+
+        _ring.widthMultiplier = width;
+        var c = new Color(RingColor.r, RingColor.g, RingColor.b, alpha);
+        _ring.startColor = c;
+        _ring.endColor   = c;
+
+        Vector3 centre = transform.position;
+        for (int i = 0; i < Segments; i++)
+        {
+            float a = 2f * Mathf.PI * i / Segments;
+            _ring.SetPosition(i, centre + new Vector3(Mathf.Cos(a) * radius, Mathf.Sin(a) * radius, 0f));
+        }
+
+        if (_instance != null) CheckHits(centre, radius);
+
+        if (t >= 1f) Destroy(gameObject);
+    }
+
+    // Enemies are detected once each as the expanding ring first reaches their distance.
+    void CheckHits(Vector3 centre, float radius)
+    {
+        var cols = Physics2D.OverlapCircleAll(centre, radius);
+        foreach (var col in cols)
+        {
+            if (!col.TryGetComponent<EnemyMovement>(out var em)) continue;
+            if (!_hit.Add(em)) continue;  // already hit this enemy
+
+            float dmg = _instance.CurrentAttack * 0.5f;
+            em.TakeDamage(dmg, AttackType.Splash, centre);
+
+            EnemyStatusEffects.ApplyFreeze(em.gameObject, SlowDur, SlowFactor);
+            EnemySlowIndicator.Apply(em.gameObject, SlowDur);
+        }
+    }
+
+    static float EaseOutCubic(float t) { float f = 1f - t; return 1f - f * f * f; }
 }

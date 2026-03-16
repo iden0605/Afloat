@@ -24,6 +24,7 @@ public class EnemyVisualEffects : MonoBehaviour
 
     private float _freezeTimer;
     private float _stunTimer;
+    private float _dazeTimer;
 
     // ── Particles ─────────────────────────────────────────────────────────────
 
@@ -32,6 +33,10 @@ public class EnemyVisualEffects : MonoBehaviour
     private ParticleSystem _freezePS;
     private Transform      _stunOrbit; // rotating anchor above head
     private ParticleSystem _stunPS;
+    private Transform      _dazeOrbit; // daze rotating anchor — counter-clockwise, higher up
+    private ParticleSystem _dazePS;
+    private ParticleSystem _doubleGoldPS;
+    private bool           _hasDoubleGold;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -74,6 +79,25 @@ public class EnemyVisualEffects : MonoBehaviour
         if (!_stunPS.isPlaying) _stunPS.Play();
     }
 
+    /// <summary>Apply or refresh a daze visual for the given duration.</summary>
+    public void ApplyDaze(float duration)
+    {
+        _dazeTimer = Mathf.Max(_dazeTimer, duration);
+        EnsureDazePS();
+        if (!_dazePS.isPlaying) _dazePS.Play();
+    }
+
+    /// <summary>
+    /// Marks this enemy with the double-gold debuff visual: golden shimmer particles + gold tint.
+    /// Safe to call repeatedly — idempotent once active.
+    /// </summary>
+    public void ApplyDoubleGold()
+    {
+        _hasDoubleGold = true;
+        EnsureDoubleGoldPS();
+        if (!_doubleGoldPS.isPlaying) _doubleGoldPS.Play();
+    }
+
     /// <summary>
     /// Plays a brief red speed-burst trail (Wasp reactive speed / ReactiveSpeedOnHit).
     /// Safe to call every hit — spawns a one-shot particle burst each time.
@@ -106,6 +130,7 @@ public class EnemyVisualEffects : MonoBehaviour
     {
         if (_freezeTimer > 0f) _freezeTimer -= Time.deltaTime;
         if (_stunTimer   > 0f) _stunTimer   -= Time.deltaTime;
+        if (_dazeTimer   > 0f) _dazeTimer   -= Time.deltaTime;
 
         // Stop expired CC particles
         if (_freezeTimer <= 0f && _freezePS != null && _freezePS.isPlaying)
@@ -113,6 +138,9 @@ public class EnemyVisualEffects : MonoBehaviour
 
         if (_stunTimer <= 0f && _stunPS != null && _stunPS.isPlaying)
             _stunPS.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+
+        if (_dazeTimer <= 0f && _dazePS != null && _dazePS.isPlaying)
+            _dazePS.Stop(true, ParticleSystemStopBehavior.StopEmitting);
 
         // Sync DoT particles with live stack counts
         bool hasBurn   = _status != null && _status.HasBurnStacks;
@@ -134,9 +162,22 @@ public class EnemyVisualEffects : MonoBehaviour
         else if (_poisonPS != null && _poisonPS.isPlaying)
             _poisonPS.Stop(true, ParticleSystemStopBehavior.StopEmitting);
 
-        // Rotate the stun orbit anchor
+        // Double-gold shimmer — stays active once applied (cleared only on death/disable)
+        if (_hasDoubleGold)
+        {
+            EnsureDoubleGoldPS();
+            if (!_doubleGoldPS.isPlaying) _doubleGoldPS.Play();
+        }
+        else if (_doubleGoldPS != null && _doubleGoldPS.isPlaying)
+            _doubleGoldPS.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+
+        // Rotate the stun orbit anchor (clockwise)
         if (_stunOrbit != null)
             _stunOrbit.Rotate(0f, 0f, 200f * Time.deltaTime);
+
+        // Rotate the daze orbit anchor (counter-clockwise, slower — confused wobble)
+        if (_dazeOrbit != null)
+            _dazeOrbit.Rotate(0f, 0f, -140f * Time.deltaTime);
     }
 
     void LateUpdate()
@@ -144,7 +185,7 @@ public class EnemyVisualEffects : MonoBehaviour
         if (_sr == null) return;
 
         bool any = (_status != null && (_status.HasBurnStacks || _status.HasPoisonStacks))
-                   || _freezeTimer > 0f || _stunTimer > 0f;
+                   || _freezeTimer > 0f || _stunTimer > 0f || _dazeTimer > 0f || _hasDoubleGold;
 
         Color target = any ? ComputeTint() : _baseColor;
         _sr.color = Color.Lerp(_sr.color, target, 10f * Time.deltaTime);
@@ -158,17 +199,26 @@ public class EnemyVisualEffects : MonoBehaviour
         bool hasPoison = _status != null && _status.HasPoisonStacks;
         bool hasFreeze = _freezeTimer > 0f;
         bool hasStun   = _stunTimer   > 0f;
+        bool hasDaze   = _dazeTimer   > 0f;
+        bool hasGold   = _hasDoubleGold;
 
+        if (!hasBurn && !hasPoison && !hasFreeze && !hasStun && !hasDaze && !hasGold)
+            return _baseColor;
+
+        // Each active effect lerps the current tint 55% toward its highlight colour,
+        // producing vivid, clearly readable highlights even when effects stack.
         Color tint = _baseColor;
-        int   n    = 0;
+        const float s = 0.55f;
 
-        if (hasBurn)   { tint += new Color(0.8f, 0.15f, 0.00f); n++; }
-        if (hasPoison) { tint += new Color(0.45f, 0.00f, 0.65f); n++; }
-        if (hasFreeze) { tint += new Color(0.30f, 0.55f, 0.85f); n++; }
-        if (hasStun)   { tint += new Color(0.70f, 0.70f, 0.00f); n++; }
+        if (hasBurn)   tint = Color.Lerp(tint, new Color(1.00f, 0.12f, 0.05f, _baseColor.a), s);
+        if (hasPoison) tint = Color.Lerp(tint, new Color(0.55f, 0.05f, 0.85f, _baseColor.a), s);
+        if (hasFreeze) tint = Color.Lerp(tint, new Color(0.25f, 0.65f, 1.00f, _baseColor.a), s);
+        if (hasStun)   tint = Color.Lerp(tint, new Color(1.00f, 0.95f, 0.10f, _baseColor.a), s);
+        if (hasDaze)   tint = Color.Lerp(tint, new Color(0.70f, 0.05f, 0.95f, _baseColor.a), s);
+        if (hasGold)   tint = Color.Lerp(tint, new Color(1.00f, 0.85f, 0.00f, _baseColor.a), s * 0.5f);
 
-        if (n == 0) return _baseColor;
-        return new Color(tint.r / (n + 1), tint.g / (n + 1), tint.b / (n + 1), _baseColor.a);
+        tint.a = _baseColor.a;
+        return tint;
     }
 
     // ── Particle builders (lazy) ──────────────────────────────────────────────
@@ -338,12 +388,122 @@ public class EnemyVisualEffects : MonoBehaviour
         psr.sortingOrder = 8;
     }
 
+    void EnsureDazePS()
+    {
+        if (_dazePS != null) return;
+
+        // Orbit anchor — floats slightly higher than stun, tilted offset so both can coexist
+        _dazeOrbit = new GameObject("DazeOrbit").transform;
+        _dazeOrbit.SetParent(transform, false);
+        _dazeOrbit.localPosition = new Vector3(0f, 0.42f, 0f);
+
+        // Particle emitter on the orbit rim — spirals counter-clockwise
+        var go = new GameObject("DazeFX");
+        go.transform.SetParent(_dazeOrbit, false);
+        go.transform.localPosition = new Vector3(0.18f, 0f, 0f);
+
+        _dazePS = go.AddComponent<ParticleSystem>();
+        var main = _dazePS.main;
+        main.loop            = true;
+        main.simulationSpace = ParticleSystemSimulationSpace.Local;
+        main.startLifetime   = new ParticleSystem.MinMaxCurve(0.25f, 0.45f);
+        main.startSpeed      = new ParticleSystem.MinMaxCurve(0.05f, 0.20f);
+        main.startSize       = new ParticleSystem.MinMaxCurve(0.04f, 0.08f);
+        main.startColor      = new ParticleSystem.MinMaxGradient(
+                                   new Color(0.80f, 0.20f, 1.00f),   // vivid purple
+                                   new Color(0.55f, 0.00f, 0.85f));  // deep violet
+        main.gravityModifier = -0.04f;
+        main.maxParticles    = 14;
+
+        var emission = _dazePS.emission;
+        emission.rateOverTime = 10f;
+
+        var shape = _dazePS.shape;
+        shape.enabled   = true;
+        shape.shapeType = ParticleSystemShapeType.Circle;
+        shape.radius    = 0.04f;
+
+        var sizeL = _dazePS.sizeOverLifetime;
+        sizeL.enabled = true;
+        sizeL.size    = new ParticleSystem.MinMaxCurve(1f,
+                            new AnimationCurve(new Keyframe(0f, 0.8f), new Keyframe(0.5f, 1f), new Keyframe(1f, 0f)));
+
+        // Fade from bright purple → transparent
+        var col = _dazePS.colorOverLifetime;
+        col.enabled = true;
+        var grad = new Gradient();
+        grad.SetKeys(
+            new GradientColorKey[] { new(new Color(0.90f, 0.50f, 1.00f), 0f), new(new Color(0.55f, 0.00f, 0.85f), 1f) },
+            new GradientAlphaKey[] { new(0f, 0f), new(0.90f, 0.15f), new(0.70f, 0.70f), new(0f, 1f) });
+        col.color = new ParticleSystem.MinMaxGradient(grad);
+
+        var psr = go.GetComponent<ParticleSystemRenderer>();
+        psr.material     = new Material(Shader.Find("Sprites/Default"));
+        psr.sortingOrder = 9;
+    }
+
+    void EnsureDoubleGoldPS()
+    {
+        if (_doubleGoldPS != null) return;
+        var go = new GameObject("DoubleGoldFX");
+        go.transform.SetParent(transform, false);
+        go.transform.localPosition = Vector3.zero;
+
+        _doubleGoldPS = go.AddComponent<ParticleSystem>();
+        var main = _doubleGoldPS.main;
+        main.loop            = true;
+        main.simulationSpace = ParticleSystemSimulationSpace.Local;
+        main.startLifetime   = new ParticleSystem.MinMaxCurve(1.60f, 2.20f); // long life to complete full orbit
+        main.startSpeed      = new ParticleSystem.MinMaxCurve(0f, 0.04f);     // near-zero — orbital velocity drives movement
+        main.startSize       = new ParticleSystem.MinMaxCurve(0.05f, 0.10f);
+        main.startColor      = new ParticleSystem.MinMaxGradient(
+                                   new Color(1.00f, 1.00f, 0.20f),   // bright pure yellow
+                                   new Color(1.00f, 0.92f, 0.00f));  // yellow-gold
+        main.gravityModifier = 0f;
+        main.maxParticles    = 18;
+
+        var emission = _doubleGoldPS.emission;
+        emission.rateOverTime = 7f;
+
+        // Emit from a ring at the orbit radius
+        var shape = _doubleGoldPS.shape;
+        shape.enabled         = true;
+        shape.shapeType       = ParticleSystemShapeType.Circle;
+        shape.radius          = 0.24f;
+        shape.radiusThickness = 0f; // rim only
+
+        // Orbital velocity around Z makes particles circle the enemy
+        var vel = _doubleGoldPS.velocityOverLifetime;
+        vel.enabled   = true;
+        vel.space     = ParticleSystemSimulationSpace.Local;
+        vel.orbitalZ  = new ParticleSystem.MinMaxCurve(220f); // degrees/sec
+
+        var col = _doubleGoldPS.colorOverLifetime;
+        col.enabled = true;
+        var grad = new Gradient();
+        grad.SetKeys(
+            new GradientColorKey[] { new(new Color(1f, 1f, 0.50f), 0f), new(new Color(1f, 0.90f, 0.00f), 1f) },
+            new GradientAlphaKey[] { new(0f, 0f), new(0.85f, 0.15f), new(0.75f, 0.70f), new(0f, 1f) });
+        col.color = new ParticleSystem.MinMaxGradient(grad);
+
+        var sizeL = _doubleGoldPS.sizeOverLifetime;
+        sizeL.enabled = true;
+        sizeL.size    = new ParticleSystem.MinMaxCurve(1f,
+                            new AnimationCurve(new Keyframe(0f, 0.4f), new Keyframe(0.2f, 1f), new Keyframe(0.8f, 1f), new Keyframe(1f, 0f)));
+
+        var psr = go.GetComponent<ParticleSystemRenderer>();
+        psr.material     = new Material(Shader.Find("Sprites/Default"));
+        psr.sortingOrder = 6;
+    }
+
     private void StopAll()
     {
-        _burnPS?.Stop(true,   ParticleSystemStopBehavior.StopEmittingAndClear);
-        _poisonPS?.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        _freezePS?.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        _stunPS?.Stop(true,   ParticleSystemStopBehavior.StopEmittingAndClear);
+        _burnPS?.Stop(true,       ParticleSystemStopBehavior.StopEmittingAndClear);
+        _poisonPS?.Stop(true,     ParticleSystemStopBehavior.StopEmittingAndClear);
+        _freezePS?.Stop(true,     ParticleSystemStopBehavior.StopEmittingAndClear);
+        _stunPS?.Stop(true,       ParticleSystemStopBehavior.StopEmittingAndClear);
+        _dazePS?.Stop(true,       ParticleSystemStopBehavior.StopEmittingAndClear);
+        _doubleGoldPS?.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
     // ── One-shot VFX spawners ─────────────────────────────────────────────────

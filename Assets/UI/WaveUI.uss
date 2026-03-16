@@ -69,33 +69,7 @@
     margin-right: 10px;
 }
 
-/* ── Next wave play button ────────────────────────────────── */
-.hud-next-btn {
-    width: 46px;
-    height: 36px;
-    border-radius: 8px;
-    font-size: 22px;
-    -unity-text-align: middle-center;
-    padding: 0;
-    border-width: 1px;
-    border-color: rgba(100, 180, 100, 0.35);
-    background-color: rgba(30, 90, 35, 0.70);
-    color: rgb(190, 255, 160);
-    transition-property: background-color, opacity;
-    transition-duration: 0.10s;
-    transition-timing-function: ease-out;
-}
-
-.hud-next-btn:hover {
-    background-color: rgba(45, 120, 50, 0.90);
-}
-
-/* Disabled state */
-.wave-btn--disabled {
-    opacity: 0.22;
-}
-
-/* ── Control toggle buttons (pause, speed, auto) ──────────────── */
+/* ── Control toggle buttons (speed) ──────────────────────────── */
 .hud-ctrl-btn {
     width: 38px;
     height: 30px;

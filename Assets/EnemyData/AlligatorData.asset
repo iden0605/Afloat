@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: AlligatorData
   m_EditorClassIdentifier: 
   enemyName: Alligator
-  description: 
+  description: "A massive alligator that crawls relentlessly down the path. No special
+    tricks \u2014 just an overwhelming wall of HP that demands sustained, cooperative
+    tower fire."
   portrait: {fileID: 21300000, guid: d11056b818ac44d40be868c1d563e586, type: 3}
   prefab: {fileID: 6215224273661497099, guid: 72e0c64ef131540819a67c6bd89b1e49, type: 3}
-  baseHealth: 1200
+  baseHealth: 1600
   speed: 0.8
   goldDrop: 100
   effectType: 0

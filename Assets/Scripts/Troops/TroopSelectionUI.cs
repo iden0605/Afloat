@@ -32,19 +32,34 @@ public class TroopSelectionUI : MonoBehaviour
     private VisualElement _tagsContainer;
     private Label         _effectLabel;
 
+    // Next-upgrade effect preview (inline inside _upgradeInfoRow)
+    private VisualElement _nextUpgradeTagsContainer;
+
+    // Level badge in the top bar
+    private Label _levelBadgeLabel;
+
     // Upgrade info
     private VisualElement _upgradeInfoRow;
     private Label         _upgradeTierLabel;
     private Label         _upgradeDescLabel;
 
+    // Evolution — effect preview tags
+    private VisualElement _evoEffectsContainer;
+
     // Evolution section
     private VisualElement _evolutionSection;
     private VisualElement _evolutionPortraitEl;
     private Label         _evolutionNameLabel;
-    private Label         _evolutionDescLabel;
     private Label         _evolutionBoostsLabel;
     private Label         _evolutionReqLabel;
     private Button        _evolveBtn;
+
+    // Live buff display (updates every frame when panel is open)
+    private VisualElement _liveBuffSection;
+    private Label         _liveConditionalLabel;
+    private Label         _liveRampingLabel;
+    private Label         _liveFocusLabel;
+    private Label         _liveColonyLabel;
 
     // Action buttons
     private Button _upgradeBtn;
@@ -142,6 +157,7 @@ public class TroopSelectionUI : MonoBehaviour
     {
         if (_target == null) return;
         var d = _target.Data;
+        if (d == null) return;
 
         if (d.portrait != null)
             _portraitEl.style.backgroundImage = new StyleBackground(d.portrait);
@@ -168,6 +184,14 @@ public class TroopSelectionUI : MonoBehaviour
         _atkLabel.text = $"{_target.CurrentAttack:0.#}";
         _spdLabel.text = $"{_target.CurrentAttackSpeed:0.#}/s";
         _rngLabel.text = $"{_target.CurrentRange:0.#}u";
+
+        // Level badge
+        int  totalTiers  = _target.Data?.upgrades?.Length ?? 0;
+        bool fullyUpgraded = totalTiers > 0 && _target.UpgradeLevel >= totalTiers;
+        _levelBadgeLabel.text = totalTiers > 0
+            ? $"T{_target.UpgradeLevel}"
+            : "BASE";
+        _levelBadgeLabel.EnableInClassList("sel-level-badge--max", fullyUpgraded);
 
         // Next-upgrade delta hints beside each stat
         if (_target.CanUpgrade)
@@ -198,11 +222,15 @@ public class TroopSelectionUI : MonoBehaviour
 
         // Upgrade tier info
         int total = _target.Data.upgrades?.Length ?? 0;
+        bool evolutionGate = _target.EvolutionGateActive;
         if (total > 0)
         {
-            _upgradeTierLabel.text = _target.CanUpgrade
-                ? $"TIER {_target.UpgradeLevel} / {total}  — NEXT UPGRADE"
-                : $"TIER {_target.UpgradeLevel} / {total}  ✓  FULLY UPGRADED";
+            if (evolutionGate)
+                _upgradeTierLabel.text = $"TIER {_target.UpgradeLevel} / {total}  — EVOLVE TO CONTINUE";
+            else if (_target.CanUpgrade)
+                _upgradeTierLabel.text = $"TIER {_target.UpgradeLevel} / {total}  — NEXT UPGRADE";
+            else
+                _upgradeTierLabel.text = $"TIER {_target.UpgradeLevel} / {total}  ✓  FULLY UPGRADED";
 
             if (_target.CanUpgrade)
             {
@@ -223,12 +251,12 @@ public class TroopSelectionUI : MonoBehaviour
             _upgradeInfoRow.style.display = DisplayStyle.None;
         }
 
-        // Upgrade button — disabled if maxed OR player can't afford it
+        // Upgrade button — disabled if maxed, gate active, OR can't afford
         bool canUpgrade      = _target.CanUpgrade;
         bool canAffordUpgrade = GoldManager.Instance?.CanAfford(_target.NextUpgradeCost) ?? true;
         _upgradeBtn.SetEnabled(canUpgrade && canAffordUpgrade);
         _upgradeBtn.EnableInClassList("sel-btn--unaffordable", canUpgrade && !canAffordUpgrade);
-        _upgradeCostLabel.text = canUpgrade ? $"{_target.NextUpgradeCost}g" : "MAX";
+        _upgradeCostLabel.text = evolutionGate ? "EVOLVE\nFIRST" : canUpgrade ? $"{_target.NextUpgradeCost}g" : "MAX";
         _sellValueLabel.text   = $"{_target.SellValue}g";
 
         // Evolution section — show next evolution in the chain, or "fully evolved"
@@ -242,8 +270,8 @@ public class TroopSelectionUI : MonoBehaviour
                 var finalEvo = _target.Data.evolutions[^1];
                 _evolutionNameLabel.text  = finalEvo.evolutionName;
                 SetEvoPortrait(finalEvo.portrait);
-                _evolutionDescLabel.style.display   = DisplayStyle.None;
                 _evolutionBoostsLabel.style.display = DisplayStyle.None;
+                _evoEffectsContainer.style.display  = DisplayStyle.None;
                 _evolutionReqLabel.text = "✓  Fully evolved";
                 _evolutionReqLabel.RemoveFromClassList("sel-evo-req--lacking");
                 _evolutionReqLabel.RemoveFromClassList("sel-evo-req--ready");
@@ -257,9 +285,25 @@ public class TroopSelectionUI : MonoBehaviour
                 _evolutionNameLabel.text = next.evolutionName;
                 SetEvoPortrait(next.portrait);
 
-                bool hasDesc = !string.IsNullOrEmpty(next.description);
-                _evolutionDescLabel.text = next.description;
-                _evolutionDescLabel.style.display = hasDesc ? DisplayStyle.Flex : DisplayStyle.None;
+                // Evolution effect preview tags
+                _evoEffectsContainer.Clear();
+                bool hasEvoEffects = false;
+                if (next.effects != null)
+                {
+                    foreach (var cfg in next.effects)
+                    {
+                        if (cfg == null || cfg.effectType == TroopEffectType.None) continue;
+                        string tagName = TroopEffectTagName(cfg);
+                        if (string.IsNullOrEmpty(tagName)) continue;
+                        hasEvoEffects = true;
+                        var tag = new Label(tagName);
+                        tag.AddToClassList("skill-tag");
+                        tag.AddToClassList(TroopEffectTagClass(cfg));
+                        tag.AddToClassList("skill-tag--preview");
+                        _evoEffectsContainer.Add(tag);
+                    }
+                }
+                _evoEffectsContainer.style.display = hasEvoEffects ? DisplayStyle.Flex : DisplayStyle.None;
 
                 string boosts = FormatEvoBoosts(next);
                 _evolutionBoostsLabel.text = boosts;
@@ -312,10 +356,14 @@ public class TroopSelectionUI : MonoBehaviour
         var titleLabel = new Label("SELECTED");
         titleLabel.AddToClassList("sel-sidebar-title");
 
+        _levelBadgeLabel = new Label();
+        _levelBadgeLabel.AddToClassList("sel-level-badge");
+
         var closeBtn = new Button(Hide) { text = "✕" };
         closeBtn.AddToClassList("sel-close-btn");
 
         topBar.Add(titleLabel);
+        topBar.Add(_levelBadgeLabel);
         topBar.Add(closeBtn);
         _panel.Add(topBar);
 
@@ -325,12 +373,16 @@ public class TroopSelectionUI : MonoBehaviour
         scroll.verticalScrollerVisibility   = ScrollerVisibility.Auto;
         scroll.AddToClassList("sel-scroll");
 
-        // Portrait + name + placement
+        // Portrait + name + placement (horizontal row)
         var portraitSection = new VisualElement();
         portraitSection.AddToClassList("sel-portrait-section");
+        portraitSection.AddToClassList("sel-portrait-section--troop");
 
         _portraitEl = new VisualElement();
         _portraitEl.AddToClassList("sel-portrait");
+
+        var identityCol = new VisualElement();
+        identityCol.AddToClassList("sel-identity-col");
 
         _troopNameLabel = new Label();
         _troopNameLabel.AddToClassList("sel-troop-name");
@@ -338,9 +390,11 @@ public class TroopSelectionUI : MonoBehaviour
         _placementLabel = new Label();
         _placementLabel.AddToClassList("sel-placement-badge");
 
+        identityCol.Add(_troopNameLabel);
+        identityCol.Add(_placementLabel);
+
         portraitSection.Add(_portraitEl);
-        portraitSection.Add(_troopNameLabel);
-        portraitSection.Add(_placementLabel);
+        portraitSection.Add(identityCol);
         scroll.Add(portraitSection);
 
         // Stats row
@@ -369,7 +423,27 @@ public class TroopSelectionUI : MonoBehaviour
         _effectRow.Add(_effectLabel);
         scroll.Add(_effectRow);
 
-        // Upgrade info
+        // Live buff status (War Frenzy / Rampage — updated per-frame)
+        _liveBuffSection = new VisualElement();
+        _liveBuffSection.AddToClassList("sel-live-buff-section");
+        _liveConditionalLabel = new Label();
+        _liveConditionalLabel.AddToClassList("sel-live-buff-label");
+        _liveRampingLabel = new Label();
+        _liveRampingLabel.AddToClassList("sel-live-buff-label");
+        _liveFocusLabel = new Label();
+        _liveFocusLabel.AddToClassList("sel-live-buff-label");
+        _liveFocusLabel.AddToClassList("sel-live-buff-label--focus");
+        _liveColonyLabel = new Label();
+        _liveColonyLabel.AddToClassList("sel-live-buff-label");
+        _liveColonyLabel.AddToClassList("sel-live-buff-label--colony");
+        _liveBuffSection.Add(_liveConditionalLabel);
+        _liveBuffSection.Add(_liveRampingLabel);
+        _liveBuffSection.Add(_liveFocusLabel);
+        _liveBuffSection.Add(_liveColonyLabel);
+        _liveBuffSection.style.display = DisplayStyle.None;
+        scroll.Add(_liveBuffSection);
+
+        // Upgrade info + next-upgrade preview (combined)
         scroll.Add(MakeDivider());
         _upgradeInfoRow = new VisualElement();
         _upgradeInfoRow.AddToClassList("sel-upgrade-info");
@@ -380,40 +454,49 @@ public class TroopSelectionUI : MonoBehaviour
         _upgradeDescLabel = new Label();
         _upgradeDescLabel.AddToClassList("sel-upgrade-desc");
 
+        _nextUpgradeTagsContainer = new VisualElement();
+        _nextUpgradeTagsContainer.AddToClassList("skill-tags-row");
+        _nextUpgradeTagsContainer.AddToClassList("sel-upgrade-preview-tags");
+
         _upgradeInfoRow.Add(_upgradeTierLabel);
         _upgradeInfoRow.Add(_upgradeDescLabel);
+        _upgradeInfoRow.Add(_nextUpgradeTagsContainer);
         scroll.Add(_upgradeInfoRow);
 
         // ── Evolution section ─────────────────────────────────────
         _evolutionSection = new VisualElement();
         _evolutionSection.AddToClassList("sel-evolution-section");
 
-        // "EVOLUTION" badge label
         var evoHeaderLabel = new Label("EVOLUTION");
         evoHeaderLabel.AddToClassList("sel-evo-header");
         _evolutionSection.Add(evoHeaderLabel);
 
-        // Portrait + name row (shown below the badge)
+        // Portrait | name + boosts column (horizontal)
         var evoIdentityRow = new VisualElement();
         evoIdentityRow.AddToClassList("sel-evo-identity-row");
 
         _evolutionPortraitEl = new VisualElement();
         _evolutionPortraitEl.AddToClassList("sel-evo-portrait");
 
+        var evoTextCol = new VisualElement();
+        evoTextCol.AddToClassList("sel-evo-text-col");
+
         _evolutionNameLabel = new Label();
         _evolutionNameLabel.AddToClassList("sel-evo-name");
 
-        evoIdentityRow.Add(_evolutionPortraitEl);
-        evoIdentityRow.Add(_evolutionNameLabel);
-        _evolutionSection.Add(evoIdentityRow);
-
-        _evolutionDescLabel = new Label();
-        _evolutionDescLabel.AddToClassList("sel-evo-desc");
-        _evolutionSection.Add(_evolutionDescLabel);
-
         _evolutionBoostsLabel = new Label();
         _evolutionBoostsLabel.AddToClassList("sel-evo-boosts");
-        _evolutionSection.Add(_evolutionBoostsLabel);
+
+        evoTextCol.Add(_evolutionNameLabel);
+        evoTextCol.Add(_evolutionBoostsLabel);
+        evoIdentityRow.Add(_evolutionPortraitEl);
+        evoIdentityRow.Add(evoTextCol);
+        _evolutionSection.Add(evoIdentityRow);
+
+        _evoEffectsContainer = new VisualElement();
+        _evoEffectsContainer.AddToClassList("skill-tags-row");
+        _evoEffectsContainer.AddToClassList("sel-upgrade-preview-tags");
+        _evolutionSection.Add(_evoEffectsContainer);
 
         _evolutionReqLabel = new Label();
         _evolutionReqLabel.AddToClassList("sel-evo-req");
@@ -499,6 +582,115 @@ public class TroopSelectionUI : MonoBehaviour
         if (Mathf.Approximately(delta, 0f)) { lbl.style.display = DisplayStyle.None; return; }
         lbl.text = delta > 0f ? $"+{delta:0.#}" : $"{delta:0.#}";
         lbl.style.display = DisplayStyle.Flex;
+    }
+
+    // -------------------------------------------------------
+    // Update — live buff display
+    // -------------------------------------------------------
+
+    void Update()
+    {
+        if (_target == null || !_panel.ClassListContains("sel-open"))
+        {
+            if (_liveBuffSection != null)
+                _liveBuffSection.style.display = DisplayStyle.None;
+            return;
+        }
+        RefreshLiveBuff();
+    }
+
+    void RefreshLiveBuff()
+    {
+        var behavior   = _target.GetComponent<TroopBehavior>();
+        int inRange    = behavior != null ? behavior.EnemiesInRange : 0;
+        bool any       = false;
+
+        // War Frenzy — ConditionalAttackBuff
+        var condCfg = _target.GetEffectConfig(TroopEffectType.ConditionalAttackBuff);
+        if (condCfg != null && condCfg.conditionalAttack > 0)
+        {
+            any = true;
+            int   extra = Mathf.Min(Mathf.Max(0, inRange - 1), (int)condCfg.rampingMaxStacks);
+            float bonus = condCfg.conditionalAttack * extra;
+            _liveConditionalLabel.text = bonus > 0
+                ? $"⚔  WAR FRENZY   +{bonus:0.#} ATK   ({inRange} enemies)"
+                : $"⚔  WAR FRENZY   no bonus   ({inRange} in range)";
+            _liveConditionalLabel.style.display = DisplayStyle.Flex;
+        }
+        else
+        {
+            _liveConditionalLabel.style.display = DisplayStyle.None;
+        }
+
+        // Rampage — RampingDoubleBuff
+        var rampCfg = _target.GetEffectConfig(TroopEffectType.RampingDoubleBuff);
+        if (rampCfg != null)
+        {
+            any = true;
+            int stacks = _target.RampingStackCount;
+            int max    = (int)rampCfg.rampingMaxStacks;
+            _liveRampingLabel.text = stacks > 0
+                ? $"⚡  RAMPAGE   {stacks} / {max} stacks   ({(int)Mathf.Pow(2f, stacks)}× ATK & SPD)"
+                : $"⚡  RAMPAGE   0 / {max} stacks   (idle)";
+            _liveRampingLabel.style.display = DisplayStyle.Flex;
+        }
+        else
+        {
+            _liveRampingLabel.style.display = DisplayStyle.None;
+        }
+
+        // Colony / Swarm — AllyProximityBuff & AllySpeedBuff
+        var proxyCfg  = _target.GetEffectConfig(TroopEffectType.AllyProximityBuff);
+        var swarmCfg  = _target.GetEffectConfig(TroopEffectType.AllySpeedBuff);
+        var colonyCfg = proxyCfg ?? swarmCfg;
+        if (colonyCfg != null && colonyCfg.allyBonus > 0)
+        {
+            any = true;
+            int allies = _target.NearbyAllyCount;
+            bool isSwarm = swarmCfg != null && proxyCfg == null;
+            if (isSwarm)
+            {
+                float spdBonus = colonyCfg.allyBonus * allies;
+                _liveColonyLabel.text = allies > 0
+                    ? $"🐜  SWARM   {allies} allies nearby   (+{spdBonus:0.##}/s SPD)"
+                    : $"🐜  SWARM   no allies in range   (no bonus)";
+            }
+            else
+            {
+                float atkBonus = colonyCfg.allyBonus * allies;
+                _liveColonyLabel.text = allies > 0
+                    ? $"🐜  COLONY   {allies} allies nearby   (+{atkBonus:0.#} ATK)"
+                    : $"🐜  COLONY   no allies in range   (no bonus)";
+            }
+            _liveColonyLabel.EnableInClassList("sel-live-buff-label--colony-active", allies > 0);
+            _liveColonyLabel.style.display = DisplayStyle.Flex;
+        }
+        else
+        {
+            _liveColonyLabel.style.display = DisplayStyle.None;
+        }
+
+        // Focus Strike — ConditionalSpeedBuff
+        var focusCfg = _target.GetEffectConfig(TroopEffectType.ConditionalSpeedBuff);
+        if (focusCfg != null && focusCfg.conditionalSpeed > 0)
+        {
+            any = true;
+            bool focused    = inRange == 1;
+            float rate      = focused ? focusCfg.conditionalSpeed : _target.CurrentAttackSpeed;
+            _liveFocusLabel.text = focused
+                ? $"🎯  FOCUS STRIKE   {rate:0.##}/s   (focused!)"
+                : inRange == 0
+                    ? $"🎯  FOCUS STRIKE   {rate:0.##}/s   (no target)"
+                    : $"🎯  FOCUS STRIKE   {rate:0.##}/s   ({inRange} in range)";
+            _liveFocusLabel.EnableInClassList("sel-live-buff-label--focus-active", focused);
+            _liveFocusLabel.style.display = DisplayStyle.Flex;
+        }
+        else
+        {
+            _liveFocusLabel.style.display = DisplayStyle.None;
+        }
+
+        _liveBuffSection.style.display = any ? DisplayStyle.Flex : DisplayStyle.None;
     }
 
     // -------------------------------------------------------
@@ -603,20 +795,27 @@ public class TroopSelectionUI : MonoBehaviour
 
     /// <summary>
     /// Clears and repopulates the skill-tag pills and description text for the current target.
-    /// Returns true if any effects were found (so the caller can show/hide the row).
+    /// Also populates the next-upgrade preview row.
+    /// Returns true if any active or upcoming effects were found.
     /// </summary>
     bool RefreshEffectTags()
     {
         _tagsContainer.Clear();
-        if (_target == null) return false;
+        _nextUpgradeTagsContainer.Clear();
+        if (_target == null) { _nextUpgradeTagsContainer.style.display = DisplayStyle.None; return false; }
 
         var descSb = new System.Text.StringBuilder();
         bool any = false;
 
+        // ── Active effects (deduplicated by effectType) ────────────────────────
+        var seenTypes = new System.Collections.Generic.HashSet<TroopEffectType>();
         foreach (var cfg in _target.ActiveEffects)
         {
             string tagName = TroopEffectTagName(cfg);
             if (string.IsNullOrEmpty(tagName)) continue;
+
+            // Only show the first config per effect type to avoid visual duplicates
+            if (!seenTypes.Add(cfg.effectType)) continue;
 
             any = true;
             var tag = new Label(tagName);
@@ -632,9 +831,91 @@ public class TroopSelectionUI : MonoBehaviour
             }
         }
 
+        // ── Axolotl ricochet (custom mechanic, not in the effect system) ─────────
+        var axolotlAtk = _target.GetComponent<AxolotlWaterBallAttack>();
+        if (axolotlAtk != null)
+        {
+            any = true;
+            int bounces = axolotlAtk.CurrentBounces;
+            var tag = new Label($"RICOCHET {bounces}×");
+            tag.AddToClassList("skill-tag");
+            tag.AddToClassList("skill-tag--teal");
+            _tagsContainer.Add(tag);
+
+            if (descSb.Length > 0) descSb.Append('\n');
+            descSb.Append($"Ball ricochets to {bounces} enemies per shot, slowing each");
+        }
+
         _effectLabel.text = descSb.ToString();
         _effectLabel.style.display = descSb.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
-        return any;
+
+        // ── Next-upgrade preview: show effects the player doesn't have yet ──────
+        bool hasPreview = false;
+
+        // Ricochet count preview — checked independently of effect tier data
+        if (axolotlAtk != null && _target.CanUpgrade)
+        {
+            int curBounces = axolotlAtk.CurrentBounces;
+            int nxtBounces = AxolotlWaterBallAttack.BouncesForUpgradeLevel(_target.UpgradeLevel + 1);
+            if (nxtBounces != curBounces)
+            {
+                hasPreview = true;
+                var previewTag = new Label($"RICOCHET {nxtBounces}× ↑");
+                previewTag.AddToClassList("skill-tag");
+                previewTag.AddToClassList("skill-tag--teal");
+                previewTag.AddToClassList("skill-tag--preview");
+                _nextUpgradeTagsContainer.Add(previewTag);
+            }
+        }
+
+        int nextTierIndex = _target.UpgradeLevel; // 0-based: upgrades[UpgradeLevel] is the NEXT tier
+        var upgrades = _target.Data?.upgrades;
+        if (upgrades != null && nextTierIndex < upgrades.Length)
+        {
+            var nextEffects = upgrades[nextTierIndex].effects;
+            if (nextEffects != null)
+            {
+                foreach (var cfg in nextEffects)
+                {
+                    if (cfg == null || cfg.effectType == TroopEffectType.None) continue;
+
+                    string tagName = TroopEffectTagName(cfg);
+                    if (string.IsNullOrEmpty(tagName)) continue;
+
+                    if (seenTypes.Contains(cfg.effectType))
+                    {
+                        // Already active — only preview if values are changing
+                        var activeCfg = _target.GetEffectConfig(cfg.effectType);
+                        if (activeCfg == null || !EffectConfigValuesChanged(activeCfg, cfg)) continue;
+                        tagName += " ↑";
+                    }
+
+                    hasPreview = true;
+                    var tag = new Label(tagName);
+                    tag.AddToClassList("skill-tag");
+                    tag.AddToClassList(TroopEffectTagClass(cfg));
+                    tag.AddToClassList("skill-tag--preview");
+                    _nextUpgradeTagsContainer.Add(tag);
+                }
+            }
+        }
+        _nextUpgradeTagsContainer.style.display = hasPreview ? DisplayStyle.Flex : DisplayStyle.None;
+
+        return any || hasPreview;
+    }
+
+    static bool EffectConfigValuesChanged(TroopEffectConfig a, TroopEffectConfig b)
+    {
+        return !Mathf.Approximately(a.conditionalAttack, b.conditionalAttack)
+            || !Mathf.Approximately(a.conditionalSpeed,  b.conditionalSpeed)
+            || !Mathf.Approximately(a.rampingDuration,   b.rampingDuration)
+            || !Mathf.Approximately(a.rampingMaxStacks,  b.rampingMaxStacks)
+            || !Mathf.Approximately(a.dotDamage,         b.dotDamage)
+            || !Mathf.Approximately(a.dotDuration,       b.dotDuration)
+            || !Mathf.Approximately(a.freezeDuration,    b.freezeDuration)
+            || !Mathf.Approximately(a.stunDuration,      b.stunDuration)
+            || !Mathf.Approximately(a.goldMultiplier,    b.goldMultiplier)
+            || !Mathf.Approximately(a.allyBonus,         b.allyBonus);
     }
 
     static string TroopEffectTagName(TroopEffectConfig cfg) => cfg.effectType switch
@@ -645,12 +926,14 @@ public class TroopSelectionUI : MonoBehaviour
         TroopEffectType.PoisonSplash          => "POISON SPLASH",
         TroopEffectType.FreezeOnHit           => "FREEZE",
         TroopEffectType.StunOnHit             => "STUN",
+        TroopEffectType.DazeOnHit             => "DAZE",
         TroopEffectType.ConditionalAttackBuff => "WAR FRENZY",
         TroopEffectType.ConditionalSpeedBuff  => "FOCUS STRIKE",
         TroopEffectType.DoubleEveryFourth     => "DOUBLE HIT",
         TroopEffectType.RampingDoubleBuff     => "RAMPAGE",
         TroopEffectType.AllyProximityBuff     => "COLONY",
         TroopEffectType.AllySpeedBuff         => "PACK RUSH",
+        TroopEffectType.PiercingShot          => "PIERCING",
         _                                     => ""
     };
 
@@ -662,12 +945,14 @@ public class TroopSelectionUI : MonoBehaviour
         TroopEffectType.PoisonSplash          => "skill-tag--poison",
         TroopEffectType.FreezeOnHit           => "skill-tag--freeze",
         TroopEffectType.StunOnHit             => "skill-tag--stun",
+        TroopEffectType.DazeOnHit             => "skill-tag--daze",
         TroopEffectType.ConditionalAttackBuff => "skill-tag--power",
         TroopEffectType.ConditionalSpeedBuff  => "skill-tag--teal",
         TroopEffectType.DoubleEveryFourth     => "skill-tag--power",
         TroopEffectType.RampingDoubleBuff     => "skill-tag--power",
         TroopEffectType.AllyProximityBuff     => "skill-tag--support",
         TroopEffectType.AllySpeedBuff         => "skill-tag--support",
+        TroopEffectType.PiercingShot          => "skill-tag--teal",
         _                                     => "skill-tag--power"
     };
 
@@ -675,22 +960,33 @@ public class TroopSelectionUI : MonoBehaviour
     {
         TroopEffectType.DoubleGoldDrop        => $"Enemies hit drop {cfg.goldMultiplier:0.#}× gold on death",
         TroopEffectType.BurnOnHit             => cfg.dotDuration > 0
-                                                    ? $"Burns for {cfg.dotDamage:0.#} dmg every {cfg.dotInterval:0.#}s over {cfg.dotDuration:0.#}s (stackable)"
-                                                    : $"Burns for {cfg.dotDamage:0.#} dmg every {cfg.dotInterval:0.#}s (stackable)",
+                                                    ? $"Burns for 20% ATK dmg every {cfg.dotInterval:0.#}s over {cfg.dotDuration:0.#}s (stackable)"
+                                                    : $"Burns for 20% ATK dmg every {cfg.dotInterval:0.#}s (stackable)",
         TroopEffectType.PoisonOnHit           => cfg.dotDuration > 0
-                                                    ? $"Poisons for {cfg.dotDamage:0.#} dmg every {cfg.dotInterval:0.#}s over {cfg.dotDuration:0.#}s (stackable)"
-                                                    : $"Poisons for {cfg.dotDamage:0.#} dmg every {cfg.dotInterval:0.#}s (stackable)",
-        TroopEffectType.PoisonSplash          => $"Splash attack + poisons every {cfg.dotInterval:0.#}s",
+                                                    ? $"Poisons for 20% ATK dmg every {cfg.dotInterval:0.#}s over {cfg.dotDuration:0.#}s (stackable)"
+                                                    : $"Poisons for 20% ATK dmg every {cfg.dotInterval:0.#}s (stackable)",
+        TroopEffectType.PoisonSplash          => $"Splash attack + poisons for 20% ATK dmg every {cfg.dotInterval:0.#}s",
         TroopEffectType.FreezeOnHit           => $"Slows to {cfg.freezeSlowFactor * 100:0}% speed for {cfg.freezeDuration:0.#}s",
         TroopEffectType.StunOnHit             => $"Stuns enemies for {cfg.stunDuration:0.#}s",
+        TroopEffectType.DazeOnHit             => $"Dazes enemies for {cfg.stunDuration:0.#}s — sends them stumbling backwards",
         TroopEffectType.ConditionalAttackBuff => $"+{cfg.conditionalAttack:0.#} ATK per extra enemy in range (max {cfg.rampingMaxStacks})",
-        TroopEffectType.ConditionalSpeedBuff  => $"Attack speed → {cfg.conditionalSpeed:0.#}/s when only 1 enemy in range",
-        TroopEffectType.DoubleEveryFourth     => "Every 4th attack deals double damage",
+        TroopEffectType.ConditionalSpeedBuff  => $"Attack speed → {cfg.conditionalSpeed:0.##}/s when focused on a single enemy",
+        TroopEffectType.DoubleEveryFourth     => DoubleHitDesc(cfg),
         TroopEffectType.RampingDoubleBuff     => $"Each hit doubles ATK & SPD for {cfg.rampingDuration:0.#}s (max {cfg.rampingMaxStacks} stacks)",
         TroopEffectType.AllyProximityBuff     => $"+{cfg.allyBonus:0.#} ATK per nearby same-type ally",
         TroopEffectType.AllySpeedBuff         => $"+{cfg.allyBonus:0.#} SPD per nearby same-type ally",
+        TroopEffectType.PiercingShot          => cfg.rampingMaxStacks > 1
+                                                    ? $"Projectile pierces through {cfg.rampingMaxStacks} enemies"
+                                                    : "Projectile pierces through enemies",
         _                                     => ""
     };
+
+    static string DoubleHitDesc(TroopEffectConfig cfg)
+    {
+        int n = cfg.rampingMaxStacks > 0 ? cfg.rampingMaxStacks : 4;
+        string sfx = n switch { 1 => "st", 2 => "nd", 3 => "rd", _ => "th" };
+        return $"Every {n}{sfx} attack deals ×2 damage";
+    }
 
     static string FormatUpgradeTier(TroopData.UpgradeTier tier)
     {

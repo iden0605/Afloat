@@ -24,6 +24,19 @@ public class EnemyMovement : MonoBehaviour
     /// </summary>
     [HideInInspector] public float speedMultiplier = 1f;
 
+    // ── Daze (reverse movement) ───────────────────────────────────────────────
+
+    private float _dazeEndTime = 0f;
+
+    /// <summary>True while the enemy is dazed and walking backwards along the path.</summary>
+    public bool IsDazed => Time.time < _dazeEndTime;
+
+    /// <summary>Forces the enemy to walk backwards along the path for <paramref name="duration"/> seconds.</summary>
+    public void Daze(float duration)
+    {
+        _dazeEndTime = Mathf.Max(_dazeEndTime, Time.time + duration);
+    }
+
     [Tooltip("Rotation offset (degrees) that corrects for the sprite's default facing direction.\n" +
              "0   = sprite already faces right (+X).\n" +
              "-90 = sprite faces up (+Y) — same convention as troops.\n" +
@@ -48,13 +61,17 @@ public class EnemyMovement : MonoBehaviour
 
     void Update()
     {
+        if (IsDazed)
+        {
+            TickDazed();
+            return;
+        }
+
         if (currentWaypointIndex >= _waypoints.Length) return;
 
         Transform target = _waypoints[currentWaypointIndex];
 
-        // Rotate to face the current target before moving
         FaceToward(target.position);
-
         transform.position = Vector3.MoveTowards(
             transform.position, target.position, speed * speedMultiplier * Time.deltaTime);
 
@@ -64,6 +81,21 @@ public class EnemyMovement : MonoBehaviour
             if (currentWaypointIndex >= _waypoints.Length)
                 ReachEndOfPath();
         }
+    }
+
+    /// <summary>Moves the enemy backward toward the previous waypoint while dazed.</summary>
+    private void TickDazed()
+    {
+        // Already at the very first waypoint — just sit there until daze expires
+        if (currentWaypointIndex <= 0) return;
+
+        Transform prev = _waypoints[currentWaypointIndex - 1];
+        FaceToward(prev.position);
+        transform.position = Vector3.MoveTowards(
+            transform.position, prev.position, speed * Time.deltaTime);
+
+        if (Vector3.Distance(transform.position, prev.position) < 0.1f)
+            currentWaypointIndex--;
     }
 
     // ── API ───────────────────────────────────────────────────────────────────

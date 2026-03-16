@@ -24,6 +24,18 @@ public class BeetleGroundPoundAttack : MonoBehaviour
     [Tooltip("Seconds to slam back down to base scale")]
     [SerializeField] private float slamDuration   = 0.10f;
 
+    [Header("Tier-2 Upgrade — Higher Leap")]
+    [Tooltip("windUpScale used when UpgradeLevel >= 2 (visually leaps much higher).")]
+    [SerializeField] private float upgradedWindUpScale    = 1.72f;
+    [Tooltip("Seconds to reach peak scale at tier 2 — slightly longer ascent for a bigger jump.")]
+    [SerializeField] private float upgradedWindUpDuration = 0.40f;
+
+    [Header("Tier-3 Upgrade — Even Higher Leap")]
+    [Tooltip("windUpScale used when UpgradeLevel >= 3.")]
+    [SerializeField] private float tier3WindUpScale    = 2.10f;
+    [Tooltip("Seconds to reach peak scale at tier 3.")]
+    [SerializeField] private float tier3WindUpDuration = 0.50f;
+
     [Header("Shockwave Visuals")]
     [SerializeField] private Color  shockwaveColor    = new Color(0.55f, 0.35f, 0.10f, 1f);
     [SerializeField] private float  shockwaveWidth    = 0.12f;
@@ -46,6 +58,10 @@ public class BeetleGroundPoundAttack : MonoBehaviour
     private Phase _phase      = Phase.Idle;
     private float _phaseTimer = 0f;
     private float _cooldown   = 0f;
+
+    // Resolved once per jump cycle so mid-air upgrades don't corrupt the animation
+    private float _activeWindUpScale    = 1.30f;
+    private float _activeWindUpDuration = 0.28f;
 
     // Shockwave — separate scene GOs so beetle scale doesn't affect collider radius
     private GameObject       _ringGO;
@@ -157,9 +173,9 @@ public class BeetleGroundPoundAttack : MonoBehaviour
         {
             case Phase.WindUp:
             {
-                float t = Mathf.Clamp01(_phaseTimer / windUpDuration);
+                float t = Mathf.Clamp01(_phaseTimer / _activeWindUpDuration);
                 // EaseOutBack gives a slight overshoot — cartoon "charge" puff
-                transform.localScale = Vector3.Lerp(_baseScale, _baseScale * windUpScale, EaseOutBack(t));
+                transform.localScale = Vector3.Lerp(_baseScale, _baseScale * _activeWindUpScale, EaseOutBack(t));
                 if (t >= 1f) BeginSlam();
                 break;
             }
@@ -168,7 +184,7 @@ public class BeetleGroundPoundAttack : MonoBehaviour
             {
                 float t = Mathf.Clamp01(_phaseTimer / slamDuration);
                 // EaseInCubic accelerates — snappy slam back to ground
-                transform.localScale = Vector3.Lerp(_baseScale * windUpScale, _baseScale, EaseInCubic(t));
+                transform.localScale = Vector3.Lerp(_baseScale * _activeWindUpScale, _baseScale, EaseInCubic(t));
                 if (t >= 1f) BeginRecover();
                 break;
             }
@@ -193,6 +209,14 @@ public class BeetleGroundPoundAttack : MonoBehaviour
         _phaseTimer = 0f;
         if (_animator != null) _animator.speed = 0f; // freeze idle animation
         _trail?.StartTrail(); // brief trail during the charged wind-up
+
+        // Resolve jump parameters for this cycle
+        int level = _instance.UpgradeLevel;
+        _activeWindUpScale    = level >= 3 ? tier3WindUpScale    : level >= 2 ? upgradedWindUpScale    : windUpScale;
+        _activeWindUpDuration = level >= 3 ? tier3WindUpDuration : level >= 2 ? upgradedWindUpDuration : windUpDuration;
+
+        if (level >= 2)
+            SpawnJumpLaunchParticles(transform.position);
     }
 
     void BeginSlam()
@@ -227,6 +251,61 @@ public class BeetleGroundPoundAttack : MonoBehaviour
         _colliderGO.SetActive(true);
 
         SpawnSlamDust(_slamPos);
+        SpawnGroundCracks(_slamPos);
+    }
+
+    // ── Tier-2 jump launch VFX ────────────────────────────────
+    // Spawned at wind-up start — small debris/air burst kicked up as the beetle
+    // launches into its big jump. Only plays when UpgradeLevel >= 2.
+
+    void SpawnJumpLaunchParticles(Vector3 pos)
+    {
+        var go = new GameObject("BeetleJump_Launch");
+        go.transform.position = pos;
+
+        var ps   = go.AddComponent<ParticleSystem>();
+        var main = ps.main;
+        main.loop            = false;
+        main.startLifetime   = new ParticleSystem.MinMaxCurve(0.20f, 0.45f);
+        main.startSpeed      = new ParticleSystem.MinMaxCurve(0.8f, 2.5f);
+        main.startSize       = new ParticleSystem.MinMaxCurve(0.03f, 0.10f);
+        main.startColor      = new ParticleSystem.MinMaxGradient(
+                                   new Color(0.65f, 0.50f, 0.20f),   // earthy brown
+                                   new Color(0.88f, 0.78f, 0.50f));  // pale tan
+        main.gravityModifier = -0.3f; // kick upward (into the air) rather than falling
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.maxParticles    = 24;
+        main.stopAction      = ParticleSystemStopAction.Destroy;
+
+        var emission = ps.emission;
+        emission.rateOverTime = 0;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 18) });
+
+        // Emit in a wide outward cone to simulate ground scuff on launch
+        var shape = ps.shape;
+        shape.enabled   = true;
+        shape.shapeType = ParticleSystemShapeType.Circle;
+        shape.radius    = 0.12f;
+
+        var col  = ps.colorOverLifetime;
+        col.enabled = true;
+        var grad = new Gradient();
+        grad.SetKeys(
+            new GradientColorKey[] { new(new Color(0.88f, 0.78f, 0.50f), 0f), new(new Color(0.55f, 0.38f, 0.14f), 1f) },
+            new GradientAlphaKey[] { new(1f, 0f), new(0f, 1f) });
+        col.color = new ParticleSystem.MinMaxGradient(grad);
+
+        var sizeLife = ps.sizeOverLifetime;
+        sizeLife.enabled = true;
+        sizeLife.size    = new ParticleSystem.MinMaxCurve(1f,
+                               new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0f)));
+
+        var psr = go.GetComponent<ParticleSystemRenderer>();
+        psr.material         = new Material(Shader.Find("Sprites/Default"));
+        psr.sortingLayerName = sortingLayerName;
+        psr.sortingOrder     = sortingOrder + 1;
+
+        ps.Play();
     }
 
     // ── Slam dust VFX ─────────────────────────────────────────
@@ -279,6 +358,26 @@ public class BeetleGroundPoundAttack : MonoBehaviour
         psr.sortingOrder     = sortingOrder + 1;
 
         ps.Play();
+    }
+
+    // ── Ground crack VFX ──────────────────────────────────────
+    // Jagged fracture arms radiate out from the slam point and fade over ~2 seconds.
+    // Arm count and line thickness scale with upgrade level.
+
+    void SpawnGroundCracks(Vector3 pos)
+    {
+        int level = _instance.UpgradeLevel;
+        if (level < 3) return;
+
+        float radius    = _instance.CurrentRange * 0.72f;
+        const float lineWidth = 0.10f;
+        const int   armCount  = 8;
+
+        var go = new GameObject("BeetleGroundCracks");
+        go.AddComponent<GroundCrackVFX>().Init(
+            pos, radius, armCount, lineWidth,
+            new Color(0.18f, 0.11f, 0.06f, 0.85f),
+            sortingLayerName, -1);
     }
 
     void UpdateShockwave()
@@ -349,4 +448,99 @@ public class BeetleGroundPoundAttack : MonoBehaviour
 
     // Decelerating shockwave expansion — fast burst, slows as it spreads
     static float EaseOutCubic(float t) { float f = 1f - t; return 1f - f * f * f; }
+}
+
+// ── GroundCrackVFX ────────────────────────────────────────────────────────────
+
+/// <summary>
+/// Spawns N jagged fracture arms radiating from an impact point, then fades them out.
+/// Self-contained — destroys itself after FadeDuration seconds.
+/// </summary>
+public class GroundCrackVFX : MonoBehaviour
+{
+    private Color          _baseColor;
+    private LineRenderer[] _arms;
+    private float          _timer;
+    private const float    FadeDuration = 2.2f;
+
+    public void Init(Vector3 origin, float radius, int armCount, float lineWidth,
+                     Color color, string sortingLayer, int sortingOrder)
+    {
+        _baseColor = color;
+        _arms      = new LineRenderer[armCount];
+
+        float angleStep = 360f / armCount;
+        for (int i = 0; i < armCount; i++)
+        {
+            float angleDeg = angleStep * i + Random.Range(-18f, 18f);
+            _arms[i] = BuildArm(origin, angleDeg * Mathf.Deg2Rad, radius,
+                                lineWidth, color, sortingLayer, sortingOrder);
+        }
+    }
+
+    LineRenderer BuildArm(Vector3 origin, float angleRad, float radius, float baseWidth,
+                          Color color, string layer, int order)
+    {
+        var go = new GameObject("CrackArm");
+        go.transform.SetParent(transform, true);
+
+        var lr               = go.AddComponent<LineRenderer>();
+        lr.useWorldSpace     = true;
+        lr.loop              = false;
+        lr.numCapVertices    = 2;
+        lr.numCornerVertices = 2;
+
+        Vector3 dir  = new Vector3(Mathf.Cos(angleRad), Mathf.Sin(angleRad), 0f);
+        Vector3 perp = new Vector3(-dir.y, dir.x, 0f);
+
+        int segCount = Random.Range(4, 7);
+        var positions = new Vector3[segCount + 1];
+        positions[0]  = origin;
+
+        Vector3 cur = origin;
+        for (int i = 1; i <= segCount; i++)
+        {
+            float segLen = (radius / segCount) * Random.Range(0.75f, 1.25f);
+            // Jitter perpendicular — no jag on the final tip so it tapers to a point
+            float jag = i < segCount ? Random.Range(-0.20f, 0.20f) * radius : 0f;
+            cur       += dir * segLen + perp * jag;
+            positions[i] = cur;
+        }
+
+        lr.positionCount = positions.Length;
+        lr.SetPositions(positions);
+
+        // Taper: thick at the base crack, thin at the tip
+        var widthCurve = new AnimationCurve(
+            new Keyframe(0f, baseWidth),
+            new Keyframe(1f, baseWidth * 0.15f));
+        lr.widthCurve = widthCurve;
+
+        var mat = new Material(Shader.Find("Sprites/Default"));
+        mat.color           = color;
+        lr.material         = mat;
+        lr.startColor       = color;
+        lr.endColor         = color;
+        lr.sortingLayerName = layer;
+        lr.sortingOrder     = order;
+
+        return lr;
+    }
+
+    void Update()
+    {
+        _timer += Time.deltaTime;
+        float t     = Mathf.Clamp01(_timer / FadeDuration);
+        float alpha = Mathf.Lerp(0.80f, 0f, t * t); // ease-in fade so cracks linger then disappear
+
+        foreach (var lr in _arms)
+        {
+            if (lr == null) continue;
+            var c = new Color(_baseColor.r, _baseColor.g, _baseColor.b, alpha);
+            lr.startColor = c;
+            lr.endColor   = c;
+        }
+
+        if (t >= 1f) Destroy(gameObject);
+    }
 }

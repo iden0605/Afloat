@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: BabyMosquitoData
   m_EditorClassIdentifier: 
   enemyName: Baby Mosquito
-  description: 
+  description: "A tiny, fast-moving larval mosquito. Fragile but quick \u2014 forces
+    players to prioritize fast-targeting troops."
   portrait: {fileID: 21300000, guid: 5b7b09a31d60b436c9ef85f74c9e2adf, type: 3}
   prefab: {fileID: 1103165689165731684, guid: 8d96844c280e547d0aa5f0efd5628b99, type: 3}
   baseHealth: 15
-  speed: 2.2
+  speed: 2
   goldDrop: 6
   effectType: 0
   effectValue: 0

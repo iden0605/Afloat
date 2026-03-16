@@ -44,6 +44,23 @@ public class GoldHUD : MonoBehaviour
     private static readonly Color GoldColour  = new Color(1.00f, 0.88f, 0.30f);
     private static readonly Color SpendColour = new Color(1.00f, 0.28f, 0.22f);
 
+    // ── Timer badge ───────────────────────────────────────────────────────────
+    private VisualElement _timerBadge;
+    private Label         _timerLabel;
+
+    // Elapsed seconds during the current wave
+    private float  _elapsedSeconds = 0f;
+    private int    _lastWaveIndex  = -1;
+    private Button _skipBtn;
+
+    private static readonly Color TimerNormalColour   = new Color(0.55f, 0.92f, 1.00f);
+    private static readonly Color TimerCountdownColour = new Color(1.00f, 0.82f, 0.30f);
+    private static readonly Color TimerFlashColour     = new Color(1.00f, 0.22f, 0.18f);
+    private static readonly Color TimerFlashHighColour = new Color(1.00f, 0.85f, 0.85f);
+
+    private static readonly Color TimerBorderNormal = new Color(0.20f, 0.62f, 0.88f, 0.55f);
+    private static readonly Color TimerBorderRed    = new Color(0.90f, 0.18f, 0.14f, 0.80f);
+
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     void Awake()
@@ -159,6 +176,70 @@ public class GoldHUD : MonoBehaviour
         _goldLabel.style.unityTextAlign          = TextAnchor.MiddleCenter;
         _goldLabel.pickingMode                   = PickingMode.Ignore;
         _badge.Add(_goldLabel);
+
+        // ── Timer badge (sits immediately to the right of the gold badge) ─────
+        var timerGap = new VisualElement();
+        timerGap.style.width     = 8;
+        timerGap.pickingMode     = PickingMode.Ignore;
+        screen.Add(timerGap);
+
+        _timerBadge = new VisualElement();
+        _timerBadge.style.marginTop              = 0;
+        _timerBadge.style.paddingTop             = paddingV;
+        _timerBadge.style.paddingBottom          = paddingV;
+        _timerBadge.style.paddingLeft            = paddingH;
+        _timerBadge.style.paddingRight           = paddingH;
+        _timerBadge.style.backgroundColor        = new StyleColor(new Color(0.04f, 0.08f, 0.12f, 0.88f));
+        _timerBadge.style.borderTopLeftRadius    = cornerRadius;
+        _timerBadge.style.borderTopRightRadius   = cornerRadius;
+        _timerBadge.style.borderBottomLeftRadius  = cornerRadius;
+        _timerBadge.style.borderBottomRightRadius = cornerRadius;
+        _timerBadge.style.borderTopWidth         = 1f;
+        _timerBadge.style.borderBottomWidth      = 1f;
+        _timerBadge.style.borderLeftWidth        = 1f;
+        _timerBadge.style.borderRightWidth       = 1f;
+        SetBadgeBorderColor(_timerBadge, TimerBorderNormal);
+        _timerBadge.style.height                 = badgeHeight;
+        _timerBadge.style.flexDirection          = FlexDirection.Row;
+        _timerBadge.style.alignItems             = Align.Center;
+        _timerBadge.pickingMode                  = PickingMode.Ignore;
+        screen.Add(_timerBadge);
+
+        _timerLabel = new Label("—:——");
+        _timerLabel.style.fontSize               = fontSize;
+        _timerLabel.style.color                  = new StyleColor(TimerNormalColour);
+        _timerLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+        _timerLabel.style.marginTop              = 0;
+        _timerLabel.style.marginBottom           = 0;
+        _timerLabel.style.paddingTop             = 0;
+        _timerLabel.style.paddingBottom          = 0;
+        _timerLabel.style.unityTextAlign         = TextAnchor.MiddleCenter;
+        _timerLabel.pickingMode                  = PickingMode.Ignore;
+        _timerBadge.Add(_timerLabel);
+
+        // Skip button — visible only during countdown
+        _skipBtn = new Button(() => WaveManager.Instance?.SkipCountdown()) { text = "▶▶" };
+        _skipBtn.style.marginLeft              = 10;
+        _skipBtn.style.paddingTop              = 0;
+        _skipBtn.style.paddingBottom           = 0;
+        _skipBtn.style.paddingLeft             = 8;
+        _skipBtn.style.paddingRight            = 8;
+        _skipBtn.style.height                  = 30;
+        _skipBtn.style.fontSize                = 13;
+        _skipBtn.style.color                   = new StyleColor(new Color(1f, 0.85f, 0.30f));
+        _skipBtn.style.backgroundColor         = new StyleColor(new Color(0.25f, 0.20f, 0.04f, 0.80f));
+        _skipBtn.style.borderTopLeftRadius     = 6;
+        _skipBtn.style.borderTopRightRadius    = 6;
+        _skipBtn.style.borderBottomLeftRadius  = 6;
+        _skipBtn.style.borderBottomRightRadius = 6;
+        _skipBtn.style.borderTopWidth          = 1f;
+        _skipBtn.style.borderBottomWidth       = 1f;
+        _skipBtn.style.borderLeftWidth         = 1f;
+        _skipBtn.style.borderRightWidth        = 1f;
+        SetBadgeBorderColor(_skipBtn, new Color(0.85f, 0.65f, 0.10f, 0.50f));
+        _skipBtn.style.unityTextAlign          = TextAnchor.MiddleCenter;
+        _skipBtn.style.display                 = DisplayStyle.None;
+        _timerBadge.Add(_skipBtn);
     }
 
     // ── Update display ────────────────────────────────────────────────────────
@@ -218,6 +299,88 @@ public class GoldHUD : MonoBehaviour
                 _scaleAnim.Pause();
             }
         }).Every(16); // ~60 fps
+    }
+
+    // ── Timer update ──────────────────────────────────────────────────────────
+
+    void Update()
+    {
+        if (_timerLabel == null || WaveManager.Instance == null) return;
+
+        var wm          = WaveManager.Instance;
+        bool waveActive = wm.IsWaveActive;
+        bool counting   = wm.IsCountingDown;
+        int  waveIdx    = wm.CurrentWaveIndex;
+
+        // Reset elapsed timer whenever a new wave begins
+        if (waveIdx != _lastWaveIndex)
+        {
+            _elapsedSeconds = 0f;
+            _lastWaveIndex  = waveIdx;
+        }
+
+        if (_skipBtn != null)
+            _skipBtn.style.display = counting ? DisplayStyle.Flex : DisplayStyle.None;
+
+        if (counting)
+        {
+            float remaining = wm.CountdownRemaining;
+            _timerLabel.text = FormatTime(remaining, ceiling: true);
+
+            if (remaining <= 3f && remaining > 0f)
+            {
+                // Flash between red and a pale highlight at ~4 Hz
+                float flash = (Mathf.Sin(Time.unscaledTime * Mathf.PI * 4f) + 1f) * 0.5f;
+                _timerLabel.style.color = new StyleColor(Color.Lerp(TimerFlashColour, TimerFlashHighColour, flash));
+
+                // Wobble left-right at ~6 Hz
+                float wobble = Mathf.Sin(Time.unscaledTime * Mathf.PI * 6f) * 5f;
+                _timerBadge.transform.position = new Vector3(wobble, 0f, 0f);
+
+                SetBadgeBorderColor(_timerBadge, TimerBorderRed);
+            }
+            else
+            {
+                _timerLabel.style.color = new StyleColor(TimerCountdownColour);
+                _timerBadge.transform.position = Vector3.zero;
+                SetBadgeBorderColor(_timerBadge, TimerBorderNormal);
+            }
+        }
+        else if (waveActive)
+        {
+            _elapsedSeconds += Time.deltaTime;
+            _timerLabel.text = FormatTime(_elapsedSeconds, ceiling: false);
+            _timerLabel.style.color = new StyleColor(TimerNormalColour);
+            _timerBadge.transform.position = Vector3.zero;
+            SetBadgeBorderColor(_timerBadge, TimerBorderNormal);
+        }
+        else if (waveIdx < 0)
+        {
+            // Before the first wave starts
+            _timerLabel.text = "—:——";
+            _timerLabel.style.color = new StyleColor(TimerNormalColour);
+            _timerBadge.transform.position = Vector3.zero;
+            SetBadgeBorderColor(_timerBadge, TimerBorderNormal);
+        }
+        // All waves complete — leave last elapsed time displayed
+    }
+
+    // Formats seconds as M:SS.  ceiling=true rounds up (for countdown display).
+    static string FormatTime(float seconds, bool ceiling)
+    {
+        float s = ceiling ? Mathf.Ceil(seconds) : Mathf.Floor(seconds);
+        s = Mathf.Max(0f, s);
+        int total = (int)s;
+        return $"{total / 60}:{total % 60:00}";
+    }
+
+    static void SetBadgeBorderColor(VisualElement el, Color col)
+    {
+        var sc = new StyleColor(col);
+        el.style.borderTopColor    = sc;
+        el.style.borderBottomColor = sc;
+        el.style.borderLeftColor   = sc;
+        el.style.borderRightColor  = sc;
     }
 
     // ── Spend animation: label flashes red then fades back to gold ───────────

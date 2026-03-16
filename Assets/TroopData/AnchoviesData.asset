@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: AnchoviesData
   m_EditorClassIdentifier: 
   troopName: Anchovies
-  description: 
+  description: Placed on a water section of the enemy path. Periodically surges across
+    the water lane, damaging every enemy on contact. Must be placed directly on the
+    enemy path in water.
   portrait: {fileID: 21300000, guid: 2513a652f7728413287142358bf43a6c, type: 3}
   prefab: {fileID: 9127803922270330756, guid: 850171726e875466bb93c128b0f89ec4, type: 3}
   category: 0
@@ -21,10 +23,10 @@ MonoBehaviour:
   isLandPlatform: 0
   useRectangularRange: 1
   rangeRectWidth: 0.5
-  baseCost: 50
+  baseCost: 100
   attack: 12
-  attackSpeed: 0.25
-  range: 1.5
+  attackSpeed: 0.5
+  range: 0.9
   attackType: 3
   projectileType: 0
   splashRadius: 0.5
@@ -42,5 +44,23 @@ MonoBehaviour:
     freezeDuration: 0
     freezeSlowFactor: 0
     stunDuration: 0
-  upgrades: []
+  upgrades:
+  - description: The school grows frenzied - sweeps come swifter and bite harder.
+    cost: 75
+    attackDelta: 6
+    attackSpeedDelta: 0.1
+    rangeDelta: 0
+    effects: []
+  - description: A relentless tide - barely a moment between surges.
+    cost: 100
+    attackDelta: 8
+    attackSpeedDelta: 0.2
+    rangeDelta: 0
+    effects: []
+  - description: A living current - enemies barely recover before the next wave hits.
+    cost: 150
+    attackDelta: 12
+    attackSpeedDelta: 0.3
+    rangeDelta: 0
+    effects: []
   evolutions: []

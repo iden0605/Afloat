@@ -357,7 +357,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   fishCollisionRadius: 0.14
-  sweepSpeed: 1.5
+  sweepSpeed: 1.7
   orbitSpeed: 0.5
   orbitRadius: 0.055
   breatheFreq: 0.7

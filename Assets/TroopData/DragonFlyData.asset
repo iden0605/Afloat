@@ -13,16 +13,20 @@ MonoBehaviour:
   m_Name: DragonFlyData
   m_EditorClassIdentifier: 
   troopName: Dragon Fly
-  description: 
+  description: Flies a fixed figure-8 patrol route over the map, dropping exploding
+    eggs at set intervals. Eggs detonate on landing, dealing AoE splash damage. Its
+    path cannot be changed after placement.
   portrait: {fileID: 21300000, guid: e626057b55ed34adea50b270c1e94f75, type: 3}
   prefab: {fileID: 9164315150359954072, guid: 0631d2d2f3c3448df9418c5fd6866eb0, type: 3}
   category: 0
   placementType: 2
   isLandPlatform: 0
+  useRectangularRange: 0
+  rangeRectWidth: 0.6
   baseCost: 50
   attack: 15
   attackSpeed: 0.4
-  range: 0.0
+  range: 0
   attackType: 3
   projectileType: 0
   splashRadius: 0.5
@@ -30,7 +34,7 @@ MonoBehaviour:
     effectType: 8
     goldMultiplier: 2
     conditionalAttack: 0
-    conditionalSpeed: 1.0
+    conditionalSpeed: 1
     allyBonus: 0
     dotDamage: 0
     dotInterval: 0
@@ -40,5 +44,23 @@ MonoBehaviour:
     freezeDuration: 0
     freezeSlowFactor: 0
     stunDuration: 0
-  upgrades: []
+  upgrades:
+  - description: "Faster wings \u2014 drop rate increases"
+    cost: 80
+    attackDelta: 3
+    attackSpeedDelta: 0.15
+    rangeDelta: 0
+    effects: []
+  - description: "Double drop \u2014 releases 2 eggs per interval"
+    cost: 110
+    attackDelta: 3
+    attackSpeedDelta: 0.1
+    rangeDelta: 0
+    effects: []
+  - description: "Blast radius +85% \u2014 explosions cover a much wider area"
+    cost: 150
+    attackDelta: 5
+    attackSpeedDelta: 0.15
+    rangeDelta: 0
+    effects: []
   evolutions: []

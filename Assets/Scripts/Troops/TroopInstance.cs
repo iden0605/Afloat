@@ -25,8 +25,19 @@ public class TroopInstance : MonoBehaviour
     public float CurrentAttackInterval => 1f / Mathf.Max(0.01f, CurrentAttackSpeed);
 
     public int  SellValue       => Mathf.RoundToInt(TotalGoldSpent * 0.5f);
-    public bool CanUpgrade      => Data != null && UpgradeLevel < Data.upgrades.Length;
-    public int  NextUpgradeCost => CanUpgrade ? Data.upgrades[UpgradeLevel].cost : 0;
+    /// <summary>
+    /// True when the player has reached the upgrade threshold required to trigger the next
+    /// evolution but hasn't evolved yet — they must evolve before upgrading further.
+    /// </summary>
+    public bool EvolutionGateActive =>
+        Data != null &&
+        Data.HasEvolutions &&
+        EvolutionLevel < Data.evolutions.Length &&
+        UpgradeLevel >= Data.evolutions[EvolutionLevel].upgradesRequired &&
+        UpgradeLevel < (Data.upgrades?.Length ?? 0);
+
+    public bool CanUpgrade      => Data != null && UpgradeLevel < (Data.upgrades?.Length ?? 0) && !EvolutionGateActive;
+    public int  NextUpgradeCost => Data != null && UpgradeLevel < (Data.upgrades?.Length ?? 0) ? Data.upgrades[UpgradeLevel].cost : 0;
 
     public EvolutionData NextEvolution => (Data != null && Data.HasEvolutions && EvolutionLevel < Data.evolutions.Length)
         ? Data.evolutions[EvolutionLevel]
@@ -36,7 +47,31 @@ public class TroopInstance : MonoBehaviour
     // ── Per-attack state (effects) ─────────────────────────────────────────
 
     private int          _attackCount = 0;              // for DoubleEveryFourth
+
+    /// <summary>The "every N attacks" period for DoubleEveryFourth. 0 if effect not active.</summary>
+    public int DoubleHitPeriod
+    {
+        get
+        {
+            var cfg = GetEffectConfig(TroopEffectType.DoubleEveryFourth);
+            if (cfg == null) return 0;
+            return cfg.rampingMaxStacks > 0 ? cfg.rampingMaxStacks : 4;
+        }
+    }
+
+    /// <summary>True when the next DealDamage call will be a double-damage hit.</summary>
+    public bool IsNextAttackDoubleHit
+    {
+        get
+        {
+            int period = DoubleHitPeriod;
+            return period > 0 && (_attackCount + 1) % period == 0;
+        }
+    }
     private readonly List<float> _rampingExpiries = new(); // for RampingDoubleBuff
+
+    /// <summary>How many active RampingDoubleBuff stacks this troop currently has.</summary>
+    public int RampingStackCount => _rampingExpiries.Count;
 
     // ── Component refs ────────────────────────────────────────────────────────
 
@@ -157,10 +192,13 @@ public class TroopInstance : MonoBehaviour
 
     /// <summary>
     /// All currently active effects:
-    ///   • base effect (always)
-    ///   + effects from the highest purchased upgrade tier (if any)
-    ///   + effects from the current evolution tier (if any)
-    /// Effects from a given tier REPLACE those from the previous tier (they don't stack across tiers).
+    ///   • Upgrade tier effects (highest purchased tier only)
+    ///   + Evolution tier effects (current evo tier only)
+    ///   + Base effect — unless a tier/evo effect shares the same effectType,
+    ///     in which case the tier/evo version fully replaces the base.
+    ///
+    /// This lets upgrade tiers store the full intended value for an effect
+    /// rather than a delta on top of the base.
     /// </summary>
     public IEnumerable<TroopEffectConfig> ActiveEffects
     {
@@ -168,27 +206,38 @@ public class TroopInstance : MonoBehaviour
         {
             if (Data == null) yield break;
 
-            // Base effect always applies
-            if (Data.baseEffect != null && Data.baseEffect.effectType != TroopEffectType.None)
-                yield return Data.baseEffect;
+            var overridden = new System.Collections.Generic.HashSet<TroopEffectType>();
 
-            // Upgrade effects: only the most recently purchased tier
+            // Upgrade tier effects (highest priority)
             if (UpgradeLevel > 0)
             {
                 var tierEffects = Data.upgrades[UpgradeLevel - 1].effects;
                 if (tierEffects != null)
                     foreach (var e in tierEffects)
-                        if (e != null && e.effectType != TroopEffectType.None) yield return e;
+                        if (e != null && e.effectType != TroopEffectType.None)
+                        {
+                            overridden.Add(e.effectType);
+                            yield return e;
+                        }
             }
 
-            // Evolution effects: only the current evolution tier
+            // Evolution effects
             if (EvolutionLevel > 0)
             {
                 var evoEffects = Data.evolutions[EvolutionLevel - 1].effects;
                 if (evoEffects != null)
                     foreach (var e in evoEffects)
-                        if (e != null && e.effectType != TroopEffectType.None) yield return e;
+                        if (e != null && e.effectType != TroopEffectType.None)
+                        {
+                            overridden.Add(e.effectType);
+                            yield return e;
+                        }
             }
+
+            // Base effect — skipped when overridden by a tier or evo
+            if (Data.baseEffect != null && Data.baseEffect.effectType != TroopEffectType.None)
+                if (!overridden.Contains(Data.baseEffect.effectType))
+                    yield return Data.baseEffect;
         }
     }
 
@@ -286,11 +335,13 @@ public class TroopInstance : MonoBehaviour
         // ── Build final damage ─────────────────────────────────────────────
         float damage = GetEffectiveDamage();
 
-        // DoubleEveryFourth
+        // DoubleEveryFourth — period read from rampingMaxStacks (default 4)
         if (HasEffect(TroopEffectType.DoubleEveryFourth))
         {
             _attackCount++;
-            if (_attackCount % 4 == 0) damage *= 2f;
+            var dblCfg = GetEffectConfig(TroopEffectType.DoubleEveryFourth);
+            int period = dblCfg != null && dblCfg.rampingMaxStacks > 0 ? dblCfg.rampingMaxStacks : 4;
+            if (_attackCount % period == 0) damage *= 2f;
         }
 
         // RampingDoubleBuff: add a stack AFTER reading the current multiplier
@@ -324,21 +375,21 @@ public class TroopInstance : MonoBehaviour
 
                     case TroopEffectType.BurnOnHit:
                     {
-                        float dot = cfg.dotDamage > 0f ? cfg.dotDamage : damage;
+                        float dot = damage * 0.2f;
                         EnemyStatusEffects.ApplyBurn(t.gameObject, dot, cfg.dotInterval, cfg.dotDuration);
                         break;
                     }
 
                     case TroopEffectType.PoisonOnHit:
                     {
-                        float dot = cfg.dotDamage > 0f ? cfg.dotDamage : damage;
+                        float dot = damage * 0.2f;
                         EnemyStatusEffects.ApplyPoison(t.gameObject, dot, cfg.dotInterval, cfg.dotDuration);
                         break;
                     }
 
                     case TroopEffectType.PoisonSplash:
                     {
-                        float dot = cfg.dotDamage > 0f ? cfg.dotDamage : damage;
+                        float dot = damage * 0.2f;
                         EnemyStatusEffects.ApplyPoison(t.gameObject, dot, cfg.dotInterval, cfg.dotDuration);
                         break;
                     }
@@ -349,6 +400,10 @@ public class TroopInstance : MonoBehaviour
 
                     case TroopEffectType.StunOnHit:
                         EnemyStatusEffects.ApplyStun(t.gameObject, cfg.stunDuration);
+                        break;
+
+                    case TroopEffectType.DazeOnHit:
+                        EnemyStatusEffects.ApplyDaze(t.gameObject, cfg.stunDuration);
                         break;
                 }
             }
@@ -376,6 +431,9 @@ public class TroopInstance : MonoBehaviour
         }
         return list;
     }
+
+    /// <summary>Number of same-type allies within this troop's current range.</summary>
+    public int NearbyAllyCount => CountNearbyAllies();
 
     private int CountNearbyAllies()
     {

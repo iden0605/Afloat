@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84a0813b27cdd4b3b95d21f6cb444989, type: 3}
+  m_Name: AxolotlData
+  m_EditorClassIdentifier: 
+  troopName: Axolotl
+  description: "Launches a glowing water-charged projectile that bounces between
+    nearby enemies automatically. Each bounce deals full damage and slows enemies\u2014
+    perfect for tightly grouped threats."
+  portrait: {fileID: 21300000, guid: fa374ec4f01884d88b408774447602b8, type: 3}
+  prefab: {fileID: 7192995905059547836, guid: 237112f7295104de5b396e246b7b2088, type: 3}
+  category: 0
+  placementType: 1
+  isLandPlatform: 0
+  useRectangularRange: 0
+  rangeRectWidth: 0.6
+  baseCost: 200
+  attack: 50
+  attackSpeed: 1
+  range: 2.5
+  attackType: 1
+  projectileType: 0
+  splashRadius: 0.5
+  baseEffect:
+    effectType: 0
+    goldMultiplier: 2
+    conditionalAttack: 3
+    conditionalSpeed: 1.2
+    allyBonus: 0.5
+    dotDamage: 0
+    dotInterval: 0.5
+    dotDuration: 0
+    rampingDuration: 2
+    rampingMaxStacks: 3
+    freezeDuration: 2
+    freezeSlowFactor: 0.3
+    stunDuration: 1
+  upgrades:
+  - description: "The orb crackles louder \u2014 finds one more target before fading."
+    cost: 300
+    attackDelta: 40
+    attackSpeedDelta: 0.1
+    rangeDelta: 0.2
+    effects: []
+  - description: "Charges from deeper waters \u2014 pulls in threats from further
+      away."
+    cost: 320
+    attackDelta: 40
+    attackSpeedDelta: 0
+    rangeDelta: 0.4
+    effects: []
+  - description: "Unstoppable chain reaction \u2014 the orb refuses to die quietly."
+    cost: 390
+    attackDelta: 40
+    attackSpeedDelta: 0.2
+    rangeDelta: 0
+    effects: []
+  evolutions: []

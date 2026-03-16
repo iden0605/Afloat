@@ -10,6 +10,8 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(UIDocument))]
 public class TroopSidebarController : MonoBehaviour
 {
+    public static TroopSidebarController Instance { get; private set; }
+
     [Tooltip("Combat troops shown in the top section. Order matches display order.")]
     [SerializeField] private List<TroopData> troops = new();
 
@@ -41,6 +43,12 @@ public class TroopSidebarController : MonoBehaviour
     private VisualElement _detailEffectRow;
     private Label         _detailEffect;
     private VisualElement _detailEvolutionsContainer;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+    }
 
     void OnEnable()
     {
@@ -442,6 +450,24 @@ public class TroopSidebarController : MonoBehaviour
             _sidebar.RemoveFromClassList("open");
             _toggleBtn.text = "\u2630"; // ☰
         }
+    }
+
+    /// <summary>Close the sidebar programmatically (e.g. when a drag begins).</summary>
+    public void CloseSidebar()
+    {
+        if (!_isOpen) return;
+        _isOpen = false;
+        _sidebar.RemoveFromClassList("open");
+        _toggleBtn.text = "\u2630"; // ☰
+    }
+
+    /// <summary>Open the sidebar programmatically (e.g. after a successful troop placement).</summary>
+    public void OpenSidebar()
+    {
+        if (_isOpen) return;
+        _isOpen = true;
+        _sidebar.AddToClassList("open");
+        _toggleBtn.text = "\u2715"; // ✕
     }
 
     // -------------------------------------------------------

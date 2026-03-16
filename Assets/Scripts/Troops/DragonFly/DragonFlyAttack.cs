@@ -27,38 +27,51 @@ public class DragonFlyAttack : MonoBehaviour
 
     [Header("Egg Bomb")]
     [Tooltip("Radius in world units within which the explosion deals splash damage")]
-    [SerializeField] private float splashRadius = 0.28f;
+    [SerializeField] private float splashRadius     = 0.28f;
+    [Tooltip("Additional splash radius added at upgrade level 3")]
+    [SerializeField] private float splashRadiusU3   = 0.24f;
     [Tooltip("Seconds from drop to detonation")]
-    [SerializeField] private float fuseTime     = 2.0f;
+    [SerializeField] private float fuseTime         = 2.0f;
 
     [Header("Visuals")]
     [SerializeField] private string sortingLayerName = "Default";
     [SerializeField] private int    sortingOrder     = 4;
 
+    [Header("Focus Trail")]
+    [Tooltip("How long the wing trail persists in seconds")]
+    [SerializeField] private float trailTime  = 0.22f;
+    [Tooltip("Peak width of the wing streak trail")]
+    [SerializeField] private float trailWidth = 0.055f;
+
     // ── Internal state ────────────────────────────────────────
 
     private TroopInstance _instance;
+    private TroopBehavior _behavior;
     private Vector3       _homePos;    // centre of the figure-8 pattern
     private float         _t;          // figure-8 angle parameter
     private float         _cooldown;
+
+    // Flight streak trail (active when focus speed buff is triggered)
+    private TrailRenderer _trail;
+    private bool          _trailActive;
 
     // ── Lifecycle ─────────────────────────────────────────────
 
     void Awake()
     {
         _instance = GetComponent<TroopInstance>();
+        _behavior = GetComponent<TroopBehavior>();
 
         // Stop TroopBehavior from rotating this troop toward enemies.
         // Target detection (EnemiesInRange / CurrentTarget) still runs for effect calculations.
-        var behavior = GetComponent<TroopBehavior>();
-        if (behavior != null) behavior.suppressRotation = true;
+        if (_behavior != null) _behavior.suppressRotation = true;
     }
 
     void Start()
     {
         _homePos = transform.position;
-        // Stagger first drop so it doesn't fire the instant the troop is placed
-        _cooldown = 0.5f;
+        _cooldown = 0.5f; // stagger first drop
+        BuildFlightTrail();
     }
 
     void Update()
@@ -91,14 +104,33 @@ public class DragonFlyAttack : MonoBehaviour
             DropBombs();
             _cooldown = _instance.GetEffectiveAttackInterval();
         }
+
+        // Wing-streak trail fires when the focus speed buff is active
+        bool focused = IsFocused();
+        if (focused != _trailActive)
+        {
+            _trailActive      = focused;
+            _trail.emitting   = focused;
+            if (!focused) _trail.Clear(); // wipe old trail when buff drops
+        }
+    }
+
+    // True when ConditionalSpeedBuff is active AND exactly 1 enemy is in range
+    bool IsFocused()
+    {
+        if (_behavior == null) return false;
+        if (!_instance.HasEffect(TroopEffectType.ConditionalSpeedBuff)) return false;
+        return _behavior.EnemiesInRange == 1;
     }
 
     // ── Bomb drop ─────────────────────────────────────────────
 
-    // U2 upgrade: drops 2 eggs per interval, slightly offset so they don't overlap.
+    // U2: drops 2 eggs per interval. U3: larger explosion radius.
     void DropBombs()
     {
-        int count = _instance.UpgradeLevel >= 2 ? 2 : 1;
+        int   count          = _instance.UpgradeLevel >= 2 ? 2 : 1;
+        float effectiveRadius = splashRadius + (_instance.UpgradeLevel >= 3 ? splashRadiusU3 : 0f);
+
         for (int i = 0; i < count; i++)
         {
             float xOff = count > 1 ? (i == 0 ? -0.10f : 0.10f) : 0f;
@@ -106,8 +138,51 @@ public class DragonFlyAttack : MonoBehaviour
             go.transform.position = transform.position + new Vector3(xOff, 0f, 0f);
 
             var bomb = go.AddComponent<DragonFlyEggBomb>();
-            bomb.Init(_instance, fuseTime, splashRadius, sortingLayerName, sortingOrder);
+            bomb.Init(_instance, fuseTime, effectiveRadius, sortingLayerName, sortingOrder);
         }
+    }
+    // ── Trail setup ───────────────────────────────────────────
+
+    void BuildFlightTrail()
+    {
+        var go = new GameObject("FlightStreakTrail");
+        go.transform.SetParent(transform, false);
+
+        _trail = go.AddComponent<TrailRenderer>();
+        _trail.time               = trailTime;
+        _trail.widthMultiplier    = trailWidth;
+        _trail.minVertexDistance  = 0.015f;
+        _trail.numCornerVertices  = 4;
+        _trail.numCapVertices     = 4;
+        _trail.emitting           = false;
+        _trail.sortingLayerName   = sortingLayerName;
+        _trail.sortingOrder       = sortingOrder + 1;
+
+        var mat = new Material(Shader.Find("Sprites/Default"));
+        _trail.material = mat;
+
+        // Cyan-white streak that fades toward the tail
+        var gradient = new Gradient();
+        gradient.SetKeys(
+            new GradientColorKey[]
+            {
+                new GradientColorKey(new Color(0.60f, 0.95f, 1.00f), 0.00f),
+                new GradientColorKey(new Color(0.35f, 0.75f, 1.00f), 0.55f),
+                new GradientColorKey(new Color(0.20f, 0.50f, 0.90f), 1.00f),
+            },
+            new GradientAlphaKey[]
+            {
+                new GradientAlphaKey(0.85f, 0.00f),
+                new GradientAlphaKey(0.40f, 0.60f),
+                new GradientAlphaKey(0.00f, 1.00f),
+            });
+        _trail.colorGradient = gradient;
+
+        // Taper from full width at head to zero at tail
+        var widthCurve = new AnimationCurve(
+            new Keyframe(0f, 1f),
+            new Keyframe(1f, 0f));
+        _trail.widthCurve = widthCurve;
     }
 }
 

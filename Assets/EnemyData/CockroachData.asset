@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: CockroachData
   m_EditorClassIdentifier: 
   enemyName: Cockroach
-  description: 
+  description: A skittering roach that unpredictably sidesteps attacks. Forces players
+    to invest in high-attack-rate or multi-hit troops.
   portrait: {fileID: 21300000, guid: 5c1deee7d23b84f4c96cb7ee2109a6c4, type: 3}
   prefab: {fileID: 8343956985839966932, guid: fa08d5f46995b4c75a7ee690712b5743, type: 3}
-  baseHealth: 60
-  speed: 1.5
+  baseHealth: 150
+  speed: 1.3
   goldDrop: 15
   effectType: 5
   effectValue: 0.25

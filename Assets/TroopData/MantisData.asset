@@ -19,7 +19,9 @@ MonoBehaviour:
   category: 0
   placementType: 0
   isLandPlatform: 0
-  baseCost: 50
+  useRectangularRange: 0
+  rangeRectWidth: 0.6
+  baseCost: 125
   attack: 20
   attackSpeed: 0.8
   range: 2
@@ -28,7 +30,7 @@ MonoBehaviour:
   splashRadius: 0.5
   baseEffect:
     effectType: 7
-    goldMultiplier: 2
+    goldMultiplier: 0
     conditionalAttack: 10
     conditionalSpeed: 0
     allyBonus: 0
@@ -40,7 +42,161 @@ MonoBehaviour:
     freezeDuration: 0
     freezeSlowFactor: 0
     stunDuration: 0
-  upgrades: []
+  upgrades:
+  - description: Razor-sharp focus - the more the merrier, and deadlier.
+    cost: 100
+    attackDelta: 10
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects:
+    - effectType: 7
+      goldMultiplier: 0
+      conditionalAttack: 15
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 3
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: Extends its strike - nothing at the edge of its gaze escapes.
+    cost: 150
+    attackDelta: 12
+    attackSpeedDelta: 0
+    rangeDelta: 0.5
+    effects:
+    - effectType: 7
+      goldMultiplier: 0
+      conditionalAttack: 15
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 3
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: Battle-hardened - chaos fuels it into a whirlwind of blades.
+    cost: 200
+    attackDelta: 18
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects:
+    - effectType: 7
+      goldMultiplier: 0
+      conditionalAttack: 20
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 3
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: The rage lingers longer - it doesn't calm between kills.
+    cost: 400
+    attackDelta: 25
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects:
+    - effectType: 10
+      goldMultiplier: 0
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 7
+      rampingMaxStacks: 3
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+    - effectType: 7
+      goldMultiplier: 0
+      conditionalAttack: 20
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 3
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: A deeper bloodlust - the frenzy stacks higher than ever before.
+    cost: 500
+    attackDelta: 30
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects:
+    - effectType: 10
+      goldMultiplier: 0
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 7
+      rampingMaxStacks: 4
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+    - effectType: 7
+      goldMultiplier: 0
+      conditionalAttack: 20
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 3
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: Unstoppable - once it enters the frenzy, it almost never leaves
+      it.
+    cost: 610
+    attackDelta: 40
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects:
+    - effectType: 10
+      goldMultiplier: 0
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 10
+      rampingMaxStacks: 4
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+    - effectType: 7
+      goldMultiplier: 0
+      conditionalAttack: 20
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 3
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
   evolutions:
   - evolutionName: Giant Praying Mantis
     description: A massive evolved mantis. Strikes all enemies with each leap.
@@ -50,18 +206,18 @@ MonoBehaviour:
     evolutionCost: 400
     attackBoost: 20
     attackSpeedBoost: 0
-    rangeBoost: 0.5
+    rangeBoost: 0
     effects:
     - effectType: 10
-    goldMultiplier: 2
-    conditionalAttack: 0
-    conditionalSpeed: 0
-    allyBonus: 0
-    dotDamage: 0
-    dotInterval: 0
-    dotDuration: 0
-    rampingDuration: 5
-    rampingMaxStacks: 3
-    freezeDuration: 0
-    freezeSlowFactor: 0
-    stunDuration: 0
+      goldMultiplier: 0
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 5
+      rampingMaxStacks: 3
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0

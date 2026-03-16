@@ -23,6 +23,10 @@ public enum TroopEffectType
     // ── Proximity self-buffs ──────────────────────────────────────────────────
     AllyProximityBuff,      // +ATK per nearby ally of the same troop type
     AllySpeedBuff,          // +SPD per nearby ally of the same troop type
+
+    // ── Projectile modifiers ──────────────────────────────────────────────────
+    PiercingShot,           // Projectile passes through N enemies (rampingMaxStacks = pierce count)
+    DazeOnHit,              // Reverses hit enemy along path for X seconds (stunDuration = daze duration)
 }
 
 // ── Per-effect configuration ──────────────────────────────────────────────────

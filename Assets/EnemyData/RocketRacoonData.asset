@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: RocketRacoonData
   m_EditorClassIdentifier: 
   enemyName: Rocket Racoon
-  description: 
+  description: "A mutated raccoon strapped with refuse-powered boosters. Deceptively
+    calm until near death \u2014 then it ignites and sprints for the exit."
   portrait: {fileID: 21300000, guid: 76fac63b4e86f46c5ac1175a3e419a53, type: 3}
   prefab: {fileID: 8985963482762792726, guid: c0f94b3773d8c40ebb8b4366525f582a, type: 3}
-  baseHealth: 800
-  speed: 1.0
+  baseHealth: 1300
+  speed: 1.1
   goldDrop: 80
   effectType: 10
   effectValue: 0.3

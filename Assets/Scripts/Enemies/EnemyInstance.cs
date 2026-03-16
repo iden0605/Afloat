@@ -46,6 +46,9 @@ public class EnemyInstance : MonoBehaviour
     // DoubleGoldDrop: accumulate multiplier from attacking troops
     private float _goldMultiplier = 1f;
 
+    /// <summary>True once any troop has marked this enemy for bonus gold on death.</summary>
+    public bool HasDoubleGold => _goldMultiplier > 1f;
+
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     public void Initialize(EnemyData data)
@@ -97,6 +100,11 @@ public class EnemyInstance : MonoBehaviour
     public void MarkDoubleGold(float multiplier)
     {
         if (multiplier > _goldMultiplier) _goldMultiplier = multiplier;
+
+        // Trigger the gold shimmer visual on first (or upgraded) mark
+        var vis = GetComponent<EnemyVisualEffects>()
+                  ?? gameObject.AddComponent<EnemyVisualEffects>();
+        vis.ApplyDoubleGold();
     }
 
     /// <summary>

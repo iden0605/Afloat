@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: TinCanData
   m_EditorClassIdentifier: 
   enemyName: Tin Can
-  description: 
+  description: "A heavy tin can that grinds along the path. Very high HP for its
+    phase \u2014 a deliberate damage sponge intended to outlast weak towers."
   portrait: {fileID: 21300000, guid: 15d6c60b72f3442f999be3730811242d, type: 3}
   prefab: {fileID: 3364150953773157294, guid: e23eff29ba22d4fc781c2eacf0959317, type: 3}
-  baseHealth: 150
+  baseHealth: 300
   speed: 0.7
   goldDrop: 20
   effectType: 0

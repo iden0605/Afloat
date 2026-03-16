@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: StrawData
   m_EditorClassIdentifier: 
   enemyName: Straw
-  description: 
+  description: "A rigid plastic straw \u2014 faster and slightly tougher. Travels
+    in clusters."
   portrait: {fileID: 21300000, guid: 7c64eabef899140e38774c4d3812836c, type: 3}
   prefab: {fileID: 150521772448660149, guid: 13a819e466c5147d2bb4dce0bce3188e, type: 3}
   baseHealth: 35
-  speed: 1.4
+  speed: 0.9
   goldDrop: 8
   effectType: 0
   effectValue: 0

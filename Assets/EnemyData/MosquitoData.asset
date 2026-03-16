@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: MosquitoData
   m_EditorClassIdentifier: 
   enemyName: Mosquito
-  description: 
+  description: "A fully grown mosquito that hovers above ground level \u2014 melee
+    attackers simply can't reach it. Forces use of Centipede or other ranged troops."
   portrait: {fileID: 21300000, guid: 2aac20379f8bc45e48b13b53069b1747, type: 3}
   prefab: {fileID: 4701545867634183170, guid: 5baaa7739e4e04bff9cf03b3a8ced342, type: 3}
   baseHealth: 50

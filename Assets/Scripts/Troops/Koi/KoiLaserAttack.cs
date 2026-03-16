@@ -332,16 +332,30 @@ public class KoiLaserAttack : MonoBehaviour
 
     // ── Laser drawing ─────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// Thickness multiplier based on upgrade level, always relative to the base inspector widths.
+    /// U1 = +50%, U2 = +100%, U3 = +150%.
+    /// </summary>
+    float ThicknessMultiplier() => _instance.UpgradeLevel switch
+    {
+        1 => 1.5f,
+        2 => 2.0f,
+        3 => 2.5f,
+        _ => 1.0f
+    };
+
     void DrawLaser(float widthT)
     {
         Vector3 origin = LaserOrigin();
         Vector3 end    = origin + _lockedFireDir * laserLength;
 
-        DrawStraightLR(_lrOuter,     origin, end, outerGlowWidth * widthT, outerGlowColor, widthT);
-        DrawStraightLR(_lrMid,       origin, end, midGlowWidth   * widthT, midGlowColor,   widthT);
-        DrawStraightLR(_lrCoreBlue,  origin, end, coreBlueWidth  * widthT, coreBlueColor,  widthT);
-        DrawStraightLR(_lrCoreWhite, origin, end, coreWhiteWidth * widthT, coreWhiteColor, widthT);
-        DrawJitterLR(origin, end, widthT);
+        float thick = ThicknessMultiplier();
+
+        DrawStraightLR(_lrOuter,     origin, end, outerGlowWidth * widthT * thick, outerGlowColor, widthT);
+        DrawStraightLR(_lrMid,       origin, end, midGlowWidth   * widthT * thick, midGlowColor,   widthT);
+        DrawStraightLR(_lrCoreBlue,  origin, end, coreBlueWidth  * widthT * thick, coreBlueColor,  widthT);
+        DrawStraightLR(_lrCoreWhite, origin, end, coreWhiteWidth * widthT * thick, coreWhiteColor, widthT);
+        DrawJitterLR(origin, end, widthT, thick);
     }
 
     void DrawStraightLR(LineRenderer lr, Vector3 from, Vector3 to, float width, Color col, float alphaMult)
@@ -354,14 +368,14 @@ public class KoiLaserAttack : MonoBehaviour
         lr.endColor   = new Color(col.r, col.g, col.b, col.a * alphaMult);
     }
 
-    void DrawJitterLR(Vector3 origin, Vector3 end, float widthT)
+    void DrawJitterLR(Vector3 origin, Vector3 end, float widthT, float thickMult = 1f)
     {
         // Compute a perpendicular axis to the beam in 2D
         Vector3 dir  = (end - origin).normalized;
         Vector3 perp = new Vector3(-dir.y, dir.x, 0f);
 
-        float w    = jitterWidth * widthT;
-        Color jCol = new Color(jitterColor.r, jitterColor.g, jitterColor.b, jitterColor.a * widthT);
+        float w    = jitterWidth * widthT * thickMult;  // thickness scales with upgrade
+        Color jCol = new Color(jitterColor.r, jitterColor.g, jitterColor.b, jitterColor.a * widthT); // alpha envelope unchanged
         _lrJitter.startWidth = w;
         _lrJitter.endWidth   = w;
         _lrJitter.startColor = jCol;

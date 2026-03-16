@@ -25,4 +25,4 @@ MonoBehaviour:
     count: 5
     spawnInterval: 1
     groupDelay: 6
-  preWaveDelay: 5
+  preWaveDelay: 8

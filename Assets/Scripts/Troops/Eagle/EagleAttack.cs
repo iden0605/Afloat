@@ -79,6 +79,10 @@ public class EagleAttack : MonoBehaviour
     // Live particle handles
     private ParticleSystem _wingParticles;  // wind feathers during ascent / return
     private ParticleSystem _trailParticles; // golden streak during dive
+    private ParticleSystem _auraParticles;  // orange power aura on double-hit attacks
+
+    // Double-hit tracking
+    private bool _isDoubleHit; // true when this attack cycle is a ×2 hit
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -107,6 +111,8 @@ public class EagleAttack : MonoBehaviour
         _behavior.suppressRotation = false;
         StopWingParticles(clearImmediate: true);
         StopDiveTrail(clearImmediate: true);
+        StopAura(clearImmediate: true);
+        _isDoubleHit = false;
         _phase    = Phase.Idle;
         _cooldown = 0f;
     }
@@ -141,9 +147,13 @@ public class EagleAttack : MonoBehaviour
     {
         _phase      = Phase.Ascending;
         _phaseTimer = 0f;
-        // TroopBehavior rotates the eagle toward the target while it circles.
+
+        // Check now — before DealDamage increments the counter — whether this attack is a double hit
+        _isDoubleHit = _instance.IsNextAttackDoubleHit;
+
         _behavior.suppressRotation = false;
         StartWingParticles();
+        if (_isDoubleHit) StartAura();
     }
 
     void TickAscending()
@@ -174,6 +184,8 @@ public class EagleAttack : MonoBehaviour
         // If the target disappeared before we could dive, skip straight home.
         if (_lockedTarget == null)
         {
+            StopAura(clearImmediate: true);
+            _isDoubleHit = false;
             BeginReturning();
             return;
         }
@@ -211,6 +223,7 @@ public class EagleAttack : MonoBehaviour
         _phaseTimer = 0f;
 
         StopDiveTrail(clearImmediate: false);
+        StopAura(clearImmediate: false);
 
         // Deal damage — guard against the target dying mid-dive.
         if (_lockedTarget != null)
@@ -219,7 +232,12 @@ public class EagleAttack : MonoBehaviour
                 _instance.Data?.attackType ?? AttackType.Melee,
                 transform.position);
 
-        SpawnImpactVFX(transform.position);
+        if (_isDoubleHit)
+            SpawnDoubleHitImpactVFX(transform.position);
+        else
+            SpawnImpactVFX(transform.position);
+
+        _isDoubleHit = false;
     }
 
     void TickImpact()
@@ -422,12 +440,111 @@ public class EagleAttack : MonoBehaviour
         _trailParticles = null;
     }
 
+    // ── Orange power aura (double-hit attacks) ────────────────────────────────
+    // Pulsing amber/orange ring that orbits the eagle during ascent and diving,
+    // telegraphing to the player that this strike will deal double damage.
+
+    void StartAura()
+    {
+        if (_auraParticles != null) return;
+
+        var go = new GameObject("Eagle_PowerAura");
+        go.transform.SetParent(transform, false);
+        go.transform.localPosition = Vector3.zero;
+
+        var ps   = go.AddComponent<ParticleSystem>();
+        var main = ps.main;
+        main.loop            = true;
+        main.startLifetime   = new ParticleSystem.MinMaxCurve(0.55f, 0.80f);
+        main.startSpeed      = new ParticleSystem.MinMaxCurve(0.05f, 0.15f);
+        main.startSize       = new ParticleSystem.MinMaxCurve(0.06f, 0.14f);
+        main.startColor      = new ParticleSystem.MinMaxGradient(
+                                   new Color(1.00f, 0.52f, 0.05f, 1.00f),  // deep orange
+                                   new Color(1.00f, 0.82f, 0.10f, 0.90f)); // amber
+        main.gravityModifier = 0f;
+        main.simulationSpace = ParticleSystemSimulationSpace.Local;
+        main.maxParticles    = 60;
+        main.stopAction      = ParticleSystemStopAction.Destroy;
+
+        var emission = ps.emission;
+        emission.rateOverTime = 40f;
+
+        // Emit from a ring around the eagle body
+        var shape = ps.shape;
+        shape.enabled         = true;
+        shape.shapeType       = ParticleSystemShapeType.Circle;
+        shape.radius          = 0.22f;
+        shape.radiusThickness = 0f; // rim only — keeps it as a clean halo
+
+        // Orbital velocity so particles circle the eagle
+        var vel = ps.velocityOverLifetime;
+        vel.enabled  = true;
+        vel.space    = ParticleSystemSimulationSpace.Local;
+        vel.orbitalZ = new ParticleSystem.MinMaxCurve(280f);
+
+        var col  = ps.colorOverLifetime;
+        col.enabled = true;
+        var grad = new Gradient();
+        grad.SetKeys(
+            new GradientColorKey[]
+            {
+                new GradientColorKey(new Color(1.00f, 0.80f, 0.10f), 0.0f),
+                new GradientColorKey(new Color(1.00f, 0.40f, 0.02f), 0.5f),
+                new GradientColorKey(new Color(1.00f, 0.20f, 0.00f), 1.0f),
+            },
+            new GradientAlphaKey[]
+            {
+                new GradientAlphaKey(0f,    0.0f),
+                new GradientAlphaKey(0.85f, 0.15f),
+                new GradientAlphaKey(0.70f, 0.70f),
+                new GradientAlphaKey(0f,    1.0f),
+            });
+        col.color = new ParticleSystem.MinMaxGradient(grad);
+
+        var sizeLife = ps.sizeOverLifetime;
+        sizeLife.enabled = true;
+        sizeLife.size    = new ParticleSystem.MinMaxCurve(1f,
+                               new AnimationCurve(
+                                   new Keyframe(0f, 0.3f),
+                                   new Keyframe(0.3f, 1.0f),
+                                   new Keyframe(1f, 0.0f)));
+
+        var psr = go.GetComponent<ParticleSystemRenderer>();
+        psr.material         = new Material(Shader.Find("Sprites/Default"));
+        psr.sortingLayerName = sortingLayerName;
+        psr.sortingOrder     = sortingOrder + 1;
+
+        ps.Play();
+        _auraParticles = ps;
+    }
+
+    void StopAura(bool clearImmediate)
+    {
+        if (_auraParticles == null) return;
+        _auraParticles.Stop(true, clearImmediate
+            ? ParticleSystemStopBehavior.StopEmittingAndClear
+            : ParticleSystemStopBehavior.StopEmitting);
+        _auraParticles = null;
+    }
+
     // ── Impact VFX ────────────────────────────────────────────────────────────
 
     void SpawnImpactVFX(Vector3 pos)
     {
         SpawnImpactBurst(pos);
         SpawnImpactRing(pos);
+    }
+
+    // Double-hit impact: larger fiery burst + two concentric rings
+    void SpawnDoubleHitImpactVFX(Vector3 pos)
+    {
+        SpawnDoubleHitBurst(pos);
+        SpawnImpactRing(pos);  // inner gold ring (reuse standard)
+        // Outer orange ring — slightly delayed offset via a larger max-radius
+        var go = new GameObject("Eagle_DoubleHitOuterRing");
+        go.transform.position = pos;
+        go.AddComponent<EagleImpactRing>().Init(
+            new Color(1.00f, 0.45f, 0.05f), sortingLayerName, sortingOrder, maxRadius: 1.05f);
     }
 
     // Burst of golden feather/star sparks that scatter on impact.
@@ -492,6 +609,68 @@ public class EagleAttack : MonoBehaviour
         ps.Play();
     }
 
+    // Larger orange/white burst for double-hit — more particles, brighter core
+    void SpawnDoubleHitBurst(Vector3 pos)
+    {
+        var go = new GameObject("Eagle_DoubleHitBurst");
+        go.transform.position = pos;
+
+        var ps   = go.AddComponent<ParticleSystem>();
+        var main = ps.main;
+        main.loop            = false;
+        main.startLifetime   = new ParticleSystem.MinMaxCurve(0.30f, 0.65f);
+        main.startSpeed      = new ParticleSystem.MinMaxCurve(2.5f, 7.0f);
+        main.startSize       = new ParticleSystem.MinMaxCurve(0.07f, 0.22f);
+        main.startColor      = new ParticleSystem.MinMaxGradient(
+                                   new Color(1.00f, 0.55f, 0.05f, 1.00f),  // fiery orange
+                                   new Color(1.00f, 0.95f, 0.60f, 1.00f)); // hot white-yellow
+        main.gravityModifier = 0.15f;
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.maxParticles    = 60;
+        main.stopAction      = ParticleSystemStopAction.Destroy;
+
+        var emission = ps.emission;
+        emission.rateOverTime = 0;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 48) });
+
+        var shape = ps.shape;
+        shape.enabled   = true;
+        shape.shapeType = ParticleSystemShapeType.Circle;
+        shape.radius    = 0.08f;
+
+        var col  = ps.colorOverLifetime;
+        col.enabled = true;
+        var grad = new Gradient();
+        grad.SetKeys(
+            new GradientColorKey[]
+            {
+                new GradientColorKey(new Color(1.00f, 1.00f, 0.80f), 0.0f),
+                new GradientColorKey(new Color(1.00f, 0.55f, 0.05f), 0.4f),
+                new GradientColorKey(new Color(0.70f, 0.20f, 0.00f), 1.0f),
+            },
+            new GradientAlphaKey[]
+            {
+                new GradientAlphaKey(1.0f, 0.0f),
+                new GradientAlphaKey(0.8f, 0.4f),
+                new GradientAlphaKey(0.0f, 1.0f),
+            });
+        col.color = new ParticleSystem.MinMaxGradient(grad);
+
+        var sizeLife = ps.sizeOverLifetime;
+        sizeLife.enabled = true;
+        sizeLife.size    = new ParticleSystem.MinMaxCurve(1f,
+                               new AnimationCurve(
+                                   new Keyframe(0f, 1.0f),
+                                   new Keyframe(1f, 0.0f)));
+
+        var psr = go.GetComponent<ParticleSystemRenderer>();
+        psr.material         = new Material(Shader.Find("Sprites/Default"));
+        psr.sortingLayerName = sortingLayerName;
+        psr.sortingOrder     = sortingOrder + 3;
+
+        ps.Play();
+    }
+
     // Spawns an EagleImpactRing component that expands and fades on its own.
     void SpawnImpactRing(Vector3 pos)
     {
@@ -530,13 +709,15 @@ public class EagleImpactRing : MonoBehaviour
     private float        _timer;
 
     private const float Duration   = 0.40f;
-    private const float MaxRadius  = 0.60f;
     private const int   Segments   = 28;
     private const float StartWidth = 0.10f;
 
-    public void Init(Color color, string sortingLayer, int sortingOrder)
+    private float _maxRadius = 0.60f;
+
+    public void Init(Color color, string sortingLayer, int sortingOrder, float maxRadius = 0.60f)
     {
-        _color = color;
+        _color     = color;
+        _maxRadius = maxRadius;
         _ring  = gameObject.AddComponent<LineRenderer>();
         _ring.useWorldSpace     = true;
         _ring.loop              = true;
@@ -556,7 +737,7 @@ public class EagleImpactRing : MonoBehaviour
     {
         _timer += Time.deltaTime;
         float t      = Mathf.Clamp01(_timer / Duration);
-        float radius = Mathf.Lerp(0f, MaxRadius, EaseOutQuart(t));
+        float radius = Mathf.Lerp(0f, _maxRadius, EaseOutQuart(t));
         float alpha  = Mathf.Lerp(1.0f, 0f, t);
         float width  = Mathf.Lerp(StartWidth, 0.005f, t);
 

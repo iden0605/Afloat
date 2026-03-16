@@ -13,13 +13,16 @@ MonoBehaviour:
   m_Name: AntData
   m_EditorClassIdentifier: 
   troopName: Ant
-  description: 
+  description: "Dashes forward at an enemy, strikes, and scurries back to base position
+    before attacking again. Weak alone \u2014 devastating in a colony."
   portrait: {fileID: 21300000, guid: faffa8fe8960b46b9a9d9966a035c424, type: 3}
   prefab: {fileID: 3378608800881172945, guid: 67c21e601ffca49839836f8f2e1b5bbc, type: 3}
   category: 0
   placementType: 0
   isLandPlatform: 0
-  baseCost: 50
+  useRectangularRange: 0
+  rangeRectWidth: 0.6
+  baseCost: 75
   attack: 8
   attackSpeed: 1.2
   range: 1
@@ -41,154 +44,216 @@ MonoBehaviour:
     freezeSlowFactor: 0
     stunDuration: 0
   upgrades:
-  - description: ATK 12 · Colony +6
+  - description: "The colony grows bold \u2014 teammates inspire fiercer strikes."
     cost: 75
     attackDelta: 4
     attackSpeedDelta: 0
     rangeDelta: 0
     effects:
     - effectType: 11
-          goldMultiplier: 2
-          conditionalAttack: 0
-          conditionalSpeed: 0
-          allyBonus: 6
-          dotDamage: 0
-          dotInterval: 0
-          dotDuration: 0
-          rampingDuration: 0
-          rampingMaxStacks: 0
-          freezeDuration: 0
-          freezeSlowFactor: 0
-          stunDuration: 0
-  - description: ATK 18 · RNG 1.5u
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 6
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: "Legs carry it further \u2014 no enemy is out of reach."
     cost: 100
-    attackDelta: 6
+    attackDelta: 5
     attackSpeedDelta: 0
-    rangeDelta: 0.5
+    rangeDelta: 0.2
     effects:
-    - effectType: 11
-          goldMultiplier: 2
-          conditionalAttack: 0
-          conditionalSpeed: 0
-          allyBonus: 6
-          dotDamage: 0
-          dotInterval: 0
-          dotDuration: 0
-          rampingDuration: 0
-          rampingMaxStacks: 0
-          freezeDuration: 0
-          freezeSlowFactor: 0
-          stunDuration: 0
-  - description: ATK 26 · Colony +8
+    - effectType: 2
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 15
+      dotInterval: 2
+      dotDuration: 6
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: "A hive mind sharpens \u2014 the colony fights as one deadly organism."
     cost: 150
-    attackDelta: 8
+    attackDelta: 7
     attackSpeedDelta: 0
     rangeDelta: 0
     effects:
     - effectType: 11
-          goldMultiplier: 2
-          conditionalAttack: 0
-          conditionalSpeed: 0
-          allyBonus: 8
-          dotDamage: 0
-          dotInterval: 0
-          dotDuration: 0
-          rampingDuration: 0
-          rampingMaxStacks: 0
-          freezeDuration: 0
-          freezeSlowFactor: 0
-          stunDuration: 0
-  - description: ATK 32 · Burn 10 dmg
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 6
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: "The flames run hotter \u2014 wounds that won't stop smouldering."
     cost: 150
-    attackDelta: 10
+    attackDelta: 15
     attackSpeedDelta: 0
     rangeDelta: 0
     effects:
     - effectType: 2
-          goldMultiplier: 2
-          conditionalAttack: 0
-          conditionalSpeed: 0
-          allyBonus: 0
-          dotDamage: 10
-          dotInterval: 2
-          dotDuration: 4
-          rampingDuration: 0
-          rampingMaxStacks: 0
-          freezeDuration: 0
-          freezeSlowFactor: 0
-          stunDuration: 0
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 10
+      dotInterval: 2
+      dotDuration: 4
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
     - effectType: 11
-          goldMultiplier: 2
-          conditionalAttack: 0
-          conditionalSpeed: 0
-          allyBonus: 8
-          dotDamage: 0
-          dotInterval: 0
-          dotDuration: 0
-          rampingDuration: 0
-          rampingMaxStacks: 0
-          freezeDuration: 0
-          freezeSlowFactor: 0
-          stunDuration: 0
-  - description: ATK 44 · Burn 6s
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 8
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: "The embers cling longer \u2014 enemies burn well past the bite."
     cost: 200
-    attackDelta: 12
+    attackDelta: 16
     attackSpeedDelta: 0
     rangeDelta: 0
     effects:
     - effectType: 2
-          goldMultiplier: 2
-          conditionalAttack: 0
-          conditionalSpeed: 0
-          allyBonus: 0
-          dotDamage: 10
-          dotInterval: 2
-          dotDuration: 6
-          rampingDuration: 0
-          rampingMaxStacks: 0
-          freezeDuration: 0
-          freezeSlowFactor: 0
-          stunDuration: 0
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 10
+      dotInterval: 2
+      dotDuration: 6
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
     - effectType: 11
-          goldMultiplier: 2
-          conditionalAttack: 0
-          conditionalSpeed: 0
-          allyBonus: 8
-          dotDamage: 0
-          dotInterval: 0
-          dotDuration: 0
-          rampingDuration: 0
-          rampingMaxStacks: 0
-          freezeDuration: 0
-          freezeSlowFactor: 0
-          stunDuration: 0
-  - description: ATK 65 · Burn 15/2s 6s
-    cost: 300
-    attackDelta: 21
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 8
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: "A living torch \u2014 each bite leaves enemies wreathed in fire."
+    cost: 310
+    attackDelta: 20
+    attackSpeedDelta: 0.1
+    rangeDelta: 0
+    effects:
+    - effectType: 2
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 15
+      dotInterval: 2
+      dotDuration: 6
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: "The swarm synchronises \u2014 proximity sharpens every soldier's
+      pace."
+    cost: 370
+    attackDelta: 20
     attackSpeedDelta: 0
     rangeDelta: 0
     effects:
     - effectType: 2
-          goldMultiplier: 2
-          conditionalAttack: 0
-          conditionalSpeed: 0
-          allyBonus: 0
-          dotDamage: 15
-          dotInterval: 2
-          dotDuration: 6
-          rampingDuration: 0
-          rampingMaxStacks: 0
-          freezeDuration: 0
-          freezeSlowFactor: 0
-          stunDuration: 0
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 15
+      dotInterval: 2
+      dotDuration: 6
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: "The aura reaches its peak \u2014 a fully packed colony is a blur
+      of aggression."
+    cost: 400
+    attackDelta: 19
+    attackSpeedDelta: 0.1
+    rangeDelta: 0
+    effects:
+    - effectType: 2
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 15
+      dotInterval: 2
+      dotDuration: 6
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
+  - description: "The bond transcends distance \u2014 the colony feels each other
+      from further away."
+    cost: 500
+    attackDelta: 19
+    attackSpeedDelta: 0.1
+    rangeDelta: 0.2
+    effects:
+    - effectType: 2
+      goldMultiplier: 2
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0
+      dotDamage: 15
+      dotInterval: 2
+      dotDuration: 6
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0
   evolutions:
   - evolutionName: Fire Ant
-    description: 
+    description: An evolved ant wreathed in embers. Same dash-and-return attack pattern,
+      but each bite ignites the target. Colony aura now only resonates with fellow
+      Fire Ants.
     portrait: {fileID: 21300000, guid: 8ea76daa45747472aa2993fdf6e30ca1, type: 3}
     prefab: {fileID: 6102032580315816842, guid: f8a5b5a96f5b342d195a6d10305c262e, type: 3}
-    upgradesRequired: 2
-    evolutionCost: 100
-    attackBoost: 0
+    upgradesRequired: 3
+    evolutionCost: 200
+    attackBoost: 5
     attackSpeedBoost: 0
     rangeBoost: 0
     effects:
@@ -197,19 +262,36 @@ MonoBehaviour:
       conditionalAttack: 0
       conditionalSpeed: 0
       allyBonus: 0
+      dotDamage: 0
       dotInterval: 2
+      dotDuration: 0
       rampingDuration: 0
       rampingMaxStacks: 0
       freezeDuration: 0
       freezeSlowFactor: 0
       stunDuration: 0
   - evolutionName: Bullet Ant
-    description: 
+    description: "The apex of ant evolution. A colony of Bullet Ants becomes a blurring
+      attack machine \u2014 each nearby ant accelerates the whole group's assault
+      cadence."
     portrait: {fileID: 21300000, guid: 9ec2fa9df8a7e492e90c9056893b0b21, type: 3}
     prefab: {fileID: 389132586245534007, guid: 35c19ae0c17384c46b8c5a1f911b9742, type: 3}
-    upgradesRequired: 3
-    evolutionCost: 100
-    attackBoost: 0
-    attackSpeedBoost: 0
+    upgradesRequired: 6
+    evolutionCost: 400
+    attackBoost: 6
+    attackSpeedBoost: 0.1
     rangeBoost: 0
-    effects: []
+    effects:
+    - effectType: 12
+      goldMultiplier: 0
+      conditionalAttack: 0
+      conditionalSpeed: 0
+      allyBonus: 0.2
+      dotDamage: 0
+      dotInterval: 0
+      dotDuration: 0
+      rampingDuration: 0
+      rampingMaxStacks: 0
+      freezeDuration: 0
+      freezeSlowFactor: 0
+      stunDuration: 0

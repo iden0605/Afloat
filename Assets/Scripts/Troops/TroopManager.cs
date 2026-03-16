@@ -38,6 +38,8 @@ public class TroopManager : MonoBehaviour
         {
             if (hit.collider.TryGetComponent<TroopInstance>(out var troop))
             {
+                if (troop.Data == null) continue; // skip uninitialized instances (e.g. swarm sub-objects)
+                if (troop.Data.isLandPlatform && HasTroopOnPlatform(troop)) continue; // occupied lily pad — select the troop on top instead
                 EnemySelectionUI.Instance?.Hide();
                 TroopSelectionUI.Instance.Show(troop);
                 return;
@@ -45,6 +47,7 @@ public class TroopManager : MonoBehaviour
 
             if (hit.collider.TryGetComponent<TroopHomeProxy>(out var proxy) && proxy.Troop != null)
             {
+                if (proxy.Troop.Data == null) continue;
                 EnemySelectionUI.Instance?.Hide();
                 TroopSelectionUI.Instance.Show(proxy.Troop);
                 return;
@@ -88,6 +91,18 @@ public class TroopManager : MonoBehaviour
         instance.Initialize(data);
         Register(instance);
         return instance;
+    }
+
+    bool HasTroopOnPlatform(TroopInstance platform)
+    {
+        var col = platform.GetComponent<Collider2D>();
+        if (col == null) return false;
+        foreach (var t in _placedTroops)
+        {
+            if (col.OverlapPoint(new Vector2(t.transform.position.x, t.transform.position.y)))
+                return true;
+        }
+        return false;
     }
 
     public void Register(TroopInstance troop)

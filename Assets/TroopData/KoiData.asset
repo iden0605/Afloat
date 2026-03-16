@@ -13,32 +13,56 @@ MonoBehaviour:
   m_Name: KoiData
   m_EditorClassIdentifier: 
   troopName: Koi
-  description: 
+  description: Charges a dazzling laser beam that fires across the entire map, piercing
+    through every enemy in its line simultaneously. Slow to charge but unmatched
+    for corridor control.
   portrait: {fileID: 21300000, guid: 294b6bff024f34d5cb21c3c34eb12c45, type: 3}
   prefab: {fileID: 2801682847433654534, guid: 0eb71f2fd051644849987531e6dd6550, type: 3}
   category: 0
   placementType: 1
   isLandPlatform: 0
+  useRectangularRange: 0
+  rangeRectWidth: 0.6
   baseCost: 50
-  attack: 30
-  attackSpeed: 0.4
-  range: 100.0
+  attack: 110
+  attackSpeed: 0.7
+  range: 6
   attackType: 2
   projectileType: 0
   splashRadius: 0.5
   baseEffect:
-    effectType: 0
+    effectType: 2
     goldMultiplier: 0
     conditionalAttack: 0
     conditionalSpeed: 0
     allyBonus: 0
-    dotDamage: 0
-    dotInterval: 0
-    dotDuration: 0
+    dotDamage: 5
+    dotInterval: 1
+    dotDuration: 3
     rampingDuration: 0
     rampingMaxStacks: 0
-    freezeDuration: 2
-    freezeSlowFactor: 0.3
-    stunDuration: 1
-  upgrades: []
+    freezeDuration: 0
+    freezeSlowFactor: 0
+    stunDuration: 0
+  upgrades:
+  - description: "Laser beam widens +50% \u2014 scorches a broader path through enemies."
+    cost: 75
+    attackDelta: 5
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects: []
+  - description: "Laser beam widens +100% \u2014 the superheated beam tears through
+      enemies twice as wide."
+    cost: 100
+    attackDelta: 5
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects: []
+  - description: "Laser beam widens +150% \u2014 a colossal beam that devastates
+      everything in its path."
+    cost: 150
+    attackDelta: 10
+    attackSpeedDelta: 0.1
+    rangeDelta: 0
+    effects: []
   evolutions: []

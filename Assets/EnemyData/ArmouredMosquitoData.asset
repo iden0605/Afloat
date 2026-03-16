@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: ArmouredMosquitoData
   m_EditorClassIdentifier: 
   enemyName: Armoured Mosquito
-  description: 
+  description: A mosquito encased in a micro-carapace of plastic shards. Still airborne
+    and melee-immune, now with significantly more HP.
   portrait: {fileID: 21300000, guid: 065b227841de44fb0a434832984083f3, type: 3}
   prefab: {fileID: 8988606232293926181, guid: 45b45a1f4befa4dc89575852938796f8, type: 3}
-  baseHealth: 100
-  speed: 2.0
+  baseHealth: 400
+  speed: 1.2
   goldDrop: 25
   effectType: 1
   effectValue: 0

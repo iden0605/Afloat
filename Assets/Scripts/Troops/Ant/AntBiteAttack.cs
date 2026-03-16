@@ -89,6 +89,9 @@ public class AntBiteAttack : MonoBehaviour
         _behavior = GetComponent<TroopBehavior>();
         _instance = GetComponent<TroopInstance>();
         _animator = GetComponent<Animator>();
+
+        if (GetComponent<AntColonyAura>() == null)
+            gameObject.AddComponent<AntColonyAura>();
     }
 
     void Start()
