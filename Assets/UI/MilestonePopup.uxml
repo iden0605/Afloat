@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MilestonePopup.uss" />
+
+    <!-- Full-screen root — hidden by default, shown by MilestonePopupController -->
+    <ui:VisualElement name="ms-root" class="ms-root">
+
+        <!-- Dark backdrop, absorbs clicks while open -->
+        <ui:VisualElement name="ms-backdrop" class="ms-backdrop" />
+
+        <!-- Centred panel — background-image set in Inspector via MilestonePopupController -->
+        <ui:VisualElement name="ms-panel" class="ms-panel">
+
+            <!-- Phase title e.g. "Phase 2: Creeping Threats" -->
+            <ui:Label name="ms-phase-label" class="ms-phase-title" />
+
+            <!-- Wave cleared subtitle e.g. "Wave 10 Cleared!" -->
+            <ui:Label name="ms-wave-label" class="ms-wave-label" />
+
+            <!-- Thin decorative divider -->
+            <ui:VisualElement name="ms-divider" class="ms-divider" />
+
+            <!-- "ALLIES UNLOCKED" section header — hidden on victory screen -->
+            <ui:Label name="ms-allies-header" text="ALLIES UNLOCKED" class="ms-section-header" />
+
+            <!-- Ally cards injected here by MilestonePopupController -->
+            <ui:VisualElement name="ms-cards-container" class="ms-cards-container" />
+
+            <!-- Victory message — only shown on wave 50 -->
+            <ui:Label name="ms-victory-msg" class="ms-victory-msg"
+                      text="You have defended the river against all threats." />
+
+            <!-- Button row -->
+            <ui:VisualElement name="ms-buttons" class="ms-buttons">
+                <!-- Normal milestone: single continue button -->
+                <ui:Button name="ms-continue-btn" text="CONTINUE" class="ms-btn ms-btn--continue" />
+                <!-- Victory only -->
+                <ui:Button name="ms-keep-going-btn" text="KEEP GOING" class="ms-btn ms-btn--keep-going" />
+                <ui:Button name="ms-menu-btn"       text="MAIN MENU"  class="ms-btn ms-btn--menu" />
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,256 @@
+/* =============================================================
+   MilestonePopup.uss  —  Click 'n' Claw phase-end pop-up
+   Nature / river aesthetic — designed to sit over the
+   painterly background with a hand-drawn panel art behind it.
+   ============================================================= */
+
+/* ── Full-screen root ─────────────────────────────────────── */
+.ms-root {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    display: none; /* toggled by MilestonePopupController */
+}
+
+/* ── Dark nature-tinted backdrop ──────────────────────────── */
+.ms-backdrop {
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(5, 14, 8, 0);  /* opacity animated in code */
+}
+
+/* ── Main panel ───────────────────────────────────────────── */
+.ms-panel {
+    align-self: center;
+    width: 580px;
+    max-height: 82%;
+    align-items: center;
+    padding: 40px 48px 36px 48px;
+    /* Fallback dark background until user imports panel art sprite.
+       background-image is set from the Inspector via MilestonePopupController. */
+    background-color: rgba(10, 22, 13, 0.93);
+    border-radius: 16px;
+    border-width: 2px;
+    border-color: rgba(90, 170, 80, 0.30);
+    /* Translate animated in code — starts below screen */
+    translate: 0 60px;
+    opacity: 0;
+}
+
+/* ── Phase title  e.g. "Phase 2: Creeping Threats" ───────── */
+.ms-phase-title {
+    font-size: 28px;
+    color: rgb(255, 215, 85);
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 6px;
+    opacity: 0;
+    translate: -24px 0;
+}
+
+/* ── Wave cleared subtitle  e.g. "Wave 10 Cleared!" ──────── */
+.ms-wave-label {
+    font-size: 16px;
+    color: rgb(140, 230, 130);
+    -unity-font-style: bold;
+    letter-spacing: 3px;
+    -unity-text-align: middle-center;
+    margin-bottom: 0;
+    opacity: 0;
+    translate: -24px 0;
+}
+
+/* ── Thin divider ─────────────────────────────────────────── */
+.ms-divider {
+    width: 0%;  /* expanded from 0 → 100% by code */
+    height: 1px;
+    background-color: rgba(110, 200, 90, 0.28);
+    margin-top: 18px;
+    margin-bottom: 20px;
+    opacity: 0;
+}
+
+/* ── "ALLIES UNLOCKED" section header ────────────────────── */
+.ms-section-header {
+    font-size: 11px;
+    color: rgb(130, 210, 120);
+    -unity-font-style: bold;
+    letter-spacing: 4px;
+    -unity-text-align: middle-center;
+    margin-bottom: 16px;
+    opacity: 0;
+}
+
+/* ── Ally cards scroll container ─────────────────────────── */
+.ms-cards-container {
+    width: 100%;
+    max-height: 320px;
+    margin-bottom: 22px;
+    /* Remove ScrollView inner padding */
+    padding: 0;
+}
+
+/* ── Individual ally card ─────────────────────────────────── */
+.ms-card {
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 18px;
+    opacity: 0;    /* animated in by code */
+    translate: 36px 0;
+}
+
+/* ── Portrait thumbnail ───────────────────────────────────── */
+.ms-card-portrait {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    margin-right: 18px;
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: rgba(110, 190, 90, 0.40);
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(20, 45, 20, 0.60);
+}
+
+/* ── Info column (name, badge, stats, ability) ────────────── */
+.ms-card-info {
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: flex-start;
+}
+
+.ms-card-name {
+    font-size: 20px;
+    color: rgb(255, 248, 215);
+    -unity-font-style: bold;
+    margin-bottom: 5px;
+    opacity: 0;
+    translate: 0 8px;
+}
+
+/* ── Attack-type badge ────────────────────────────────────── */
+.ms-attack-badge {
+    font-size: 9px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-bottom: 7px;
+    align-self: flex-start;
+    opacity: 0;
+    translate: 0 8px;
+}
+.ms-attack-badge--melee  { background-color: rgba(140, 55, 25, 0.65); color: rgb(255, 185, 145); }
+.ms-attack-badge--ranged { background-color: rgba(25, 70, 140, 0.65); color: rgb(145, 200, 255); }
+.ms-attack-badge--splash { background-color: rgba(115, 35, 130, 0.65); color: rgb(220, 165, 255); }
+.ms-attack-badge--utility { background-color: rgba(50, 90, 40, 0.65); color: rgb(170, 240, 155); }
+
+/* ── Stat chips row ───────────────────────────────────────── */
+.ms-stats-row {
+    flex-direction: row;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+    opacity: 0;
+    translate: 0 8px;
+}
+
+.ms-stat-chip {
+    background-color: rgba(18, 48, 22, 0.75);
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: rgba(90, 170, 80, 0.25);
+    padding: 2px 9px;
+    margin-right: 6px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: rgb(160, 235, 155);
+    -unity-font-style: bold;
+}
+
+/* ── Special ability label ────────────────────────────────── */
+.ms-card-ability {
+    font-size: 12px;
+    color: rgb(185, 220, 165);
+    -unity-font-style: italic;
+    white-space: normal;
+    opacity: 0;
+    translate: 0 8px;
+}
+
+/* ── Victory message (wave 50 only) ──────────────────────── */
+.ms-victory-msg {
+    font-size: 15px;
+    color: rgb(210, 240, 190);
+    -unity-font-style: italic;
+    -unity-text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 24px;
+    opacity: 0;
+    max-width: 420px;
+}
+
+/* ── Button row ───────────────────────────────────────────── */
+.ms-buttons {
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    opacity: 0;
+    translate: 0 10px;
+}
+
+/* ── Shared button base ───────────────────────────────────── */
+.ms-btn {
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 48px;
+    border-radius: 10px;
+    font-size: 13px;
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+    -unity-text-align: middle-center;
+    padding: 0 28px;
+    border-width: 2px;
+    margin: 0 6px;
+    transition-property: background-color, border-color;
+    transition-duration: 0.12s;
+    transition-timing-function: ease-out;
+}
+
+/* Continue — natural green */
+.ms-btn--continue {
+    background-color: rgba(28, 80, 30, 0.88);
+    color: rgb(185, 255, 165);
+    border-color: rgba(80, 170, 70, 0.45);
+}
+.ms-btn--continue:hover {
+    background-color: rgba(40, 110, 42, 0.95);
+    border-color: rgba(110, 210, 95, 0.65);
+}
+
+/* Keep Going — gold/warm, for victory -->  */
+.ms-btn--keep-going {
+    background-color: rgba(90, 65, 15, 0.88);
+    color: rgb(255, 220, 100);
+    border-color: rgba(200, 160, 50, 0.45);
+}
+.ms-btn--keep-going:hover {
+    background-color: rgba(120, 90, 20, 0.95);
+    border-color: rgba(230, 190, 70, 0.65);
+}
+
+/* Main Menu — earthy brown */
+.ms-btn--menu {
+    background-color: rgba(55, 35, 15, 0.88);
+    color: rgb(225, 195, 155);
+    border-color: rgba(140, 100, 55, 0.45);
+}
+.ms-btn--menu:hover {
+    background-color: rgba(80, 52, 22, 0.95);
+    border-color: rgba(175, 130, 75, 0.65);
+}
