@@ -3911,12 +3911,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4216f888c0f24b5ea0869983bfb7f4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  paddingH: 18
-  paddingV: 8
-  topMargin: 14
-  cornerRadius: 10
-  badgeHeight: 32
-  fontSize: 14
+  paddingH: 20
+  paddingV: 0
+  topMargin: 0
+  cornerRadius: 14
+  badgeHeight: 60
+  fontSize: 26
 --- !u!114 &1880854877
 MonoBehaviour:
   m_ObjectHideFlags: 0

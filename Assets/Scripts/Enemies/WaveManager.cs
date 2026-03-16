@@ -30,7 +30,7 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private List<WaveData> waves = new();
 
     [Header("Options")]
-    [Tooltip("Automatically begin the next wave once the current one is fully cleared.")]
+    [Tooltip("Default value for AutoProceed at scene start.")]
     [SerializeField] private bool autoPlayBetweenWaves = false;
 
     [Tooltip("Call StartNextWave() automatically when the scene loads.")]
@@ -56,12 +56,17 @@ public class WaveManager : MonoBehaviour
     /// <summary>True after the last wave has been cleared.</summary>
     public bool AllWavesComplete => CurrentWaveIndex >= waves.Count - 1 && !IsWaveActive;
 
+    /// <summary>When true, the next wave starts automatically after the current one clears.
+    /// Milestone pop-ups still block progression until dismissed.</summary>
+    public bool AutoProceed { get; set; } = false;
+
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
+        AutoProceed = autoPlayBetweenWaves;
     }
 
     void Start()
@@ -189,7 +194,7 @@ public class WaveManager : MonoBehaviour
         Debug.Log($"[WaveManager] ── Wave {CurrentWaveIndex + 1} cleared! ──");
         WaveCleared?.Invoke(CurrentWaveIndex);
 
-        if (!autoPlayBetweenWaves) return;
+        if (!AutoProceed) return;
 
         int nextIndex = CurrentWaveIndex + 1;
         if (nextIndex >= waves.Count) return;
@@ -200,9 +205,10 @@ public class WaveManager : MonoBehaviour
 
     IEnumerator AutoStartNext(float delay)
     {
-        if (delay > 0f)
-            yield return new WaitForSeconds(delay);
-        StartNextWave();
+        // Always yield so that any milestone popup (which sets timeScale=0) can
+        // freeze this coroutine until the player dismisses the popup.
+        yield return new WaitForSeconds(delay);
+        if (AutoProceed) StartNextWave();
     }
 
     static string Data(EnemyInstance e) =>

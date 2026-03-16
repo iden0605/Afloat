@@ -25,9 +25,16 @@ public class WaveUIController : MonoBehaviour
     private Label         _healthLabel;
     private VisualElement _heartIcon;
     private Button        _nextWaveBtn;
+    private Button        _pauseBtn;
+    private Button        _speedBtn;
+    private Button        _autoBtn;
 
-    private float _animTime   = 0f;
+    private float _animTime    = 0f;
     private bool  _pingPongDir = true; // true = forward, false = backward
+
+    // Simple pause state managed by the HUD button (no PauseManager required)
+    private bool  _hudPaused              = false;
+    private float _preHudPauseTimeScale   = 1f;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -40,8 +47,14 @@ public class WaveUIController : MonoBehaviour
         _heartIcon   = root.Q("heart-icon");
         _nextWaveBtn = root.Q<Button>("next-wave-btn");
 
-        if (_nextWaveBtn != null)
-            _nextWaveBtn.clicked += OnNextWaveClicked;
+        _pauseBtn    = root.Q<Button>("pause-btn");
+        _speedBtn    = root.Q<Button>("speed-btn");
+        _autoBtn     = root.Q<Button>("auto-btn");
+
+        if (_nextWaveBtn != null) _nextWaveBtn.clicked += OnNextWaveClicked;
+        if (_pauseBtn    != null) _pauseBtn.clicked    += OnPauseClicked;
+        if (_speedBtn    != null) _speedBtn.clicked    += OnSpeedClicked;
+        if (_autoBtn     != null) _autoBtn.clicked     += OnAutoClicked;
 
         PlayerHealthManager.OnHealthChanged += RefreshHealth;
 
@@ -50,8 +63,10 @@ public class WaveUIController : MonoBehaviour
 
     void OnDisable()
     {
-        if (_nextWaveBtn != null)
-            _nextWaveBtn.clicked -= OnNextWaveClicked;
+        if (_nextWaveBtn != null) _nextWaveBtn.clicked -= OnNextWaveClicked;
+        if (_pauseBtn    != null) _pauseBtn.clicked    -= OnPauseClicked;
+        if (_speedBtn    != null) _speedBtn.clicked    -= OnSpeedClicked;
+        if (_autoBtn     != null) _autoBtn.clicked     -= OnAutoClicked;
 
         PlayerHealthManager.OnHealthChanged -= RefreshHealth;
     }
@@ -60,6 +75,7 @@ public class WaveUIController : MonoBehaviour
     {
         UpdateWaveLabel();
         UpdateNextWaveButton();
+        UpdateControlButtons();
         UpdateHeartAnimation();
     }
 
@@ -117,8 +133,52 @@ public class WaveUIController : MonoBehaviour
             : "—";
     }
 
-    void OnNextWaveClicked()
+    void UpdateControlButtons()
     {
-        WaveManager.Instance?.StartNextWave();
+        bool paused = PauseManager.Instance != null ? PauseManager.Instance.IsPaused : _hudPaused;
+        SetCtrlActive(_pauseBtn, paused);
+        SetCtrlActive(_speedBtn, WaveManager.Instance != null && WaveManager.Instance.IsDoubleSpeed);
+        SetCtrlActive(_autoBtn,  WaveManager.Instance != null && WaveManager.Instance.AutoProceed);
+    }
+
+    static void SetCtrlActive(Button btn, bool active)
+    {
+        if (btn == null) return;
+        if (active) btn.AddToClassList("hud-ctrl-btn--active");
+        else        btn.RemoveFromClassList("hud-ctrl-btn--active");
+    }
+
+    void OnNextWaveClicked() => WaveManager.Instance?.StartNextWave();
+    void OnPauseClicked()
+    {
+        if (PauseManager.Instance != null)
+        {
+            PauseManager.Instance.QuietToggle();
+            return;
+        }
+
+        // PauseManager not in scene — manage pause directly
+        _hudPaused = !_hudPaused;
+        if (_hudPaused)
+        {
+            _preHudPauseTimeScale = Time.timeScale > 0f ? Time.timeScale : 1f;
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            Time.timeScale = _preHudPauseTimeScale;
+        }
+    }
+
+    void OnSpeedClicked()
+    {
+        if (WaveManager.Instance == null) return;
+        WaveManager.Instance.SetDoubleSpeed(!WaveManager.Instance.IsDoubleSpeed);
+    }
+
+    void OnAutoClicked()
+    {
+        if (WaveManager.Instance == null) return;
+        WaveManager.Instance.AutoProceed = !WaveManager.Instance.AutoProceed;
     }
 }
