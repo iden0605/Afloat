@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3182f490517aa6d4497049e1072acba3, type: 3}
+  m_Name: Milestone_Phase8
+  m_EditorClassIdentifier: 
+  phaseName: 'Phase 8: Apex Predators'
+  triggerAfterWave: 39
+  isVictory: 0
+  unlockedTroops: []
+  evolutionUnlocks:
+  - portrait: {fileID: 21300000, guid: c88c09162a5144e8fa1d389092646ef3, type: 3}
+    displayName: Giant Praying Mantis
+    subtitle: '''Big AND Mighty'''
+    abilityDescription: Attack and attack speed doubles every attack for a short
+      duration

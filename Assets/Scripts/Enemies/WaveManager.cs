@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,10 @@ using UnityEngine;
 public class WaveManager : MonoBehaviour
 {
     public static WaveManager Instance { get; private set; }
+
+    /// <summary>Fired when a wave is fully cleared (all enemies defeated or escaped).
+    /// Passes the 0-based wave index that just finished.</summary>
+    public static event Action<int> WaveCleared;
 
     [Header("Waves — add WaveData assets in order")]
     [SerializeField] private List<WaveData> waves = new();
@@ -182,6 +187,7 @@ public class WaveManager : MonoBehaviour
     void OnWaveCleared()
     {
         Debug.Log($"[WaveManager] ── Wave {CurrentWaveIndex + 1} cleared! ──");
+        WaveCleared?.Invoke(CurrentWaveIndex);
 
         if (!autoPlayBetweenWaves) return;
 
