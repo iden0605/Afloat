@@ -9,6 +9,9 @@ public class TroopManager : MonoBehaviour
 {
     public static TroopManager Instance { get; private set; }
 
+    /// <summary>Fired whenever a troop is successfully placed on the field.</summary>
+    public static event System.Action TroopPlaced;
+
     [Tooltip("The Allys parent GameObject in the scene hierarchy")]
     [SerializeField] private Transform troopsParent;
 
@@ -87,6 +90,7 @@ public class TroopManager : MonoBehaviour
 
         instance.Initialize(data);
         Register(instance);
+        TroopPlaced?.Invoke();
         return instance;
     }
 

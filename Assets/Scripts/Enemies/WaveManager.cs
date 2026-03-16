@@ -26,6 +26,9 @@ public class WaveManager : MonoBehaviour
     /// Passes the 0-based wave index that just finished.</summary>
     public static event Action<int> WaveCleared;
 
+    /// <summary>Fired when a new wave begins spawning. Passes the 0-based wave index.</summary>
+    public static event Action<int> WaveStarted;
+
     [Header("Waves — add WaveData assets in order")]
     [SerializeField] private List<WaveData> waves = new();
 
@@ -132,6 +135,7 @@ public class WaveManager : MonoBehaviour
     IEnumerator RunWave(WaveData wave)
     {
         IsSpawning = true;
+        WaveStarted?.Invoke(CurrentWaveIndex);
         Debug.Log($"[WaveManager] ── Wave {CurrentWaveIndex + 1} starting ──");
 
         foreach (var entry in wave.entries)

@@ -13,6 +13,8 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(UIDocument))]
 public class WaveUIController : MonoBehaviour
 {
+    public static WaveUIController Instance { get; private set; }
+
     [Header("Heart Animation")]
     [Tooltip("Sprite frames in order: 0, 1, 2, 3, 4")]
     [SerializeField] private Sprite[] heartSprites;
@@ -37,6 +39,12 @@ public class WaveUIController : MonoBehaviour
     private float _preHudPauseTimeScale   = 1f;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+    }
 
     void OnEnable()
     {
@@ -147,6 +155,23 @@ public class WaveUIController : MonoBehaviour
         if (active) btn.AddToClassList("hud-ctrl-btn--active");
         else        btn.RemoveFromClassList("hud-ctrl-btn--active");
     }
+
+    /// <summary>Returns the Next Wave button's screen bounds for hint highlighting.</summary>
+    public Rect GetNextWaveButtonBounds()  => _nextWaveBtn?.worldBound ?? Rect.zero;
+
+    /// <summary>Returns a rect that covers the pause/speed/auto control buttons for hint highlighting.</summary>
+    public Rect GetControlButtonsBounds()
+    {
+        if (_pauseBtn == null) return Rect.zero;
+        Rect r = _pauseBtn.worldBound;
+        if (_speedBtn != null) r = RectUnion(r, _speedBtn.worldBound);
+        if (_autoBtn  != null) r = RectUnion(r, _autoBtn.worldBound);
+        return r;
+    }
+
+    static Rect RectUnion(Rect a, Rect b) =>
+        Rect.MinMaxRect(Mathf.Min(a.xMin, b.xMin), Mathf.Min(a.yMin, b.yMin),
+                        Mathf.Max(a.xMax, b.xMax), Mathf.Max(a.yMax, b.yMax));
 
     void OnNextWaveClicked() => WaveManager.Instance?.StartNextWave();
     void OnPauseClicked()

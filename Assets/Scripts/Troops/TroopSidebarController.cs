@@ -10,6 +10,11 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(UIDocument))]
 public class TroopSidebarController : MonoBehaviour
 {
+    public static TroopSidebarController Instance { get; private set; }
+
+    /// <summary>Fired when the sidebar is opened (not when it closes).</summary>
+    public static event System.Action SidebarOpened;
+
     [Tooltip("Combat troops shown in the top section. Order matches display order.")]
     [SerializeField] private List<TroopData> troops = new();
 
@@ -41,6 +46,12 @@ public class TroopSidebarController : MonoBehaviour
     private VisualElement _detailEffectRow;
     private Label         _detailEffect;
     private VisualElement _detailUpgradesContainer;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+    }
 
     void OnEnable()
     {
@@ -402,6 +413,9 @@ public class TroopSidebarController : MonoBehaviour
     // Toggle
     // -------------------------------------------------------
 
+    /// <summary>Returns the sidebar toggle button's screen bounds for hint highlighting.</summary>
+    public Rect GetToggleButtonBounds() => _toggleBtn?.worldBound ?? Rect.zero;
+
     void ToggleSidebar()
     {
         _isOpen = !_isOpen;
@@ -409,6 +423,7 @@ public class TroopSidebarController : MonoBehaviour
         {
             _sidebar.AddToClassList("open");
             _toggleBtn.text = "\u2715"; // ✕
+            SidebarOpened?.Invoke();
         }
         else
         {
