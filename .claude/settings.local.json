@@ -20,7 +20,9 @@
       "Bash(grep \"\\\\.cs$\")",
       "Bash(grep -E \"\\\\.\\(cs|uxml\\)$\")",
       "Bash(xargs head:*)",
-      "Bash(xargs cat:*)"
+      "Bash(xargs cat:*)",
+      "Bash(find c:UserszonesDesktopProjectsClick-n-Claw-gameAssets -type f -name *.wav -o -name *.mp3 -o -name *.ogg)",
+      "Bash(find c:UserszonesDesktopProjectsClick-n-Claw-gameAssets -name *.uxml)"
     ]
   }
 }

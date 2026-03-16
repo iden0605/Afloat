@@ -76,6 +76,7 @@ public class PauseManager : MonoBehaviour
         // Remember double-speed state, then freeze time.
         _wasDoubleSpeed = WaveManager.Instance != null && WaveManager.Instance.IsDoubleSpeed;
         Time.timeScale = 0f;
+        AudioManager.Instance?.PauseMusic();
 
         _pauseRoot.style.display = DisplayStyle.Flex;
     }
@@ -87,6 +88,7 @@ public class PauseManager : MonoBehaviour
 
         // Restore previous time scale.
         Time.timeScale = _wasDoubleSpeed ? 2f : 1f;
+        AudioManager.Instance?.ResumeMusic();
 
         _pauseRoot.style.display = DisplayStyle.None;
     }

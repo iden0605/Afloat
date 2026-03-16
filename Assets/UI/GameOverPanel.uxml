@@ -2,16 +2,16 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/UI/GameOverPanel.uss" />
 
-    <!-- Full-screen root — hidden by default, shown on game over -->
+    <!-- Full-screen root — hidden by default, shown on game over or victory -->
     <ui:VisualElement name="gameover-root" class="go-root">
 
         <!-- Semi-transparent backdrop (blocks game input) -->
         <ui:VisualElement class="go-backdrop" />
 
         <!-- Centred dialog panel -->
-        <ui:VisualElement class="go-panel">
+        <ui:VisualElement name="gameover-panel" class="go-panel">
 
-            <ui:Label text="GAME OVER" class="go-title" />
+            <ui:Label name="gameover-title" text="GAME OVER" class="go-title" />
             <ui:VisualElement class="go-divider" />
 
             <ui:Button name="quit-btn" text="QUIT TO MENU" class="go-btn go-btn--quit" />

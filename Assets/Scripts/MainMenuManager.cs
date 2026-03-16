@@ -29,6 +29,8 @@ public class MainMenuManager : MonoBehaviour
 
     void OnEnable()
     {
+        AudioManager.Instance?.PlayMusic(AudioManager.Instance.bgmLobby);
+
         var root = GetComponent<UIDocument>().rootVisualElement;
 
         // ── Sprite assignments ─────────────────────────────────

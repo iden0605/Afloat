@@ -59,6 +59,7 @@ public class PlayerHealthManager : MonoBehaviour
 
         CurrentHealth = Mathf.Max(0, CurrentHealth - amount);
         OnHealthChanged?.Invoke();
+        AudioManager.Instance?.PlaySFX(AudioManager.Instance?.sfxPlayerHpLoss);
 
         Debug.Log($"[PlayerHealthManager] Player took {amount} damage — HP: {CurrentHealth}/{startingHealth}");
 

@@ -115,6 +115,15 @@ public class WaveUIController : MonoBehaviour
         WaveManager.Instance.SetDoubleSpeed(!WaveManager.Instance.IsDoubleSpeed);
     }
 
+    /// <summary>
+    /// Disables all interactive HUD controls. Called on game over or victory
+    /// so the player cannot change game state through the HUD.
+    /// </summary>
+    public void LockHUD()
+    {
+        if (_speedBtn != null) _speedBtn.SetEnabled(false);
+    }
+
     // ── Hint system bounds ─────────────────────────────────────────────────────
     public Rect GetControlButtonsBounds()   => _speedBtn?.worldBound  ?? Rect.zero;
 }

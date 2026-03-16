@@ -192,6 +192,7 @@ public class EnemyInstance : MonoBehaviour
         _healthBar?.SetFill(CurrentHealth / MaxHealth);
         _hitFlash?.Flash();
         _hitStop?.TriggerStop(); // 3-frame animator freeze for impact weight
+        AudioManager.Instance?.PlaySFX(AudioManager.Instance?.sfxEnemyHit, 0.3f);
 
         // SpeedBurst: triggers once when health first crosses the threshold
         if (Data != null && Data.effectType == EnemyEffectType.SpeedBurst && !_speedBurstTriggered)

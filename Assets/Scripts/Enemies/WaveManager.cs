@@ -29,6 +29,9 @@ public class WaveManager : MonoBehaviour
     /// <summary>Fired when a new wave begins spawning. Passes the 0-based wave index.</summary>
     public static event Action<int> WaveStarted;
 
+    /// <summary>Fired once when the final wave is cleared and the player has won.</summary>
+    public static event Action OnGameWon;
+
     [Header("Waves — add WaveData assets in order")]
     [SerializeField] private List<WaveData> waves = new();
 
@@ -154,6 +157,7 @@ public class WaveManager : MonoBehaviour
     {
         IsSpawning = true;
         WaveStarted?.Invoke(CurrentWaveIndex);
+        AudioManager.Instance?.PlaySFX(AudioManager.Instance?.sfxWaveStart);
         Debug.Log($"[WaveManager] ── Wave {CurrentWaveIndex + 1} starting ──");
 
         foreach (var entry in wave.entries)
@@ -217,7 +221,12 @@ public class WaveManager : MonoBehaviour
         WaveCleared?.Invoke(CurrentWaveIndex);
 
         int nextIndex = CurrentWaveIndex + 1;
-        if (nextIndex >= waves.Count) return;
+        if (nextIndex >= waves.Count)
+        {
+            Debug.Log("[WaveManager] All waves cleared — player wins!");
+            OnGameWon?.Invoke();
+            return;
+        }
 
         float delay = waves[nextIndex].preWaveDelay > 0f
             ? waves[nextIndex].preWaveDelay

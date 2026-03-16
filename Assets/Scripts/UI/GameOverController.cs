@@ -3,8 +3,9 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 /// <summary>
-/// Controls the Game Over overlay.
-/// Hidden by default; shown automatically when PlayerHealthManager fires OnGameOver.
+/// Controls the Game Over / Victory overlay.
+/// Hidden by default; shown automatically when PlayerHealthManager fires OnGameOver
+/// or WaveManager fires OnGameWon.
 ///
 /// ── Scene setup ──
 ///   1. Add a GameObject "GameOverUI" to the scene.
@@ -15,23 +16,27 @@ using UnityEngine.UIElements;
 public class GameOverController : MonoBehaviour
 {
     private VisualElement _root;
+    private VisualElement _panel;
+    private Label         _title;
     private Button        _quitBtn;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     void OnEnable()
     {
-        var doc = GetComponent<UIDocument>();
-        _root    = doc.rootVisualElement.Q("gameover-root");
-        _quitBtn = doc.rootVisualElement.Q<Button>("quit-btn");
+        var doc = GetComponent<UIDocument>().rootVisualElement;
+        _root    = doc.Q("gameover-root");
+        _panel   = doc.Q("gameover-panel");
+        _title   = doc.Q<Label>("gameover-title");
+        _quitBtn = doc.Q<Button>("quit-btn");
 
-        // Hide panel until game over fires
         _root.style.display = DisplayStyle.None;
 
         if (_quitBtn != null)
             _quitBtn.clicked += OnQuit;
 
         PlayerHealthManager.OnGameOver += ShowGameOver;
+        WaveManager.OnGameWon          += ShowVictory;
     }
 
     void OnDisable()
@@ -40,15 +45,40 @@ public class GameOverController : MonoBehaviour
             _quitBtn.clicked -= OnQuit;
 
         PlayerHealthManager.OnGameOver -= ShowGameOver;
+        WaveManager.OnGameWon          -= ShowVictory;
     }
 
     // ── Handlers ──────────────────────────────────────────────────────────────
 
     void ShowGameOver()
     {
+        if (_title != null)
+        {
+            _title.text = "GAME OVER";
+            _title.RemoveFromClassList("go-title--win");
+        }
+        _panel?.RemoveFromClassList("go-panel--win");
+
+        Show();
+    }
+
+    void ShowVictory()
+    {
+        if (_title != null)
+        {
+            _title.text = "YOU WIN!";
+            _title.AddToClassList("go-title--win");
+        }
+        _panel?.AddToClassList("go-panel--win");
+
+        Show();
+    }
+
+    void Show()
+    {
         _root.style.display = DisplayStyle.Flex;
         Time.timeScale = 0f;
-        Debug.Log("[GameOverController] Showing game over screen.");
+        WaveUIController.Instance?.LockHUD();
     }
 
     void OnQuit()
