@@ -1514,10 +1514,10 @@ MonoBehaviour:
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PanelSettings: {fileID: 11400000, guid: 0b95441f2b49f9e42bb282153fe1466a, type: 2}
+  m_PanelSettings: {fileID: 11400000, guid: e5f852c81029243af8ef8d7d24c793a1, type: 2}
   m_ParentUI: {fileID: 0}
   sourceAsset: {fileID: 0}
-  m_SortingOrder: 0
+  m_SortingOrder: 20
 --- !u!4 &784799964
 Transform:
   m_ObjectHideFlags: 0
@@ -2042,6 +2042,67 @@ PolygonCollider2D:
       - {x: 3.8232005, y: 1.0929027}
       - {x: 3.9853058, y: 1.1251332}
   m_UseDelaunayMesh: 0
+--- !u!1 &900000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 900000004}
+  - component: {fileID: 900000002}
+  - component: {fileID: 900000003}
+  m_Layer: 0
+  m_Name: PauseManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &900000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67248745519624bf6809d6ee6c4b6231, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &900000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PanelSettings: {fileID: 11400000, guid: e5f852c81029243af8ef8d7d24c793a1, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 80453f2afb2584c2e8cd003605138bed, type: 3}
+  m_SortingOrder: 100
+--- !u!4 &900000004
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &904010627
 GameObject:
   m_ObjectHideFlags: 0
@@ -2304,7 +2365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77fa7e4db1d5ea541903aea97b702dfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unlockAllForTesting: 1
+  unlockAllForTesting: 0
   startingTroops:
   - {fileID: 11400000, guid: cdd9444a3378a449690808faf7699a9e, type: 2}
   milestones:
@@ -6213,5 +6274,5 @@ SceneRoots:
   m_Roots:
   - {fileID: 25439010}
   - {fileID: 880659459}
-  - {fileID: 51961633}
   - {fileID: 784799964}
+  - {fileID: 900000004}

@@ -36,14 +36,13 @@ public class HintManager : MonoBehaviour
     private const string KeyWaveStart    = "hint_wave_start";
     private const string KeyGold         = "hint_gold";
     private const string KeyWaveCleared  = "hint_wave_cleared";
-    private const string KeyNextWave     = "hint_next_wave";
     private const string KeyWaveControls = "hint_wave_controls";
     private const string KeyHP           = "hint_hp";
     private const string KeyEvolution    = "hint_evolution";
 
     // ── Hint data ─────────────────────────────────────────────────────────────
 
-    private enum HintHighlight { None, Sidebar, NextWave, WaveControls }
+    private enum HintHighlight { None, Sidebar, WaveControls }
 
     private struct HintEntry
     {
@@ -54,6 +53,7 @@ public class HintManager : MonoBehaviour
 
     private readonly Queue<HintEntry> _queue    = new();
     private bool                      _isShowing;
+    private bool                      _skipCurrentHint;
 
     // ── UI elements ───────────────────────────────────────────────────────────
     private VisualElement _toast;
@@ -89,8 +89,6 @@ public class HintManager : MonoBehaviour
         TroopManager.TroopPlaced               += OnTroopPlaced;
         TroopSidebarController.SidebarOpened   += OnSidebarOpened;
         PlayerHealthManager.OnHealthChanged    += OnHealthChanged;
-
-        StartCoroutine(ShowStartHintDelayed());
     }
 
     void OnDisable()
@@ -105,19 +103,14 @@ public class HintManager : MonoBehaviour
 
     // ── Event handlers ────────────────────────────────────────────────────────
 
-    // Hint 1: shown 2 s after scene loads — draws attention to the sidebar toggle
-    IEnumerator ShowStartHintDelayed()
-    {
-        yield return new WaitForSecondsRealtime(2f);
-        Enqueue(KeySidebar,
-            "Tap the \u2630 button on the left to open your troop menu",
-            HintHighlight.Sidebar);
-    }
-
-    // Hint 2: sidebar opened — remind player troops cost gold before they drag
+    // Hint 2: sidebar opened — dismiss the sidebar hint immediately, then remind
+    //         the player that troops cost gold before they drag
     void OnSidebarOpened()
-        => Enqueue(KeyDrag,
+    {
+        _skipCurrentHint = true;
+        Enqueue(KeyDrag,
             "Each troop costs gold to place. Drag a card onto the field to deploy it!");
+    }
 
     // Hint 3: first troop placed — basic attack loop explained, no upgrade mention
     void OnTroopPlaced()
@@ -134,7 +127,7 @@ public class HintManager : MonoBehaviour
         // Hint 8: wave controls introduced on wave 2 (player has already used Next Wave once)
         if (waveIndex == 1)
             Enqueue(KeyWaveControls,
-                "Use the top-right controls: \u23f8 to pause, 2\u00d7 to double speed, and Auto to skip the break between waves.",
+                "Tap 2\u00d7 in the top-right to double the wave speed. Press ESC to pause.",
                 HintHighlight.WaveControls);
 
         // Arm the gold hint: fire the first time gold increases during a wave
@@ -157,6 +150,7 @@ public class HintManager : MonoBehaviour
         }
     }
 
+    // Hint 1: wave 0 cleared — draw attention to the sidebar
     // Hint 6: first wave cleared — reminder to reinforce
     // Hint 7: introduce Next Wave button
     // Hint 9: first evolution unlock (Phase 7, after wave index 34 = WAVE 35)
@@ -166,9 +160,9 @@ public class HintManager : MonoBehaviour
         {
             Enqueue(KeyWaveCleared,
                 "Wave cleared! Use the break to place more troops before the next wave begins.");
-            Enqueue(KeyNextWave,
-                "Press 'Next Wave' when you're ready. Waves won't start automatically until you do!",
-                HintHighlight.NextWave);
+            Enqueue(KeySidebar,
+                "Tap the \u2630 button on the left to open your troop menu.",
+                HintHighlight.Sidebar);
         }
 
         if (waveIndex == 34)
@@ -228,7 +222,6 @@ public class HintManager : MonoBehaviour
         Rect highlightBounds = entry.highlight switch
         {
             HintHighlight.Sidebar      => TroopSidebarController.Instance?.GetToggleButtonBounds() ?? Rect.zero,
-            HintHighlight.NextWave     => WaveUIController.Instance?.GetNextWaveButtonBounds()     ?? Rect.zero,
             HintHighlight.WaveControls => WaveUIController.Instance?.GetControlButtonsBounds()     ?? Rect.zero,
             _                          => Rect.zero
         };
@@ -251,13 +244,21 @@ public class HintManager : MonoBehaviour
         }
 
         // ── Show the toast ─────────────────────────────────────────────────────
-        _toastLabel.text     = entry.message;
-        _toast.style.display = DisplayStyle.Flex;
+        _skipCurrentHint         = false;
+        _toastLabel.text         = entry.message;
+        _toast.style.display     = DisplayStyle.Flex;
 
-        yield return new WaitForSecondsRealtime(displayDuration);
+        float elapsed = 0f;
+        while (elapsed < displayDuration && !_skipCurrentHint)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            yield return null;
+        }
 
         _toast.style.display     = DisplayStyle.None;
         _highlight.style.display = DisplayStyle.None;
+
+        if (_pulseCoroutine != null) { StopCoroutine(_pulseCoroutine); _pulseCoroutine = null; }
     }
 
     // Animates the highlight box border with a pulsing yellow glow
@@ -315,10 +316,10 @@ public class HintManager : MonoBehaviour
         _toast.pickingMode                   = PickingMode.Ignore;
         _toast.style.display                 = DisplayStyle.None;
         _toast.style.backgroundColor         = new Color(0.06f, 0.06f, 0.06f, 0.93f);
-        _toast.style.borderTopLeftRadius     = 12;
-        _toast.style.borderTopRightRadius    = 12;
-        _toast.style.borderBottomLeftRadius  = 12;
-        _toast.style.borderBottomRightRadius = 12;
+        _toast.style.borderTopLeftRadius     = 16;
+        _toast.style.borderTopRightRadius    = 16;
+        _toast.style.borderBottomLeftRadius  = 16;
+        _toast.style.borderBottomRightRadius = 16;
         _toast.style.borderTopWidth          = 1;
         _toast.style.borderRightWidth        = 1;
         _toast.style.borderBottomWidth       = 1;
@@ -327,17 +328,17 @@ public class HintManager : MonoBehaviour
         _toast.style.borderRightColor        = new Color(1f, 1f, 1f, 0.15f);
         _toast.style.borderBottomColor       = new Color(1f, 1f, 1f, 0.15f);
         _toast.style.borderLeftColor         = new Color(1f, 1f, 1f, 0.15f);
-        _toast.style.paddingTop              = 8;
-        _toast.style.paddingBottom           = 8;
-        _toast.style.paddingLeft             = 16;
-        _toast.style.paddingRight            = 16;
+        _toast.style.paddingTop              = 10;
+        _toast.style.paddingBottom           = 10;
+        _toast.style.paddingLeft             = 21;
+        _toast.style.paddingRight            = 21;
         _toast.style.marginBottom            = 50;
-        _toast.style.maxWidth                = 460;
+        _toast.style.maxWidth                = 598;
 
         _toastLabel = new Label();
         _toastLabel.pickingMode              = PickingMode.Ignore;
         _toastLabel.style.color              = Color.white;
-        _toastLabel.style.fontSize           = 13;
+        _toastLabel.style.fontSize           = 17;
         _toastLabel.style.unityTextAlign     = TextAnchor.MiddleCenter;
         _toastLabel.style.whiteSpace         = WhiteSpace.Normal;
 
@@ -351,7 +352,7 @@ public class HintManager : MonoBehaviour
     public void ResetAllHints()
     {
         foreach (var key in new[] { KeySidebar, KeyDrag, KeyPlaced, KeyWaveStart, KeyGold,
-                                     KeyWaveCleared, KeyNextWave, KeyWaveControls, KeyHP, KeyEvolution })
+                                     KeyWaveCleared, KeyWaveControls, KeyHP, KeyEvolution })
             PlayerPrefs.DeleteKey(key);
         PlayerPrefs.Save();
         Debug.Log("[HintManager] All hints reset.");
