@@ -114,4 +114,7 @@ public class WaveUIController : MonoBehaviour
         if (WaveManager.Instance == null) return;
         WaveManager.Instance.SetDoubleSpeed(!WaveManager.Instance.IsDoubleSpeed);
     }
+
+    // ── Hint system bounds ─────────────────────────────────────────────────────
+    public Rect GetControlButtonsBounds()   => _speedBtn?.worldBound  ?? Rect.zero;
 }

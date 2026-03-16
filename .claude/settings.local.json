@@ -19,7 +19,8 @@
       "Bash(grep -E \"\\\\.asset$|Data\\\\.cs$\")",
       "Bash(grep \"\\\\.cs$\")",
       "Bash(grep -E \"\\\\.\\(cs|uxml\\)$\")",
-      "Bash(xargs head:*)"
+      "Bash(xargs head:*)",
+      "Bash(xargs cat:*)"
     ]
   }
 }
