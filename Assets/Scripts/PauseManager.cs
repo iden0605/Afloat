@@ -97,6 +97,25 @@ public class PauseManager : MonoBehaviour
         else          Pause();
     }
 
+    /// <summary>
+    /// Pauses or resumes without showing the pause menu overlay.
+    /// Used by the HUD pause button for a quick freeze/unfreeze.
+    /// </summary>
+    public void QuietToggle()
+    {
+        if (IsPaused)
+        {
+            IsPaused = false;
+            Time.timeScale = _wasDoubleSpeed ? 2f : 1f;
+        }
+        else
+        {
+            IsPaused = true;
+            _wasDoubleSpeed = WaveManager.Instance != null && WaveManager.Instance.IsDoubleSpeed;
+            Time.timeScale = 0f;
+        }
+    }
+
     // ── Button handlers ──────────────────────────────────────────────────────
 
     void OnContinue() => Resume();
