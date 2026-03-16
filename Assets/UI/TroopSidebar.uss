@@ -396,6 +396,14 @@
     -unity-text-align: middle-center;
 }
 
+.sel-stat-delta {
+    font-size: 10px;
+    color: rgb(120, 225, 110);
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-top: -2px;
+}
+
 .sel-stat-name {
     font-size: 10px;
     color: rgba(145, 215, 120, 0.55);
@@ -927,3 +935,44 @@
     color: rgb(245, 145, 95);
     white-space: normal;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   SKILL TAG PILLS — shown in both troop and enemy selection panels
+   ════════════════════════════════════════════════════════════════ */
+
+/* Wrapping flex row that holds the pill tags */
+.skill-tags-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 6px 10px 2px 10px;
+    margin-bottom: 2px;
+}
+
+/* Base pill */
+.skill-tag {
+    border-radius: 10px;
+    padding: 2px 8px;
+    margin: 2px 3px;
+    font-size: 9px;
+    -unity-font-style: bold;
+    letter-spacing: 0.8px;
+    color: rgb(235, 235, 235);
+    -unity-text-align: middle-center;
+}
+
+/* ── Troop effect colours ───────────────── */
+.skill-tag--fire    { background-color: rgba(190, 65, 20,  0.88); }   /* burn / flame      */
+.skill-tag--poison  { background-color: rgba(40,  135, 35, 0.88); }   /* poison / toxic    */
+.skill-tag--freeze  { background-color: rgba(30,  110, 190, 0.88); }  /* ice / slow        */
+.skill-tag--stun    { background-color: rgba(110, 35, 190, 0.88); }   /* stun / electric   */
+.skill-tag--gold    { background-color: rgba(145, 100, 10, 0.88); }   /* gold / economy    */
+.skill-tag--power   { background-color: rgba(45,  85,  200, 0.88); }  /* atk buff / power  */
+.skill-tag--teal    { background-color: rgba(20,  135, 135, 0.88); }  /* spd / tactical    */
+.skill-tag--support { background-color: rgba(30,  115, 65,  0.88); }  /* ally / support    */
+
+/* ── Enemy effect colours ──────────────── */
+.skill-tag--immune  { background-color: rgba(65,  65,  85,  0.88); }  /* immunity / shield */
+.skill-tag--armor   { background-color: rgba(90,  45,  110, 0.88); }  /* damage reduction  */
+.skill-tag--dodge   { background-color: rgba(20,  140, 155, 0.88); }  /* evasion           */
+.skill-tag--speed   { background-color: rgba(195, 85,  20,  0.88); }  /* reactive speed    */
+.skill-tag--spawn   { background-color: rgba(170, 35,  35,  0.88); }  /* spawner / danger  */

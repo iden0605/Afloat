@@ -225,8 +225,13 @@ public class TroopInstance : MonoBehaviour
             switch (cfg.effectType)
             {
                 case TroopEffectType.ConditionalAttackBuff when enemies > 1:
-                    dmg = cfg.conditionalAttack;
+                {
+                    // Add conditionalAttack per extra enemy, capped at rampingMaxStacks extras (0 = uncapped)
+                    int extra = enemies - 1;
+                    if (cfg.rampingMaxStacks > 0) extra = Mathf.Min(extra, cfg.rampingMaxStacks);
+                    dmg += cfg.conditionalAttack * extra;
                     break;
+                }
                 case TroopEffectType.AllyProximityBuff:
                     dmg += cfg.allyBonus * allies;
                     break;
@@ -318,16 +323,25 @@ public class TroopInstance : MonoBehaviour
                         break;
 
                     case TroopEffectType.BurnOnHit:
-                        EnemyStatusEffects.ApplyBurn(t.gameObject, damage, cfg.dotInterval);
+                    {
+                        float dot = cfg.dotDamage > 0f ? cfg.dotDamage : damage;
+                        EnemyStatusEffects.ApplyBurn(t.gameObject, dot, cfg.dotInterval, cfg.dotDuration);
                         break;
+                    }
 
                     case TroopEffectType.PoisonOnHit:
-                        EnemyStatusEffects.ApplyPoison(t.gameObject, damage, cfg.dotInterval);
+                    {
+                        float dot = cfg.dotDamage > 0f ? cfg.dotDamage : damage;
+                        EnemyStatusEffects.ApplyPoison(t.gameObject, dot, cfg.dotInterval, cfg.dotDuration);
                         break;
+                    }
 
                     case TroopEffectType.PoisonSplash:
-                        EnemyStatusEffects.ApplyPoison(t.gameObject, damage, cfg.dotInterval);
+                    {
+                        float dot = cfg.dotDamage > 0f ? cfg.dotDamage : damage;
+                        EnemyStatusEffects.ApplyPoison(t.gameObject, dot, cfg.dotInterval, cfg.dotDuration);
                         break;
+                    }
 
                     case TroopEffectType.FreezeOnHit:
                         EnemyStatusEffects.ApplyFreeze(t.gameObject, cfg.freezeDuration, cfg.freezeSlowFactor);

@@ -20,55 +20,167 @@ MonoBehaviour:
   placementType: 0
   isLandPlatform: 0
   baseCost: 50
-  attack: 1
-  attackSpeed: 1
-  range: 0.8
+  attack: 8
+  attackSpeed: 1.2
+  range: 1
   attackType: 1
   projectileType: 0
   splashRadius: 0.5
   baseEffect:
     effectType: 11
-    goldMultiplier: 0
+    goldMultiplier: 2
     conditionalAttack: 0
     conditionalSpeed: 0
-    allyBonus: 1
+    allyBonus: 4
+    dotDamage: 0
     dotInterval: 0
+    dotDuration: 0
     rampingDuration: 0
     rampingMaxStacks: 0
     freezeDuration: 0
     freezeSlowFactor: 0
     stunDuration: 0
   upgrades:
-  - description: 
-    cost: 0
-    attackDelta: 0
+  - description: ATK 12 · Colony +6
+    cost: 75
+    attackDelta: 4
     attackSpeedDelta: 0
     rangeDelta: 0
-    effects: []
-  - description: 
-    cost: 0
-    attackDelta: 0
+    effects:
+    - effectType: 11
+          goldMultiplier: 2
+          conditionalAttack: 0
+          conditionalSpeed: 0
+          allyBonus: 6
+          dotDamage: 0
+          dotInterval: 0
+          dotDuration: 0
+          rampingDuration: 0
+          rampingMaxStacks: 0
+          freezeDuration: 0
+          freezeSlowFactor: 0
+          stunDuration: 0
+  - description: ATK 18 · RNG 1.5u
+    cost: 100
+    attackDelta: 6
+    attackSpeedDelta: 0
+    rangeDelta: 0.5
+    effects:
+    - effectType: 11
+          goldMultiplier: 2
+          conditionalAttack: 0
+          conditionalSpeed: 0
+          allyBonus: 6
+          dotDamage: 0
+          dotInterval: 0
+          dotDuration: 0
+          rampingDuration: 0
+          rampingMaxStacks: 0
+          freezeDuration: 0
+          freezeSlowFactor: 0
+          stunDuration: 0
+  - description: ATK 26 · Colony +8
+    cost: 150
+    attackDelta: 8
     attackSpeedDelta: 0
     rangeDelta: 0
-    effects: []
-  - description: 
-    cost: 0
-    attackDelta: 0
+    effects:
+    - effectType: 11
+          goldMultiplier: 2
+          conditionalAttack: 0
+          conditionalSpeed: 0
+          allyBonus: 8
+          dotDamage: 0
+          dotInterval: 0
+          dotDuration: 0
+          rampingDuration: 0
+          rampingMaxStacks: 0
+          freezeDuration: 0
+          freezeSlowFactor: 0
+          stunDuration: 0
+  - description: ATK 32 · Burn 10 dmg
+    cost: 150
+    attackDelta: 10
     attackSpeedDelta: 0
     rangeDelta: 0
-    effects: []
-  - description: 
-    cost: 0
-    attackDelta: 0
+    effects:
+    - effectType: 2
+          goldMultiplier: 2
+          conditionalAttack: 0
+          conditionalSpeed: 0
+          allyBonus: 0
+          dotDamage: 10
+          dotInterval: 2
+          dotDuration: 4
+          rampingDuration: 0
+          rampingMaxStacks: 0
+          freezeDuration: 0
+          freezeSlowFactor: 0
+          stunDuration: 0
+    - effectType: 11
+          goldMultiplier: 2
+          conditionalAttack: 0
+          conditionalSpeed: 0
+          allyBonus: 8
+          dotDamage: 0
+          dotInterval: 0
+          dotDuration: 0
+          rampingDuration: 0
+          rampingMaxStacks: 0
+          freezeDuration: 0
+          freezeSlowFactor: 0
+          stunDuration: 0
+  - description: ATK 44 · Burn 6s
+    cost: 200
+    attackDelta: 12
     attackSpeedDelta: 0
     rangeDelta: 0
-    effects: []
-  - description: 
-    cost: 0
-    attackDelta: 0
+    effects:
+    - effectType: 2
+          goldMultiplier: 2
+          conditionalAttack: 0
+          conditionalSpeed: 0
+          allyBonus: 0
+          dotDamage: 10
+          dotInterval: 2
+          dotDuration: 6
+          rampingDuration: 0
+          rampingMaxStacks: 0
+          freezeDuration: 0
+          freezeSlowFactor: 0
+          stunDuration: 0
+    - effectType: 11
+          goldMultiplier: 2
+          conditionalAttack: 0
+          conditionalSpeed: 0
+          allyBonus: 8
+          dotDamage: 0
+          dotInterval: 0
+          dotDuration: 0
+          rampingDuration: 0
+          rampingMaxStacks: 0
+          freezeDuration: 0
+          freezeSlowFactor: 0
+          stunDuration: 0
+  - description: ATK 65 · Burn 15/2s 6s
+    cost: 300
+    attackDelta: 21
     attackSpeedDelta: 0
     rangeDelta: 0
-    effects: []
+    effects:
+    - effectType: 2
+          goldMultiplier: 2
+          conditionalAttack: 0
+          conditionalSpeed: 0
+          allyBonus: 0
+          dotDamage: 15
+          dotInterval: 2
+          dotDuration: 6
+          rampingDuration: 0
+          rampingMaxStacks: 0
+          freezeDuration: 0
+          freezeSlowFactor: 0
+          stunDuration: 0
   evolutions:
   - evolutionName: Fire Ant
     description: 

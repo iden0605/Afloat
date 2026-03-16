@@ -20,33 +20,48 @@ MonoBehaviour:
   placementType: 0
   isLandPlatform: 0
   baseCost: 50
-  attack: 1
-  attackSpeed: 1
-  range: 1.5
+  attack: 20
+  attackSpeed: 0.8
+  range: 2
   attackType: 1
   projectileType: 0
   splashRadius: 0.5
   baseEffect:
-    effectType: 0
+    effectType: 7
     goldMultiplier: 2
-    conditionalAttack: 3
-    conditionalSpeed: 1.2
-    allyBonus: 0.5
-    dotInterval: 0.5
-    rampingDuration: 2
+    conditionalAttack: 10
+    conditionalSpeed: 0
+    allyBonus: 0
+    dotDamage: 0
+    dotInterval: 0
+    dotDuration: 0
+    rampingDuration: 0
     rampingMaxStacks: 3
-    freezeDuration: 2
-    freezeSlowFactor: 0.3
-    stunDuration: 1
+    freezeDuration: 0
+    freezeSlowFactor: 0
+    stunDuration: 0
   upgrades: []
   evolutions:
   - evolutionName: Giant Praying Mantis
-    description: 
+    description: A massive evolved mantis. Strikes all enemies with each leap.
     portrait: {fileID: 21300000, guid: c88c09162a5144e8fa1d389092646ef3, type: 3}
     prefab: {fileID: 2742036560250044253, guid: bb622b3f1f24945daa831f0bdead4c5c, type: 3}
-    upgradesRequired: 0
-    evolutionCost: 0
-    attackBoost: 0
+    upgradesRequired: 3
+    evolutionCost: 400
+    attackBoost: 20
     attackSpeedBoost: 0
-    rangeBoost: 0
-    effects: []
+    rangeBoost: 0.5
+    effects:
+    - effectType: 10
+    goldMultiplier: 2
+    conditionalAttack: 0
+    conditionalSpeed: 0
+    allyBonus: 0
+    dotDamage: 0
+    dotInterval: 0
+    dotDuration: 0
+    rampingDuration: 5
+    rampingMaxStacks: 3
+    freezeDuration: 0
+    freezeSlowFactor: 0
+    stunDuration: 0

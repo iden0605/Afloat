@@ -21,9 +21,15 @@ public class TroopSelectionUI : MonoBehaviour
     private Label _spdLabel;
     private Label _rngLabel;
 
+    // Next-upgrade delta hints shown beside each stat value
+    private Label _atkDeltaLabel;
+    private Label _spdDeltaLabel;
+    private Label _rngDeltaLabel;
+
     // Description / effect
     private Label         _descriptionLabel;
     private VisualElement _effectRow;
+    private VisualElement _tagsContainer;
     private Label         _effectLabel;
 
     // Upgrade info
@@ -146,10 +152,8 @@ public class TroopSelectionUI : MonoBehaviour
         _descriptionLabel.text = d.description;
         _descriptionLabel.style.display = hasDesc ? DisplayStyle.Flex : DisplayStyle.None;
 
-        // Build effect lines: base effect + any upgrade/evo effects at current level
-        string fx = BuildEffectLines(_target);
-        _effectLabel.text = string.IsNullOrEmpty(fx) ? "" : fx;
-        _effectRow.style.display = string.IsNullOrEmpty(fx) ? DisplayStyle.None : DisplayStyle.Flex;
+        // Build skill tags: base effect + any upgrade/evo effects at current level
+        _effectRow.style.display = RefreshEffectTags() ? DisplayStyle.Flex : DisplayStyle.None;
 
         // Evolution section visible only when evolutions exist
         _evolutionSection.style.display = d.HasEvolutions ? DisplayStyle.Flex : DisplayStyle.None;
@@ -165,10 +169,23 @@ public class TroopSelectionUI : MonoBehaviour
         _spdLabel.text = $"{_target.CurrentAttackSpeed:0.#}/s";
         _rngLabel.text = $"{_target.CurrentRange:0.#}u";
 
+        // Next-upgrade delta hints beside each stat
+        if (_target.CanUpgrade)
+        {
+            var tier = _target.Data.upgrades[_target.UpgradeLevel];
+            SetDeltaLabel(_atkDeltaLabel, tier.attackDelta);
+            SetDeltaLabel(_spdDeltaLabel, tier.attackSpeedDelta);
+            SetDeltaLabel(_rngDeltaLabel, tier.rangeDelta);
+        }
+        else
+        {
+            _atkDeltaLabel.style.display = DisplayStyle.None;
+            _spdDeltaLabel.style.display = DisplayStyle.None;
+            _rngDeltaLabel.style.display = DisplayStyle.None;
+        }
+
         // Effects (rebuild on every refresh — upgrade/evo may change them)
-        string fx = BuildEffectLines(_target);
-        _effectLabel.text = string.IsNullOrEmpty(fx) ? "" : fx;
-        _effectRow.style.display = string.IsNullOrEmpty(fx) ? DisplayStyle.None : DisplayStyle.Flex;
+        _effectRow.style.display = RefreshEffectTags() ? DisplayStyle.Flex : DisplayStyle.None;
 
         // Name: show current evolution name if evolved, otherwise base troop name
         // Portrait always stays as the original TroopData portrait (set once in RefreshStatic)
@@ -183,10 +200,22 @@ public class TroopSelectionUI : MonoBehaviour
         int total = _target.Data.upgrades?.Length ?? 0;
         if (total > 0)
         {
-            _upgradeTierLabel.text = $"Tier {_target.UpgradeLevel} / {total}";
-            _upgradeDescLabel.text = _target.CanUpgrade
-                ? "Next: " + FormatUpgradeTier(_target.Data.upgrades[_target.UpgradeLevel])
-                : "Fully upgraded";
+            _upgradeTierLabel.text = _target.CanUpgrade
+                ? $"TIER {_target.UpgradeLevel} / {total}  — NEXT UPGRADE"
+                : $"TIER {_target.UpgradeLevel} / {total}  ✓  FULLY UPGRADED";
+
+            if (_target.CanUpgrade)
+            {
+                string desc = _target.Data.upgrades[_target.UpgradeLevel].description;
+                bool hasDesc = !string.IsNullOrEmpty(desc);
+                _upgradeDescLabel.text = hasDesc ? desc : "";
+                _upgradeDescLabel.style.display = hasDesc ? DisplayStyle.Flex : DisplayStyle.None;
+            }
+            else
+            {
+                _upgradeDescLabel.style.display = DisplayStyle.None;
+            }
+
             _upgradeInfoRow.style.display = DisplayStyle.Flex;
         }
         else
@@ -318,9 +347,9 @@ public class TroopSelectionUI : MonoBehaviour
         scroll.Add(MakeDivider());
         var statsRow = new VisualElement();
         statsRow.AddToClassList("sel-stats-row");
-        _atkLabel = BuildStatItem(statsRow, "ATK");
-        _spdLabel = BuildStatItem(statsRow, "SPD");
-        _rngLabel = BuildStatItem(statsRow, "RNG");
+        _atkLabel = BuildStatItem(statsRow, "ATK", out _atkDeltaLabel);
+        _spdLabel = BuildStatItem(statsRow, "SPD", out _spdDeltaLabel);
+        _rngLabel = BuildStatItem(statsRow, "RNG", out _rngDeltaLabel);
         scroll.Add(statsRow);
 
         // Description
@@ -329,9 +358,12 @@ public class TroopSelectionUI : MonoBehaviour
         _descriptionLabel.AddToClassList("sel-description");
         scroll.Add(_descriptionLabel);
 
-        // Special ability
+        // Special ability — tags row + description text
         _effectRow = new VisualElement();
         _effectRow.AddToClassList("sel-effect-row");
+        _tagsContainer = new VisualElement();
+        _tagsContainer.AddToClassList("skill-tags-row");
+        _effectRow.Add(_tagsContainer);
         _effectLabel = new Label();
         _effectLabel.AddToClassList("sel-effect");
         _effectRow.Add(_effectLabel);
@@ -414,14 +446,6 @@ public class TroopSelectionUI : MonoBehaviour
         upgradeGroup.Add(_upgradeBtn);
         upgradeGroup.Add(_upgradeCostLabel);
 
-        // Move
-        var moveGroup = new VisualElement();
-        moveGroup.AddToClassList("sel-group");
-        var moveBtn = new Button(OnMoveClicked) { text = "+" };
-        moveBtn.AddToClassList("sel-btn");
-        moveBtn.AddToClassList("sel-move");
-        moveGroup.Add(moveBtn);
-
         // Sell
         var sellGroup = new VisualElement();
         sellGroup.AddToClassList("sel-group");
@@ -434,7 +458,6 @@ public class TroopSelectionUI : MonoBehaviour
         sellGroup.Add(_sellValueLabel);
 
         row.Add(upgradeGroup);
-        row.Add(moveGroup);
         row.Add(sellGroup);
         actionsBar.Add(row);
         _panel.Add(actionsBar);
@@ -442,7 +465,7 @@ public class TroopSelectionUI : MonoBehaviour
         _uiDoc.rootVisualElement.Add(_panel);
     }
 
-    Label BuildStatItem(VisualElement parent, string statName)
+    Label BuildStatItem(VisualElement parent, string statName, out Label deltaLabel)
     {
         var item = new VisualElement();
         item.AddToClassList("sel-stat-item");
@@ -450,10 +473,15 @@ public class TroopSelectionUI : MonoBehaviour
         var valueLabel = new Label();
         valueLabel.AddToClassList("sel-stat-value");
 
+        deltaLabel = new Label();
+        deltaLabel.AddToClassList("sel-stat-delta");
+        deltaLabel.style.display = DisplayStyle.None;
+
         var nameLabel = new Label(statName);
         nameLabel.AddToClassList("sel-stat-name");
 
         item.Add(valueLabel);
+        item.Add(deltaLabel);
         item.Add(nameLabel);
         parent.Add(item);
         return valueLabel;
@@ -464,6 +492,13 @@ public class TroopSelectionUI : MonoBehaviour
         var d = new VisualElement();
         d.AddToClassList("sel-divider");
         return d;
+    }
+
+    static void SetDeltaLabel(Label lbl, float delta)
+    {
+        if (Mathf.Approximately(delta, 0f)) { lbl.style.display = DisplayStyle.None; return; }
+        lbl.text = delta > 0f ? $"+{delta:0.#}" : $"{delta:0.#}";
+        lbl.style.display = DisplayStyle.Flex;
     }
 
     // -------------------------------------------------------
@@ -492,6 +527,16 @@ public class TroopSelectionUI : MonoBehaviour
     {
         if (_target == null) return;
         if (!_target.Upgrade()) return;
+
+        // Refresh range indicator immediately so the circle updates without deselecting
+        if (_activeIndicator != null)
+        {
+            var d = _target.Data;
+            if (d != null && d.useRectangularRange)
+                _activeIndicator.SetRect(_target.CurrentRange, d.rangeRectWidth / 2f);
+            else
+                _activeIndicator.SetRadius(_target.CurrentRange);
+        }
 
         // Particle burst at the troop's world position
         UpgradeVFX.Play(_target.transform.position);
@@ -536,14 +581,6 @@ public class TroopSelectionUI : MonoBehaviour
         });
     }
 
-    void OnMoveClicked()
-    {
-        if (_target == null) return;
-        var t = _target;
-        Hide();
-        TroopDragController.Instance.BeginMoveDrag(t);
-    }
-
     void OnSellClicked()
     {
         if (_target == null) return;
@@ -564,34 +601,92 @@ public class TroopSelectionUI : MonoBehaviour
         _                          => ""
     };
 
-    static string BuildEffectLines(TroopInstance inst)
+    /// <summary>
+    /// Clears and repopulates the skill-tag pills and description text for the current target.
+    /// Returns true if any effects were found (so the caller can show/hide the row).
+    /// </summary>
+    bool RefreshEffectTags()
     {
-        if (inst == null) return "";
-        var sb = new System.Text.StringBuilder();
-        foreach (var cfg in inst.ActiveEffects)
+        _tagsContainer.Clear();
+        if (_target == null) return false;
+
+        var descSb = new System.Text.StringBuilder();
+        bool any = false;
+
+        foreach (var cfg in _target.ActiveEffects)
         {
-            string line = EffectDescription(cfg);
-            if (!string.IsNullOrEmpty(line))
+            string tagName = TroopEffectTagName(cfg);
+            if (string.IsNullOrEmpty(tagName)) continue;
+
+            any = true;
+            var tag = new Label(tagName);
+            tag.AddToClassList("skill-tag");
+            tag.AddToClassList(TroopEffectTagClass(cfg));
+            _tagsContainer.Add(tag);
+
+            string desc = TroopEffectDescription(cfg);
+            if (!string.IsNullOrEmpty(desc))
             {
-                if (sb.Length > 0) sb.Append('\n');
-                sb.Append("*  ").Append(line);
+                if (descSb.Length > 0) descSb.Append('\n');
+                descSb.Append(desc);
             }
         }
-        return sb.ToString();
+
+        _effectLabel.text = descSb.ToString();
+        _effectLabel.style.display = descSb.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+        return any;
     }
 
-    static string EffectDescription(TroopEffectConfig cfg) => cfg.effectType switch
+    static string TroopEffectTagName(TroopEffectConfig cfg) => cfg.effectType switch
     {
-        TroopEffectType.DoubleGoldDrop        => $"Enemies hit drop {cfg.goldMultiplier:0.#}× gold",
-        TroopEffectType.BurnOnHit             => $"Burns enemies for ATK dmg every {cfg.dotInterval:0.#}s (stackable)",
-        TroopEffectType.PoisonOnHit           => $"Poisons enemies for ATK dmg every {cfg.dotInterval:0.#}s (stackable)",
-        TroopEffectType.PoisonSplash          => $"Splashes + poisons enemies every {cfg.dotInterval:0.#}s",
-        TroopEffectType.FreezeOnHit           => $"Slows enemies to {cfg.freezeSlowFactor * 100:0}% speed for {cfg.freezeDuration:0.#}s",
+        TroopEffectType.DoubleGoldDrop        => "2× GOLD",
+        TroopEffectType.BurnOnHit             => "BURN",
+        TroopEffectType.PoisonOnHit           => "POISON",
+        TroopEffectType.PoisonSplash          => "POISON SPLASH",
+        TroopEffectType.FreezeOnHit           => "FREEZE",
+        TroopEffectType.StunOnHit             => "STUN",
+        TroopEffectType.ConditionalAttackBuff => "WAR FRENZY",
+        TroopEffectType.ConditionalSpeedBuff  => "FOCUS STRIKE",
+        TroopEffectType.DoubleEveryFourth     => "DOUBLE HIT",
+        TroopEffectType.RampingDoubleBuff     => "RAMPAGE",
+        TroopEffectType.AllyProximityBuff     => "COLONY",
+        TroopEffectType.AllySpeedBuff         => "PACK RUSH",
+        _                                     => ""
+    };
+
+    static string TroopEffectTagClass(TroopEffectConfig cfg) => cfg.effectType switch
+    {
+        TroopEffectType.DoubleGoldDrop        => "skill-tag--gold",
+        TroopEffectType.BurnOnHit             => "skill-tag--fire",
+        TroopEffectType.PoisonOnHit           => "skill-tag--poison",
+        TroopEffectType.PoisonSplash          => "skill-tag--poison",
+        TroopEffectType.FreezeOnHit           => "skill-tag--freeze",
+        TroopEffectType.StunOnHit             => "skill-tag--stun",
+        TroopEffectType.ConditionalAttackBuff => "skill-tag--power",
+        TroopEffectType.ConditionalSpeedBuff  => "skill-tag--teal",
+        TroopEffectType.DoubleEveryFourth     => "skill-tag--power",
+        TroopEffectType.RampingDoubleBuff     => "skill-tag--power",
+        TroopEffectType.AllyProximityBuff     => "skill-tag--support",
+        TroopEffectType.AllySpeedBuff         => "skill-tag--support",
+        _                                     => "skill-tag--power"
+    };
+
+    static string TroopEffectDescription(TroopEffectConfig cfg) => cfg.effectType switch
+    {
+        TroopEffectType.DoubleGoldDrop        => $"Enemies hit drop {cfg.goldMultiplier:0.#}× gold on death",
+        TroopEffectType.BurnOnHit             => cfg.dotDuration > 0
+                                                    ? $"Burns for {cfg.dotDamage:0.#} dmg every {cfg.dotInterval:0.#}s over {cfg.dotDuration:0.#}s (stackable)"
+                                                    : $"Burns for {cfg.dotDamage:0.#} dmg every {cfg.dotInterval:0.#}s (stackable)",
+        TroopEffectType.PoisonOnHit           => cfg.dotDuration > 0
+                                                    ? $"Poisons for {cfg.dotDamage:0.#} dmg every {cfg.dotInterval:0.#}s over {cfg.dotDuration:0.#}s (stackable)"
+                                                    : $"Poisons for {cfg.dotDamage:0.#} dmg every {cfg.dotInterval:0.#}s (stackable)",
+        TroopEffectType.PoisonSplash          => $"Splash attack + poisons every {cfg.dotInterval:0.#}s",
+        TroopEffectType.FreezeOnHit           => $"Slows to {cfg.freezeSlowFactor * 100:0}% speed for {cfg.freezeDuration:0.#}s",
         TroopEffectType.StunOnHit             => $"Stuns enemies for {cfg.stunDuration:0.#}s",
-        TroopEffectType.ConditionalAttackBuff => $"ATK → {cfg.conditionalAttack:0.#} with multiple enemies in range",
-        TroopEffectType.ConditionalSpeedBuff  => $"SPD → {cfg.conditionalSpeed:0.#}/s with only 1 enemy in range",
+        TroopEffectType.ConditionalAttackBuff => $"+{cfg.conditionalAttack:0.#} ATK per extra enemy in range (max {cfg.rampingMaxStacks})",
+        TroopEffectType.ConditionalSpeedBuff  => $"Attack speed → {cfg.conditionalSpeed:0.#}/s when only 1 enemy in range",
         TroopEffectType.DoubleEveryFourth     => "Every 4th attack deals double damage",
-        TroopEffectType.RampingDoubleBuff     => $"Each hit doubles ATK & SPD ({cfg.rampingDuration:0.#}s, max {cfg.rampingMaxStacks} stacks)",
+        TroopEffectType.RampingDoubleBuff     => $"Each hit doubles ATK & SPD for {cfg.rampingDuration:0.#}s (max {cfg.rampingMaxStacks} stacks)",
         TroopEffectType.AllyProximityBuff     => $"+{cfg.allyBonus:0.#} ATK per nearby same-type ally",
         TroopEffectType.AllySpeedBuff         => $"+{cfg.allyBonus:0.#} SPD per nearby same-type ally",
         _                                     => ""

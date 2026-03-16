@@ -20,21 +20,23 @@ MonoBehaviour:
   placementType: 1
   isLandPlatform: 0
   baseCost: 50
-  attack: 1
-  attackSpeed: 1
-  range: 1.5
-  attackType: 1
+  attack: 30
+  attackSpeed: 0.4
+  range: 100.0
+  attackType: 2
   projectileType: 0
   splashRadius: 0.5
   baseEffect:
     effectType: 0
-    goldMultiplier: 2
-    conditionalAttack: 3
-    conditionalSpeed: 1.2
-    allyBonus: 0.5
-    dotInterval: 0.5
-    rampingDuration: 2
-    rampingMaxStacks: 3
+    goldMultiplier: 0
+    conditionalAttack: 0
+    conditionalSpeed: 0
+    allyBonus: 0
+    dotDamage: 0
+    dotInterval: 0
+    dotDuration: 0
+    rampingDuration: 0
+    rampingMaxStacks: 0
     freezeDuration: 2
     freezeSlowFactor: 0.3
     stunDuration: 1

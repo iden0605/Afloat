@@ -107,13 +107,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idleStateName: AquaticWormIdle
   attackStateName: AquaticWormAttack
-  moveSpeed: 3.5
+  moveSpeed: 5
   attackReach: 0.18
   rotationOffset: -90
   attackDuration: 0.45
   enemyLayer:
     serializedVersion: 2
     m_Bits: 256
+  sortingOrder: 10
   particleColor: {r: 0.25, g: 0.9, b: 0.75, a: 1}
   vfxSortingLayer: Default
   vfxSortingOrder: 5

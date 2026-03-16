@@ -88,6 +88,9 @@ public class CentipedeAcidAttack : MonoBehaviour
         var go   = new GameObject("AcidProjectile");
         go.transform.position = spawnPos;
 
+        // U3 upgrade: projectile pierces through 2 enemies (hits them both).
+        int pierce = _instance.UpgradeLevel >= 3 ? 2 : 1;
+
         var proj = go.AddComponent<AcidProjectile>();
         proj.Launch(
             target       : _behavior.CurrentTarget,
@@ -96,7 +99,8 @@ public class CentipedeAcidAttack : MonoBehaviour
             radius       : projectileRadius,
             sortingLayer : sortingLayerName,
             sortingOrder : sortingOrder,
-            onHit        : OnProjectileHit
+            onHit        : OnProjectileHit,
+            pierceCount  : pierce
         );
     }
 

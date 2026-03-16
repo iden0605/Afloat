@@ -35,6 +35,13 @@ public class EnemyInstance : MonoBehaviour
     private bool _speedBurstTriggered;
     // SpeedDoubleOnHit: one-time trigger
     private bool _hitSpeedDoubled;
+    // ReactiveSpeedOnHit: refreshable timed boost
+    private float _baseSpeed;
+    private float _reactiveSpeedTimer;
+    // DesperationDash: one-time permanent boost
+    private bool _desperationTriggered;
+    // SpawnAtHPThresholds: tracks how many threshold spawns have fired
+    private int _thresholdSpawnCount;
 
     // DoubleGoldDrop: accumulate multiplier from attacking troops
     private float _goldMultiplier = 1f;
@@ -53,12 +60,32 @@ public class EnemyInstance : MonoBehaviour
 
         _movement = GetComponent<EnemyMovement>();
         _movement.speed = data.speed;
+        _baseSpeed = data.speed;
+
+        _speedBurstTriggered  = false;
+        _hitSpeedDoubled      = false;
+        _reactiveSpeedTimer   = 0f;
+        _desperationTriggered = false;
+        _thresholdSpawnCount  = 0;
 
         _healthBar = GetComponent<EnemyHealthBar>();
         _healthBar?.Initialize(MaxHealth);
 
         _hitFlash = GetComponent<EnemyHitFlash>();
         _hitStop  = GetComponent<HitStop>();
+    }
+
+    // ── Per-frame ─────────────────────────────────────────────────────────────
+
+    void Update()
+    {
+        // ReactiveSpeedOnHit: restore base speed when the timed boost expires
+        if (_reactiveSpeedTimer > 0f)
+        {
+            _reactiveSpeedTimer -= Time.deltaTime;
+            if (_reactiveSpeedTimer <= 0f && _movement != null)
+                _movement.speed = _baseSpeed;
+        }
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
@@ -109,7 +136,11 @@ public class EnemyInstance : MonoBehaviour
                     break;
 
                 case EnemyEffectType.MaxDamagePerHit:
-                    if (Data.effectValue > 0f) amount = Mathf.Min(amount, Data.effectValue);
+                    if (Data.effectValue > 0f && amount > Data.effectValue)
+                    {
+                        amount = Data.effectValue;
+                        DamageCapIndicator.Spawn(transform, attackerPos);
+                    }
                     break;
 
                 // ── Speed double on hit ────────────────────────────────────
@@ -118,6 +149,19 @@ public class EnemyInstance : MonoBehaviour
                     {
                         _hitSpeedDoubled = true;
                         _movement.speed *= 2f;
+                    }
+                    break;
+
+                // ── Reactive speed on hit (Wasp) ───────────────────────────
+                case EnemyEffectType.ReactiveSpeedOnHit:
+                    if (_movement != null)
+                    {
+                        float dur   = Data.effectValue2 > 0f ? Data.effectValue2 : 2f;
+                        _movement.speed     = _baseSpeed * (1f + Data.effectValue);
+                        _reactiveSpeedTimer = dur; // refreshes on every hit
+                        var vis = GetComponent<EnemyVisualEffects>()
+                                  ?? gameObject.AddComponent<EnemyVisualEffects>();
+                        vis.TriggerSpeedBurst();
                     }
                     break;
             }
@@ -149,8 +193,54 @@ public class EnemyInstance : MonoBehaviour
             }
         }
 
+        // DesperationDash: one-time permanent speed boost at HP threshold
+        if (Data != null && Data.effectType == EnemyEffectType.DesperationDash && !_desperationTriggered)
+        {
+            float threshold = Data.effectValue * MaxHealth;
+            if (prevHealth > threshold && CurrentHealth <= threshold)
+            {
+                _desperationTriggered = true;
+                if (_movement != null)
+                    _movement.speed = _baseSpeed * (1f + Data.effectValue2);
+
+                var vis = GetComponent<EnemyVisualEffects>()
+                          ?? gameObject.AddComponent<EnemyVisualEffects>();
+                vis.TriggerDesperationDash();
+            }
+        }
+
+        // SpawnAtHPThresholds: fire once per effectValue HP interval lost
+        if (Data != null && Data.effectType == EnemyEffectType.SpawnAtHPThresholds && Data.effectValue > 0f)
+        {
+            int expectedSpawns = Mathf.FloorToInt((MaxHealth - Mathf.Max(CurrentHealth, 0f)) / Data.effectValue);
+            while (_thresholdSpawnCount < expectedSpawns)
+            {
+                SpawnThresholdEnemy(_thresholdSpawnCount);
+                _thresholdSpawnCount++;
+            }
+        }
+
         if (CurrentHealth <= 0f)
             Die();
+    }
+
+    // ── Threshold spawn (SpawnAtHPThresholds) ────────────────────────────────
+
+    private void SpawnThresholdEnemy(int spawnIndex)
+    {
+        // Alternate between spawnEnemyData (odd spawns) and spawnEnemyData2 (even spawns)
+        bool   useSecondary = (spawnIndex % 2 == 1);
+        var    spawnData    = useSecondary ? Data.spawnEnemyData2 : Data.spawnEnemyData;
+        if (spawnData == null || spawnData.prefab == null) return;
+
+        int waypointIdx = _movement != null ? _movement.currentWaypointIndex : 0;
+        Vector2 offset  = UnityEngine.Random.insideUnitCircle * 0.3f;
+        var go = Instantiate(spawnData.prefab,
+                     transform.position + new Vector3(offset.x, offset.y),
+                     Quaternion.identity);
+
+        if (go.TryGetComponent<EnemyInstance>(out var ei))  ei.Initialize(spawnData);
+        if (go.TryGetComponent<EnemyMovement>(out var em))  em.currentWaypointIndex = waypointIdx;
     }
 
     private void Die()

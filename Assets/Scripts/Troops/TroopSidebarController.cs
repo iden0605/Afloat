@@ -36,7 +36,7 @@ public class TroopSidebarController : MonoBehaviour
     private Label         _detailDesc;
     private VisualElement _detailEffectRow;
     private Label         _detailEffect;
-    private VisualElement _detailUpgradesContainer;
+    private VisualElement _detailEvolutionsContainer;
 
     void OnEnable()
     {
@@ -278,10 +278,10 @@ public class TroopSidebarController : MonoBehaviour
         _detailEffectRow.Add(_detailEffect);
         panel.Add(_detailEffectRow);
 
-        // ── Upgrades ─────────────────────────────────────────────
-        _detailUpgradesContainer = new VisualElement();
-        _detailUpgradesContainer.AddToClassList("detail-upgrades-container");
-        panel.Add(_detailUpgradesContainer);
+        // ── Evolutions ───────────────────────────────────────────
+        _detailEvolutionsContainer = new VisualElement();
+        _detailEvolutionsContainer.AddToClassList("detail-upgrades-container");
+        panel.Add(_detailEvolutionsContainer);
 
         _detailOverlay.Add(panel);
         root.Add(_detailOverlay);
@@ -313,38 +313,65 @@ public class TroopSidebarController : MonoBehaviour
         _detailEffect.text = string.IsNullOrEmpty(fx) ? "" : $"*  {fx}";
         _detailEffectRow.style.display = string.IsNullOrEmpty(fx) ? DisplayStyle.None : DisplayStyle.Flex;
 
-        // Upgrades
-        _detailUpgradesContainer.Clear();
-        bool hasUpgrades = data.upgrades != null && data.upgrades.Length > 0;
-        if (hasUpgrades)
+        // Evolutions
+        _detailEvolutionsContainer.Clear();
+        bool hasEvolutions = data.HasEvolutions;
+        if (hasEvolutions)
         {
-            var upHeader = new Label("UPGRADES");
-            upHeader.AddToClassList("detail-upgrades-header");
-            _detailUpgradesContainer.Add(upHeader);
-            _detailUpgradesContainer.Add(MakeDetailDivider());
+            var evoHeader = new Label("EVOLUTIONS");
+            evoHeader.AddToClassList("detail-upgrades-header");
+            _detailEvolutionsContainer.Add(evoHeader);
+            _detailEvolutionsContainer.Add(MakeDetailDivider());
 
-            for (int i = 0; i < data.upgrades.Length; i++)
+            for (int i = 0; i < data.evolutions.Length; i++)
             {
-                var tier = data.upgrades[i];
-                var row  = new VisualElement();
+                var evo = data.evolutions[i];
+                var row = new VisualElement();
                 row.AddToClassList("detail-upgrade-row");
 
-                var tierLabel = new Label($"T{i + 1}");
+                var tierLabel = new Label($"E{i + 1}");
                 tierLabel.AddToClassList("detail-upgrade-tier");
 
-                var descLabel = new Label(FormatUpgradeTier(tier));
-                descLabel.AddToClassList("detail-upgrade-desc");
+                var descBlock = new VisualElement();
+                descBlock.AddToClassList("detail-upgrade-desc");
+                descBlock.style.flexGrow = 1;
 
-                var costLabel = new Label($"{tier.cost}g");
+                var nameLabel = new Label(evo.evolutionName);
+                nameLabel.style.unityFontStyleAndWeight = UnityEngine.FontStyle.Bold;
+                descBlock.Add(nameLabel);
+
+                if (!string.IsNullOrEmpty(evo.description))
+                {
+                    var evoDesc = new Label(evo.description);
+                    evoDesc.style.unityFontStyleAndWeight = UnityEngine.FontStyle.Italic;
+                    evoDesc.style.fontSize = 10;
+                    descBlock.Add(evoDesc);
+                }
+
+                string boosts = FormatEvoBoosts(evo);
+                if (boosts.Length > 0)
+                {
+                    var boostLabel = new Label(boosts);
+                    boostLabel.style.color = new UnityEngine.UIElements.StyleColor(new UnityEngine.Color(0.55f, 0.85f, 0.45f));
+                    boostLabel.style.fontSize = 10;
+                    descBlock.Add(boostLabel);
+                }
+
+                var reqLabel = new Label($"Req: {evo.upgradesRequired} upgrades");
+                reqLabel.style.color = new UnityEngine.UIElements.StyleColor(new UnityEngine.Color(0.6f, 0.6f, 0.6f));
+                reqLabel.style.fontSize = 10;
+                descBlock.Add(reqLabel);
+
+                var costLabel = new Label($"{evo.evolutionCost}g");
                 costLabel.AddToClassList("detail-upgrade-cost");
 
                 row.Add(tierLabel);
-                row.Add(descLabel);
+                row.Add(descBlock);
                 row.Add(costLabel);
-                _detailUpgradesContainer.Add(row);
+                _detailEvolutionsContainer.Add(row);
             }
         }
-        _detailUpgradesContainer.style.display = hasUpgrades ? DisplayStyle.Flex : DisplayStyle.None;
+        _detailEvolutionsContainer.style.display = hasEvolutions ? DisplayStyle.Flex : DisplayStyle.None;
 
         _detailOverlay.RemoveFromClassList("detail-overlay--hidden");
     }
@@ -427,15 +454,12 @@ public class TroopSidebarController : MonoBehaviour
         _                                     => ""
     };
 
-    static string FormatUpgradeTier(TroopData.UpgradeTier tier)
+    static string FormatEvoBoosts(EvolutionData evo)
     {
         var parts = new List<string>();
-        if (tier.attackDelta      != 0) parts.Add($"ATK {(tier.attackDelta > 0 ? "+" : "")}{tier.attackDelta:0.#}");
-        if (tier.attackSpeedDelta != 0) parts.Add($"SPD {(tier.attackSpeedDelta > 0 ? "+" : "")}{tier.attackSpeedDelta:0.#}");
-        if (tier.rangeDelta       != 0) parts.Add($"RNG {(tier.rangeDelta > 0 ? "+" : "")}{tier.rangeDelta:0.#}");
-
-        string stats = string.Join(", ", parts);
-        if (string.IsNullOrEmpty(tier.description)) return stats.Length > 0 ? stats : "Upgrade";
-        return stats.Length > 0 ? $"{tier.description}  ({stats})" : tier.description;
+        if (evo.attackBoost      != 0) parts.Add($"ATK +{evo.attackBoost:0.#}");
+        if (evo.attackSpeedBoost != 0) parts.Add($"SPD +{evo.attackSpeedBoost:0.#}");
+        if (evo.rangeBoost       != 0) parts.Add($"RNG +{evo.rangeBoost:0.#}");
+        return string.Join("   ", parts);
     }
 }

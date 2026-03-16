@@ -43,20 +43,22 @@ public class EnemyStatusEffects : MonoBehaviour
     // ── Public API ────────────────────────────────────────────────────────────
 
     /// <summary>Adds a new independent burn stack to this enemy.</summary>
-    public static void ApplyBurn(GameObject target, float damagePerTick, float tickInterval)
+    /// <param name="duration">Total duration in seconds. 0 = ticks until enemy dies.</param>
+    public static void ApplyBurn(GameObject target, float damagePerTick, float tickInterval, float duration = 0f)
     {
         var fx = target.GetComponent<EnemyStatusEffects>()
                  ?? target.AddComponent<EnemyStatusEffects>();
-        fx._burnStacks.Add(new BurnStack(damagePerTick, tickInterval));
+        fx._burnStacks.Add(new BurnStack(damagePerTick, tickInterval, duration));
         EnsureVisuals(target);
     }
 
     /// <summary>Adds a new independent poison stack to this enemy.</summary>
-    public static void ApplyPoison(GameObject target, float damagePerTick, float tickInterval)
+    /// <param name="duration">Total duration in seconds. 0 = ticks until enemy dies.</param>
+    public static void ApplyPoison(GameObject target, float damagePerTick, float tickInterval, float duration = 0f)
     {
         var fx = target.GetComponent<EnemyStatusEffects>()
                  ?? target.AddComponent<EnemyStatusEffects>();
-        fx._poisonStacks.Add(new PoisonStack(damagePerTick, tickInterval));
+        fx._poisonStacks.Add(new PoisonStack(damagePerTick, tickInterval, duration));
         EnsureVisuals(target);
     }
 
@@ -103,7 +105,16 @@ public class EnemyStatusEffects : MonoBehaviour
         for (int i = _burnStacks.Count - 1; i >= 0; i--)
         {
             var s = _burnStacks[i];
-            s.timer -= Time.deltaTime;
+            s.elapsed += Time.deltaTime;
+            s.timer   -= Time.deltaTime;
+
+            // Expire stack when duration runs out (duration 0 = infinite)
+            if (s.duration > 0f && s.elapsed >= s.duration)
+            {
+                _burnStacks.RemoveAt(i);
+                continue;
+            }
+
             if (s.timer <= 0f)
             {
                 _enemy.TakeDamage(s.damage, AttackType.Generic);
@@ -118,7 +129,16 @@ public class EnemyStatusEffects : MonoBehaviour
         for (int i = _poisonStacks.Count - 1; i >= 0; i--)
         {
             var s = _poisonStacks[i];
-            s.timer -= Time.deltaTime;
+            s.elapsed += Time.deltaTime;
+            s.timer   -= Time.deltaTime;
+
+            // Expire stack when duration runs out (duration 0 = infinite)
+            if (s.duration > 0f && s.elapsed >= s.duration)
+            {
+                _poisonStacks.RemoveAt(i);
+                continue;
+            }
+
             if (s.timer <= 0f)
             {
                 _enemy.TakeDamage(s.damage, AttackType.Generic);
@@ -162,7 +182,9 @@ public class EnemyStatusEffects : MonoBehaviour
         public float damage;
         public float interval;
         public float timer;
-        public BurnStack(float d, float i) { damage = d; interval = i; timer = i; }
+        public float duration; // 0 = infinite
+        public float elapsed;
+        public BurnStack(float d, float i, float dur) { damage = d; interval = i; timer = i; duration = dur; elapsed = 0f; }
     }
 
     private struct PoisonStack
@@ -170,6 +192,8 @@ public class EnemyStatusEffects : MonoBehaviour
         public float damage;
         public float interval;
         public float timer;
-        public PoisonStack(float d, float i) { damage = d; interval = i; timer = i; }
+        public float duration; // 0 = infinite
+        public float elapsed;
+        public PoisonStack(float d, float i, float dur) { damage = d; interval = i; timer = i; duration = dur; elapsed = 0f; }
     }
 }

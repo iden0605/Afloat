@@ -13,18 +13,53 @@ MonoBehaviour:
   m_Name: Aquatic Worm
   m_EditorClassIdentifier: 
   troopName: Aquatic Worm
-  description: 
+  description: Latches onto enemies within its water territory. Tracks targets continuously,
+    attacking without pause as long as an enemy is in range.
   portrait: {fileID: 21300000, guid: 8c2d999c84d7f47a8b0f5f58234ea8ca, type: 3}
   prefab: {fileID: 5218539016367959010, guid: 8bb2d85515dc045efbbfaca6874f0321, type: 3}
   category: 0
   placementType: 1
   isLandPlatform: 0
+  useRectangularRange: 0
+  rangeRectWidth: 0.6
   baseCost: 50
-  attack: 1
-  attackSpeed: 1
-  range: 1.5
+  attack: 4
+  attackSpeed: 1.2
+  range: 1
+  attackType: 1
   projectileType: 0
   splashRadius: 0.5
-  effectType: 0
-  upgrades: []
+  baseEffect:
+    effectType: 0
+    goldMultiplier: 2
+    conditionalAttack: 0
+    conditionalSpeed: 0
+    allyBonus: 0
+    dotDamage: 0
+    dotInterval: 0
+    dotDuration: 0
+    rampingDuration: 0
+    rampingMaxStacks: 0
+    freezeDuration: 0
+    freezeSlowFactor: 0
+    stunDuration: 0
+  upgrades:
+  - description: "Its grip tightens \u2014 each bite draws deeper."
+    cost: 75
+    attackDelta: 2
+    attackSpeedDelta: 0
+    rangeDelta: 0
+    effects: []
+  - description: "Writhing with hunger \u2014 strikes faster and meaner."
+    cost: 100
+    attackDelta: 2
+    attackSpeedDelta: 0.5
+    rangeDelta: 0
+    effects: []
+  - description: "Grown massive \u2014 its reach extends through the current."
+    cost: 150
+    attackDelta: 3
+    attackSpeedDelta: 0
+    rangeDelta: 0.5
+    effects: []
   evolutions: []

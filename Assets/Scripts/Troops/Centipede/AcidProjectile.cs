@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -11,6 +12,10 @@ using UnityEngine;
 ///
 /// The ball pulses in scale as it flies (quivering acid feel).
 /// On trigger hit it invokes the hit callback and spawns acid splat FX.
+///
+/// Pierce: if pierceCount > 1 the projectile passes through enemies and hits
+/// up to pierceCount targets before destroying. After each pierce the shot
+/// continues in the same direction it was travelling at the moment of impact.
 ///
 /// Call Launch() immediately after AddComponent<AcidProjectile>().
 /// </summary>
@@ -28,11 +33,13 @@ public class AcidProjectile : MonoBehaviour
 
     // ── Runtime ───────────────────────────────────────────────
 
-    private Vector3 _targetPos;
-    private bool    _launched;
-    private bool    _hit;          // guard: only register one hit
-    private float   _lifetime;
-    private float   _pulseTimer;
+    private Vector3               _targetPos;
+    private Vector3               _travelDir;    // direction after last pierce
+    private bool                  _launched;
+    private int                   _pierceRemaining; // hits left before destroy
+    private readonly HashSet<EnemyMovement> _alreadyHit = new();
+    private float                 _lifetime;
+    private float                 _pulseTimer;
 
     // ── Colors ────────────────────────────────────────────────
 
@@ -46,6 +53,7 @@ public class AcidProjectile : MonoBehaviour
     /// Builds visuals + collider, then starts the projectile moving.
     /// Must be called once, right after AddComponent.
     /// </summary>
+    /// <param name="pierceCount">Max enemies to hit before destroying (1 = no pierce).</param>
     public void Launch(
         EnemyMovement         target,
         float                 damage,
@@ -53,19 +61,25 @@ public class AcidProjectile : MonoBehaviour
         float                 radius,
         string                sortingLayer,
         int                   sortingOrder,
-        Action<EnemyMovement> onHit)
+        Action<EnemyMovement> onHit,
+        int                   pierceCount = 1)
     {
-        _target       = target;
-        _damage       = damage;
-        _speed        = speed;
-        _radius       = radius;
-        _sortingLayer = sortingLayer;
-        _sortingOrder = sortingOrder;
-        _onHit        = onHit;
-        _lifetime     = 12f;
+        _target           = target;
+        _damage           = damage;
+        _speed            = speed;
+        _radius           = radius;
+        _sortingLayer     = sortingLayer;
+        _sortingOrder     = sortingOrder;
+        _onHit            = onHit;
+        _pierceRemaining  = Mathf.Max(1, pierceCount);
+        _lifetime         = 12f;
 
         if (_target != null)
             _targetPos = _target.transform.position;
+
+        _travelDir = _target != null
+            ? (_targetPos - transform.position).normalized
+            : Vector3.up;
 
         BuildVisuals();
         BuildCollider();
@@ -170,7 +184,10 @@ public class AcidProjectile : MonoBehaviour
 
         // Soft-track: follow the live enemy so the shot feels responsive
         if (_target != null)
+        {
+            _travelDir = (_target.transform.position - transform.position).normalized;
             _targetPos = _target.transform.position;
+        }
 
         // Move
         transform.position = Vector3.MoveTowards(
@@ -185,7 +202,7 @@ public class AcidProjectile : MonoBehaviour
         _lifetime -= Time.deltaTime;
         if (_lifetime <= 0f) { Destroy(gameObject); return; }
 
-        // If the target was destroyed mid-flight, clean up once we reach the spot
+        // If there is no target (or it died) and we've reached the destination, clean up
         if (_target == null &&
             Vector3.Distance(transform.position, _targetPos) < 0.08f)
         {
@@ -197,13 +214,24 @@ public class AcidProjectile : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (_hit) return;
+        if (_pierceRemaining <= 0) return;
         if (!other.TryGetComponent<EnemyMovement>(out var enemy)) return;
+        if (!_alreadyHit.Add(enemy)) return; // don't double-hit the same enemy
 
-        _hit = true;
         _onHit?.Invoke(enemy);
         SpawnImpact(transform.position);
-        Destroy(gameObject);
+
+        _pierceRemaining--;
+        if (_pierceRemaining <= 0)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        // Pierce: clear tracked target so the projectile continues in its current
+        // direction. Project the destination well ahead so it flies past this enemy.
+        _target    = null;
+        _targetPos = transform.position + _travelDir * 20f;
     }
 
     // ── Impact FX ─────────────────────────────────────────────

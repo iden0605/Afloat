@@ -75,6 +75,26 @@ public class EnemyVisualEffects : MonoBehaviour
     }
 
     /// <summary>
+    /// Plays a brief red speed-burst trail (Wasp reactive speed / ReactiveSpeedOnHit).
+    /// Safe to call every hit — spawns a one-shot particle burst each time.
+    /// </summary>
+    public void TriggerSpeedBurst()
+    {
+        SpawnSpeedBurstVFX(transform.position);
+    }
+
+    /// <summary>
+    /// Plays the desperation dash explosion (Rocket Raccoon) and applies a permanent
+    /// red tint to signal the enemy is now in panic mode.
+    /// </summary>
+    public void TriggerDesperationDash()
+    {
+        SpawnDashExplosionVFX(transform.position);
+        // Permanent red panic tint — override base colour
+        if (_sr != null) _baseColor = new Color(1f, 0.25f, 0.15f, _baseColor.a);
+    }
+
+    /// <summary>
     /// The current status-tint colour. EnemyHitFlash restores to this instead of
     /// plain white so the status colour persists after a hit flash.
     /// </summary>
@@ -324,5 +344,97 @@ public class EnemyVisualEffects : MonoBehaviour
         _poisonPS?.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         _freezePS?.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         _stunPS?.Stop(true,   ParticleSystemStopBehavior.StopEmittingAndClear);
+    }
+
+    // ── One-shot VFX spawners ─────────────────────────────────────────────────
+
+    // Red/orange speed streak burst — used for ReactiveSpeedOnHit (Wasp panic dash)
+    private static void SpawnSpeedBurstVFX(Vector3 pos)
+    {
+        var go   = new GameObject("SpeedBurst_VFX");
+        go.transform.position = pos;
+
+        var ps   = go.AddComponent<ParticleSystem>();
+        var main = ps.main;
+        main.loop            = false;
+        main.startLifetime   = new ParticleSystem.MinMaxCurve(0.10f, 0.22f);
+        main.startSpeed      = new ParticleSystem.MinMaxCurve(2.5f,  5.0f);
+        main.startSize       = new ParticleSystem.MinMaxCurve(0.03f, 0.08f);
+        main.startColor      = new ParticleSystem.MinMaxGradient(
+                                   new Color(1.00f, 0.30f, 0.05f),
+                                   new Color(1.00f, 0.65f, 0.10f));
+        main.gravityModifier = 0f;
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.maxParticles    = 16;
+        main.stopAction      = ParticleSystemStopAction.Destroy;
+
+        var emission = ps.emission;
+        emission.rateOverTime = 0;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 12) });
+
+        // Horizontal spray — streaks fly sideways to look like speed lines
+        var shape = ps.shape;
+        shape.enabled   = true;
+        shape.shapeType = ParticleSystemShapeType.Circle;
+        shape.radius    = 0.08f;
+
+        var col = ps.colorOverLifetime;
+        col.enabled = true;
+        var grad = new Gradient();
+        grad.SetKeys(
+            new GradientColorKey[] { new(new Color(1f, 0.6f, 0.1f), 0f), new(new Color(1f, 0.2f, 0f), 1f) },
+            new GradientAlphaKey[] { new(1f, 0f), new(0f, 1f) });
+        col.color = new ParticleSystem.MinMaxGradient(grad);
+
+        var psr = go.GetComponent<ParticleSystemRenderer>();
+        psr.material     = new Material(Shader.Find("Sprites/Default"));
+        psr.sortingOrder = 10;
+
+        ps.Play();
+    }
+
+    // Large red/orange burst + shockwave flash — used for DesperationDash (Rocket Raccoon)
+    private static void SpawnDashExplosionVFX(Vector3 pos)
+    {
+        // Larger, more dramatic burst
+        var go   = new GameObject("DesperationDash_VFX");
+        go.transform.position = pos;
+
+        var ps   = go.AddComponent<ParticleSystem>();
+        var main = ps.main;
+        main.loop            = false;
+        main.startLifetime   = new ParticleSystem.MinMaxCurve(0.25f, 0.55f);
+        main.startSpeed      = new ParticleSystem.MinMaxCurve(2.0f,  6.0f);
+        main.startSize       = new ParticleSystem.MinMaxCurve(0.06f, 0.18f);
+        main.startColor      = new ParticleSystem.MinMaxGradient(
+                                   new Color(1.00f, 0.20f, 0.05f),
+                                   new Color(1.00f, 0.55f, 0.10f));
+        main.gravityModifier = 0.2f;
+        main.simulationSpace = ParticleSystemSimulationSpace.World;
+        main.maxParticles    = 36;
+        main.stopAction      = ParticleSystemStopAction.Destroy;
+
+        var emission = ps.emission;
+        emission.rateOverTime = 0;
+        emission.SetBursts(new[] { new ParticleSystem.Burst(0f, 28) });
+
+        var shape = ps.shape;
+        shape.enabled   = true;
+        shape.shapeType = ParticleSystemShapeType.Circle;
+        shape.radius    = 0.12f;
+
+        var col = ps.colorOverLifetime;
+        col.enabled = true;
+        var grad = new Gradient();
+        grad.SetKeys(
+            new GradientColorKey[] { new(new Color(1f, 0.8f, 0.2f), 0f), new(new Color(0.8f, 0.05f, 0f), 1f) },
+            new GradientAlphaKey[] { new(1f, 0f), new(0f, 1f) });
+        col.color = new ParticleSystem.MinMaxGradient(grad);
+
+        var psr = go.GetComponent<ParticleSystemRenderer>();
+        psr.material     = new Material(Shader.Find("Sprites/Default"));
+        psr.sortingOrder = 10;
+
+        ps.Play();
     }
 }

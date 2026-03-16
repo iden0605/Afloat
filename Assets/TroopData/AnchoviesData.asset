@@ -22,23 +22,25 @@ MonoBehaviour:
   useRectangularRange: 1
   rangeRectWidth: 0.5
   baseCost: 50
-  attack: 1
-  attackSpeed: 0.5
-  range: 0.9
-  attackType: 1
+  attack: 12
+  attackSpeed: 0.25
+  range: 1.5
+  attackType: 3
   projectileType: 0
   splashRadius: 0.5
   baseEffect:
-    effectType: 0
+    effectType: 1
     goldMultiplier: 2
-    conditionalAttack: 3
-    conditionalSpeed: 1.2
-    allyBonus: 0.5
-    dotInterval: 0.5
-    rampingDuration: 2
-    rampingMaxStacks: 3
-    freezeDuration: 2
-    freezeSlowFactor: 0.3
-    stunDuration: 1
+    conditionalAttack: 0
+    conditionalSpeed: 0
+    allyBonus: 0
+    dotDamage: 0
+    dotInterval: 0
+    dotDuration: 0
+    rampingDuration: 0
+    rampingMaxStacks: 0
+    freezeDuration: 0
+    freezeSlowFactor: 0
+    stunDuration: 0
   upgrades: []
   evolutions: []

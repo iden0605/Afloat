@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84a0813b27cdd4b3b95d21f6cb444989, type: 3}
+  m_Name: EagleData
+  m_EditorClassIdentifier: 
+  troopName: Eagle
+  description: 
+  portrait: {fileID: 21300000, guid: 968a9b7304f3048998390c1fbcba0189, type: 3}
+  prefab: {fileID: 3531158701887146364, guid: 5a0f43b104a434ce18f7db74c8bbf526, type: 3}
+  category: 0
+  placementType: 2
+  isLandPlatform: 0
+  useRectangularRange: 0
+  rangeRectWidth: 0.6
+  baseCost: 50
+  attack: 1
+  attackSpeed: 1
+  range: 1.5
+  attackType: 1
+  projectileType: 0
+  splashRadius: 0.5
+  baseEffect:
+    effectType: 0
+    goldMultiplier: 2
+    conditionalAttack: 3
+    conditionalSpeed: 1.2
+    allyBonus: 0.5
+    dotDamage: 0
+    dotInterval: 0.5
+    dotDuration: 0
+    rampingDuration: 2
+    rampingMaxStacks: 3
+    freezeDuration: 2
+    freezeSlowFactor: 0.3
+    stunDuration: 1
+  upgrades: []
+  evolutions: []

@@ -39,7 +39,8 @@ public class TroopEffectConfig
     [Tooltip("DoubleGoldDrop: gold multiplier on enemy death (default 2).")]
     public float goldMultiplier = 2f;
 
-    [Tooltip("ConditionalAttackBuff: attack value set when more than 1 enemy is in range.")]
+    [Tooltip("ConditionalAttackBuff: bonus ATK added per extra enemy in range beyond the first.\n" +
+             "Capped at rampingMaxStacks extra enemies (0 = uncapped).")]
     public float conditionalAttack = 3f;
 
     [Tooltip("ConditionalSpeedBuff: attack-speed value set when only 1 enemy is in range.")]
@@ -49,14 +50,24 @@ public class TroopEffectConfig
              "AllySpeedBuff: SPD bonus per same-type ally in range.")]
     public float allyBonus = 0.5f;
 
+    [Tooltip("BurnOnHit / PoisonOnHit / PoisonSplash: fixed damage per DoT tick.\n" +
+             "0 = falls back to the attacker's current damage stat.")]
+    public float dotDamage = 0f;
+
     [Tooltip("BurnOnHit: seconds between burn ticks (default 0.5).\n" +
              "PoisonSplash: seconds between poison ticks (default 0.2).")]
     public float dotInterval = 0.5f;
 
-    [Tooltip("RampingDoubleBuff: how many seconds each stack persists.")]
+    [Tooltip("BurnOnHit / PoisonOnHit / PoisonSplash: total duration of the DoT (seconds).\n" +
+             "0 = ticks indefinitely until enemy dies.")]
+    public float dotDuration = 0f;
+
+    [Tooltip("RampingDoubleBuff: how many seconds each stack persists.\n" +
+             "ConditionalAttackBuff: max extra enemies that contribute bonus ATK (0 = uncapped).")]
     public float rampingDuration = 2f;
 
-    [Tooltip("RampingDoubleBuff: maximum number of stacks (damage multiplier = 2^stacks).")]
+    [Tooltip("RampingDoubleBuff: maximum number of stacks (damage multiplier = 2^stacks).\n" +
+             "ConditionalAttackBuff: max extra enemies that grant the per-enemy ATK bonus (0 = uncapped).")]
     public int rampingMaxStacks = 3;
 
     [Tooltip("FreezeOnHit: seconds the enemy is slowed on each hit.")]

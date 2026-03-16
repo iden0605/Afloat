@@ -16,8 +16,12 @@ MonoBehaviour:
   description: 
   portrait: {fileID: 21300000, guid: 065b227841de44fb0a434832984083f3, type: 3}
   prefab: {fileID: 8988606232293926181, guid: 45b45a1f4befa4dc89575852938796f8, type: 3}
-  baseHealth: 10
-  speed: 1
-  goldDrop: 5
-  effectType: 0
+  baseHealth: 100
+  speed: 2.0
+  goldDrop: 25
+  effectType: 1
   effectValue: 0
+  effectValue2: 0
+  spawnEnemyData: {fileID: 0}
+  spawnEnemyData2: {fileID: 0}
+  spawnCount: 1

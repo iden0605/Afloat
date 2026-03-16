@@ -88,20 +88,26 @@ public class DragonFlyAttack : MonoBehaviour
         _cooldown -= Time.deltaTime;
         if (_cooldown <= 0f)
         {
-            DropBomb();
+            DropBombs();
             _cooldown = _instance.GetEffectiveAttackInterval();
         }
     }
 
     // ── Bomb drop ─────────────────────────────────────────────
 
-    void DropBomb()
+    // U2 upgrade: drops 2 eggs per interval, slightly offset so they don't overlap.
+    void DropBombs()
     {
-        var go   = new GameObject("DragonFlyEggBomb");
-        go.transform.position = transform.position;
+        int count = _instance.UpgradeLevel >= 2 ? 2 : 1;
+        for (int i = 0; i < count; i++)
+        {
+            float xOff = count > 1 ? (i == 0 ? -0.10f : 0.10f) : 0f;
+            var go = new GameObject("DragonFlyEggBomb");
+            go.transform.position = transform.position + new Vector3(xOff, 0f, 0f);
 
-        var bomb = go.AddComponent<DragonFlyEggBomb>();
-        bomb.Init(_instance, fuseTime, splashRadius, sortingLayerName, sortingOrder);
+            var bomb = go.AddComponent<DragonFlyEggBomb>();
+            bomb.Init(_instance, fuseTime, splashRadius, sortingLayerName, sortingOrder);
+        }
     }
 }
 

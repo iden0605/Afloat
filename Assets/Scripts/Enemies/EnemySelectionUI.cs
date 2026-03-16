@@ -32,6 +32,7 @@ public class EnemySelectionUI : MonoBehaviour
     // Description / effect
     private Label         _descriptionLabel;
     private VisualElement _effectRow;
+    private VisualElement _tagsContainer;
     private Label         _effectLabel;
 
     // Prevents LateUpdate from closing the panel on the same frame Show() was called
@@ -100,9 +101,7 @@ public class EnemySelectionUI : MonoBehaviour
         _descriptionLabel.text = d.description;
         _descriptionLabel.style.display = hasDesc ? DisplayStyle.Flex : DisplayStyle.None;
 
-        string fx = EffectDescription(d);
-        _effectLabel.text = string.IsNullOrEmpty(fx) ? "" : $"*  {fx}";
-        _effectRow.style.display = string.IsNullOrEmpty(fx) ? DisplayStyle.None : DisplayStyle.Flex;
+        _effectRow.style.display = RefreshEnemyTags(d) ? DisplayStyle.Flex : DisplayStyle.None;
     }
 
     void Refresh()
@@ -252,9 +251,12 @@ public class EnemySelectionUI : MonoBehaviour
         _descriptionLabel.AddToClassList("sel-description");
         scroll.Add(_descriptionLabel);
 
-        // Special ability
+        // Special ability — tags row + description text
         _effectRow = new VisualElement();
         _effectRow.AddToClassList("sel-effect-row");
+        _tagsContainer = new VisualElement();
+        _tagsContainer.AddToClassList("skill-tags-row");
+        _effectRow.Add(_tagsContainer);
         _effectLabel = new Label();
         _effectLabel.AddToClassList("esel-effect");
         _effectRow.Add(_effectLabel);
@@ -289,20 +291,79 @@ public class EnemySelectionUI : MonoBehaviour
         return d;
     }
 
-    static string EffectDescription(EnemyData d) => d.effectType switch
+    // ── Tag system ───────────────────────────────────────────────────────────
+
+    bool RefreshEnemyTags(EnemyData d)
     {
-        EnemyEffectType.ImmuneMelee     => "Immune to melee attacks",
-        EnemyEffectType.ImmuneRanged    => "Immune to ranged attacks",
-        EnemyEffectType.DamageReduction => $"Blocks {d.effectValue * 100:0}% of all damage",
-        EnemyEffectType.MaxDamagePerHit => $"Max {d.effectValue:0.#} damage per hit",
-        EnemyEffectType.DodgeChance     => $"{d.effectValue * 100:0}% chance to dodge attacks",
-        EnemyEffectType.SpeedBurst      => d.effectValue > 0
-                                            ? $"Doubles speed when HP drops to {d.effectValue:0.#}"
-                                            : "Doubles speed when HP drops below 50%",
-        EnemyEffectType.SpeedDoubleOnHit => "Doubles speed the first time it is hit",
-        EnemyEffectType.SpawnOnDeath    => d.spawnEnemyData != null
-                                            ? $"Spawns {d.spawnCount}× {d.spawnEnemyData.enemyName} on death"
-                                            : $"Spawns {d.spawnCount} enemies on death",
-        _                               => ""
+        _tagsContainer.Clear();
+        if (d == null || d.effectType == EnemyEffectType.None) return false;
+
+        string tagName  = EnemyEffectTagName(d);
+        string tagClass = EnemyEffectTagClass(d);
+        if (string.IsNullOrEmpty(tagName)) return false;
+
+        var tag = new Label(tagName);
+        tag.AddToClassList("skill-tag");
+        tag.AddToClassList(tagClass);
+        _tagsContainer.Add(tag);
+
+        string desc = EnemyEffectDescription(d);
+        _effectLabel.text = desc;
+        _effectLabel.style.display = !string.IsNullOrEmpty(desc) ? DisplayStyle.Flex : DisplayStyle.None;
+        return true;
+    }
+
+    static string EnemyEffectTagName(EnemyData d) => d.effectType switch
+    {
+        EnemyEffectType.ImmuneMelee       => "MELEE IMMUNE",
+        EnemyEffectType.ImmuneRanged      => "RANGED IMMUNE",
+        EnemyEffectType.DamageReduction   => "DAMAGE SHIELD",
+        EnemyEffectType.MaxDamagePerHit   => "ARMOR PLATING",
+        EnemyEffectType.DodgeChance       => "EVASIVE",
+        EnemyEffectType.SpeedBurst        => "SPEED BURST",
+        EnemyEffectType.SpeedDoubleOnHit  => "PANIC RUSH",
+        EnemyEffectType.SpawnOnDeath      => "SPAWNS ON DEATH",
+        EnemyEffectType.ReactiveSpeedOnHit => "REACTIVE SPEED",
+        EnemyEffectType.DesperationDash   => "DESPERATION",
+        EnemyEffectType.SpawnAtHPThresholds => "SPAWNER",
+        _                                 => ""
+    };
+
+    static string EnemyEffectTagClass(EnemyData d) => d.effectType switch
+    {
+        EnemyEffectType.ImmuneMelee        => "skill-tag--immune",
+        EnemyEffectType.ImmuneRanged       => "skill-tag--immune",
+        EnemyEffectType.DamageReduction    => "skill-tag--armor",
+        EnemyEffectType.MaxDamagePerHit    => "skill-tag--armor",
+        EnemyEffectType.DodgeChance        => "skill-tag--dodge",
+        EnemyEffectType.SpeedBurst         => "skill-tag--speed",
+        EnemyEffectType.SpeedDoubleOnHit   => "skill-tag--speed",
+        EnemyEffectType.SpawnOnDeath       => "skill-tag--spawn",
+        EnemyEffectType.ReactiveSpeedOnHit => "skill-tag--speed",
+        EnemyEffectType.DesperationDash    => "skill-tag--speed",
+        EnemyEffectType.SpawnAtHPThresholds => "skill-tag--spawn",
+        _                                  => "skill-tag--immune"
+    };
+
+    static string EnemyEffectDescription(EnemyData d) => d.effectType switch
+    {
+        EnemyEffectType.ImmuneMelee       => "Cannot be damaged by melee attacks",
+        EnemyEffectType.ImmuneRanged      => "Cannot be damaged by ranged attacks",
+        EnemyEffectType.DamageReduction   => $"Absorbs {d.effectValue * 100:0}% of all incoming damage",
+        EnemyEffectType.MaxDamagePerHit   => $"No single hit can deal more than {d.effectValue:0.#} damage",
+        EnemyEffectType.DodgeChance       => $"{d.effectValue * 100:0}% chance to fully dodge each attack",
+        EnemyEffectType.SpeedBurst        => d.effectValue > 0
+                                                ? $"Doubles speed when HP drops below {d.effectValue:0.#}"
+                                                : "Doubles speed when HP drops below 50%",
+        EnemyEffectType.SpeedDoubleOnHit  => "Doubles movement speed the first time it is hit",
+        EnemyEffectType.SpawnOnDeath      => d.spawnEnemyData != null
+                                                ? $"Spawns {d.spawnCount}× {d.spawnEnemyData.enemyName} on death"
+                                                : $"Spawns {d.spawnCount} enemies on death",
+        EnemyEffectType.ReactiveSpeedOnHit => $"+{d.effectValue * 100:0}% speed for {d.effectValue2:0.#}s each time hit (refreshes on hit)",
+        EnemyEffectType.DesperationDash   => $"Gains +{d.effectValue2 * 100:0}% speed permanently when HP drops below {d.effectValue * 100:0}%",
+        EnemyEffectType.SpawnAtHPThresholds => d.spawnEnemyData != null
+                                                ? $"Spawns enemies every {d.effectValue:0.#} HP lost"
+                                                : $"Spawns an enemy every {d.effectValue:0.#} HP lost",
+        _                                 => ""
     };
 }
