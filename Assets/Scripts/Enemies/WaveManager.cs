@@ -56,8 +56,11 @@ public class WaveManager : MonoBehaviour
     /// <summary>True while at least one enemy from the current wave is still alive.</summary>
     public bool IsWaveActive     => IsSpawning || EnemiesAlive > 0;
 
-    /// <summary>True when double-speed mode is enabled (Time.timeScale = 2).</summary>
-    public bool IsDoubleSpeed    { get; private set; } = false;
+    /// <summary>Current speed multiplier: 1, 2, or 4.</summary>
+    public int  SpeedLevel       { get; private set; } = 1;
+
+    /// <summary>True when double-speed mode is enabled (Time.timeScale >= 2). Preserved for backward compat.</summary>
+    public bool IsDoubleSpeed    => SpeedLevel >= 2;
 
     /// <summary>Number of enemies currently alive on the path.</summary>
     public int  EnemiesAlive     { get; private set; } = 0;
@@ -111,13 +114,18 @@ public class WaveManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Enables or disables double-speed mode by adjusting Time.timeScale.
+    /// Sets the speed level (1, 2, or 4) and adjusts Time.timeScale accordingly.
     /// </summary>
-    public void SetDoubleSpeed(bool on)
+    public void SetSpeedLevel(int level)
     {
-        IsDoubleSpeed  = on;
-        Time.timeScale = on ? 2f : 1f;
+        SpeedLevel     = level;
+        Time.timeScale = level;
     }
+
+    /// <summary>
+    /// Enables or disables double-speed mode. Preserved for backward compat.
+    /// </summary>
+    public void SetDoubleSpeed(bool on) => SetSpeedLevel(on ? 2 : 1);
 
     /// <summary>
     /// Cancels the between-wave countdown and starts the next wave immediately.

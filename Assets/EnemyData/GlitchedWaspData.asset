@@ -18,7 +18,7 @@ MonoBehaviour:
     triggers its speed surge."
   portrait: {fileID: 223822315, guid: ebde22762ed654117940d7c4ae8b851f, type: 3}
   prefab: {fileID: 2390453046999063911, guid: a3eb0712ce9564e55b18c59f73abe8b1, type: 3}
-  baseHealth: 340
+  baseHealth: 7000
   speed: 2.2
   goldDrop: 60
   effectType: 9

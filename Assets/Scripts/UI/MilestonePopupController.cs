@@ -276,7 +276,7 @@ public class MilestonePopupController : MonoBehaviour
         // Restore time scale, preserving any active double-speed state.
         // If AutoProceed is on, WaveManager's frozen AutoStartNext coroutine will
         // automatically resume and start the next wave once timeScale is > 0.
-        Time.timeScale = (WaveManager.Instance != null && WaveManager.Instance.IsDoubleSpeed) ? 2f : 1f;
+        Time.timeScale = WaveManager.Instance != null ? WaveManager.Instance.SpeedLevel : 1;
     }
 
     void OnKeepGoing()

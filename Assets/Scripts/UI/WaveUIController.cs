@@ -28,6 +28,7 @@ public class WaveUIController : MonoBehaviour
     private Label         _healthLabel;
     private VisualElement _heartIcon;
     private Button        _speedBtn;
+    private Button        _speedBtn4x;
 
     private float _animTime = 0f;
 
@@ -47,8 +48,10 @@ public class WaveUIController : MonoBehaviour
         _healthLabel = root.Q<Label>("health-label");
         _heartIcon   = root.Q("heart-icon");
         _speedBtn    = root.Q<Button>("speed-btn");
+        _speedBtn4x  = root.Q<Button>("speed-btn-4x");
 
-        if (_speedBtn != null) _speedBtn.clicked += OnSpeedClicked;
+        if (_speedBtn   != null) _speedBtn.clicked   += OnSpeedClicked;
+        if (_speedBtn4x != null) _speedBtn4x.clicked += OnSpeed4xClicked;
 
         PlayerHealthManager.OnHealthChanged += RefreshHealth;
         RefreshHealth();
@@ -56,7 +59,8 @@ public class WaveUIController : MonoBehaviour
 
     void OnDisable()
     {
-        if (_speedBtn != null) _speedBtn.clicked -= OnSpeedClicked;
+        if (_speedBtn   != null) _speedBtn.clicked   -= OnSpeedClicked;
+        if (_speedBtn4x != null) _speedBtn4x.clicked -= OnSpeed4xClicked;
         PlayerHealthManager.OnHealthChanged -= RefreshHealth;
     }
 
@@ -78,10 +82,9 @@ public class WaveUIController : MonoBehaviour
 
     void UpdateSpeedButton()
     {
-        if (_speedBtn == null) return;
-        bool fast = WaveManager.Instance != null && WaveManager.Instance.IsDoubleSpeed;
-        if (fast) _speedBtn.AddToClassList("hud-ctrl-btn--active");
-        else      _speedBtn.RemoveFromClassList("hud-ctrl-btn--active");
+        int level = WaveManager.Instance != null ? WaveManager.Instance.SpeedLevel : 1;
+        _speedBtn?.EnableInClassList("hud-ctrl-btn--active",   level == 2);
+        _speedBtn4x?.EnableInClassList("hud-ctrl-btn--active", level == 4);
     }
 
     void UpdateHeartAnimation()
@@ -112,7 +115,15 @@ public class WaveUIController : MonoBehaviour
     void OnSpeedClicked()
     {
         if (WaveManager.Instance == null) return;
-        WaveManager.Instance.SetDoubleSpeed(!WaveManager.Instance.IsDoubleSpeed);
+        int next = WaveManager.Instance.SpeedLevel == 2 ? 1 : 2;
+        WaveManager.Instance.SetSpeedLevel(next);
+    }
+
+    void OnSpeed4xClicked()
+    {
+        if (WaveManager.Instance == null) return;
+        int next = WaveManager.Instance.SpeedLevel == 4 ? 1 : 4;
+        WaveManager.Instance.SetSpeedLevel(next);
     }
 
     /// <summary>
@@ -121,7 +132,8 @@ public class WaveUIController : MonoBehaviour
     /// </summary>
     public void LockHUD()
     {
-        if (_speedBtn != null) _speedBtn.SetEnabled(false);
+        if (_speedBtn   != null) _speedBtn.SetEnabled(false);
+        if (_speedBtn4x != null) _speedBtn4x.SetEnabled(false);
     }
 
     // ── Hint system bounds ─────────────────────────────────────────────────────

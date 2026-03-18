@@ -17,8 +17,8 @@ MonoBehaviour:
     players to prioritize fast-targeting troops."
   portrait: {fileID: 21300000, guid: 5b7b09a31d60b436c9ef85f74c9e2adf, type: 3}
   prefab: {fileID: 1103165689165731684, guid: 8d96844c280e547d0aa5f0efd5628b99, type: 3}
-  baseHealth: 30
-  speed: 2.2
+  baseHealth: 50
+  speed: 2
   goldDrop: 10
   effectType: 0
   effectValue: 0

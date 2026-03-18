@@ -17,7 +17,7 @@ MonoBehaviour:
     attackers simply can't reach it. Forces use of Centipede or other ranged troops."
   portrait: {fileID: 21300000, guid: 2aac20379f8bc45e48b13b53069b1747, type: 3}
   prefab: {fileID: 4701545867634183170, guid: 5baaa7739e4e04bff9cf03b3a8ced342, type: 3}
-  baseHealth: 100
+  baseHealth: 270
   speed: 2
   goldDrop: 8
   effectType: 1

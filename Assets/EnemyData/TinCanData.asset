@@ -17,7 +17,7 @@ MonoBehaviour:
     phase \u2014 a deliberate damage sponge intended to outlast weak towers."
   portrait: {fileID: 21300000, guid: 15d6c60b72f3442f999be3730811242d, type: 3}
   prefab: {fileID: 3364150953773157294, guid: e23eff29ba22d4fc781c2eacf0959317, type: 3}
-  baseHealth: 300
+  baseHealth: 1000
   speed: 0.7
   goldDrop: 12
   effectType: 0

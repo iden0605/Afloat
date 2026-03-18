@@ -18,7 +18,7 @@ MonoBehaviour:
     Must be overwhelmed from all angles simultaneously."
   portrait: {fileID: 21300000, guid: 1bb1ea66351704b7a8728b607f6cad39, type: 3}
   prefab: {fileID: 5141655242511978369, guid: 0ca89033ae9ea411f9ca1ee717516c24, type: 3}
-  baseHealth: 30000
+  baseHealth: 20000000
   speed: 0.7
   goldDrop: 5000
   effectType: 11

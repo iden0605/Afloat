@@ -20,8 +20,8 @@ public class PauseManager : MonoBehaviour
     /// <summary>True while the game is paused.</summary>
     public bool IsPaused { get; private set; } = false;
 
-    // Remembered so we can restore double-speed correctly on resume.
-    private bool _wasDoubleSpeed = false;
+    // Remembered so we can restore speed correctly on resume.
+    private int _savedSpeedLevel = 1;
 
     private VisualElement _pauseRoot;
     private Slider        _musicSlider;
@@ -93,8 +93,8 @@ public class PauseManager : MonoBehaviour
         if (IsPaused) return;
         IsPaused = true;
 
-        // Remember double-speed state, then freeze time.
-        _wasDoubleSpeed = WaveManager.Instance != null && WaveManager.Instance.IsDoubleSpeed;
+        // Remember speed level, then freeze time.
+        _savedSpeedLevel = WaveManager.Instance != null ? WaveManager.Instance.SpeedLevel : 1;
         Time.timeScale = 0f;
         AudioManager.Instance?.PauseMusic();
 
@@ -107,7 +107,7 @@ public class PauseManager : MonoBehaviour
         IsPaused = false;
 
         // Restore previous time scale.
-        Time.timeScale = _wasDoubleSpeed ? 2f : 1f;
+        Time.timeScale = _savedSpeedLevel;
         AudioManager.Instance?.ResumeMusic();
 
         _pauseRoot.style.display = DisplayStyle.None;
@@ -128,12 +128,12 @@ public class PauseManager : MonoBehaviour
         if (IsPaused)
         {
             IsPaused = false;
-            Time.timeScale = _wasDoubleSpeed ? 2f : 1f;
+            Time.timeScale = _savedSpeedLevel;
         }
         else
         {
             IsPaused = true;
-            _wasDoubleSpeed = WaveManager.Instance != null && WaveManager.Instance.IsDoubleSpeed;
+            _savedSpeedLevel = WaveManager.Instance != null ? WaveManager.Instance.SpeedLevel : 1;
             Time.timeScale = 0f;
         }
     }

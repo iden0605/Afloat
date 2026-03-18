@@ -17,7 +17,7 @@ MonoBehaviour:
     phase \u2014 a damage sponge that tests sustained DPS."
   portrait: {fileID: 21300000, guid: aa134fe1bb6904d5888c4a01f31030c5, type: 3}
   prefab: {fileID: 6306091249988248381, guid: 6b02952a25e484400b8b744edc3b49c6, type: 3}
-  baseHealth: 130
+  baseHealth: 300
   speed: 0.8
   goldDrop: 9
   effectType: 0
